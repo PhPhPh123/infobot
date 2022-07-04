@@ -4,12 +4,16 @@ import discord
 import tkinter
 import random
 from discord.ext import commands
+import os
+from dotenv import load_dotenv, find_dotenv
 
 '''
 Settings
 '''
+load_dotenv(find_dotenv())
+token = os.environ['TOKEN']
 settings = {
-    'token': 'OTkyNDM4MjE1MjU0NDg3MTQz.Gzbd3D.bwujHkk9thKD_CooZ3304pZhNFSNh7HNsRjn5Q',
+    'token': token,
     'bot': 'Infobot_wh40k',
     'id': 992438215254487143,
     'prefix': '!'
