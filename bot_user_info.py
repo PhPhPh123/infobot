@@ -14,7 +14,6 @@ def bot_user_info_controller(bot_user_info_controller_world):
     """
     Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
     :param bot_user_info_controller_world:
-    :param args:
     :return:
     """
     db_name = 'infobot_db.db'
@@ -39,14 +38,16 @@ def db_select(curs, db_select_world):
     select_export = select_form_exports(db_select_world)
     select_import = select_form_import(db_select_world)
 
-    tuple_main = curs.execute(select_main)
-    tuple_terrains = curs.execute(select_terrains)
-    tuple_enemies = curs.execute(select_enemies)
-    tuple_export = curs.execute(select_export)
-    tuple_import = curs.execute(select_import)
+    tuple_main = tuple(curs.execute(select_main))
+    tuple_terrains = tuple(curs.execute(select_terrains))
+    tuple_enemies = tuple(curs.execute(select_enemies))
+    tuple_export = tuple(curs.execute(select_export))
+    tuple_import = tuple(curs.execute(select_import))
 
-    print(tuple_main)
-    return final_string
+    final_dict = dict_form(tuple_main, tuple_terrains, tuple_enemies, tuple_export, tuple_import)
+    final_str = str_form(final_dict)
+
+    return final_str
 
 
 def select_form_main(select_form_world):
@@ -106,5 +107,44 @@ def select_form_import(select_form_world):
     return select_render_import
 
 
-def str_form(str_form_main, str_form_terrains):
-    pass
+def dict_form(dict_form_main, dict_form_terrains, dict_form_enemies, dict_form_export, dict_form_import):
+    main_dict_keys = ('Наименование мира', 'Дополнительное описание', 'Уровень опасности', 'Имперский класс',
+                      'Население', 'Имперская власть', 'Уровень доступа')
+    print(tuple(dict_form_main))
+    main_dict = dict(zip(main_dict_keys, dict_form_main[0]))
+
+    terrains_dict = {'Местность': [elem[0] for elem in dict_form_terrains]}
+
+    enemies_dict = {'Угроза врагов': [elem[0] for elem in dict_form_enemies]}
+
+    export_dict = {'Экспортные товары': [elem[0] for elem in dict_form_export]}
+
+    import_dict = {'Импортные товары': [elem[0] for elem in dict_form_import]}
+
+    for dict_elem in terrains_dict, enemies_dict, export_dict, import_dict:
+        main_dict.update(dict_elem)
+
+    return main_dict
+
+
+def str_form(str_form_dict):
+    """
+    :param str_form_dict:
+    :return:
+    """
+    answer = f'''
+    Уровень доступа: {str_form_dict['Уровень доступа']}
+    Наименование мира: {str_form_dict['Наименование мира'] if str_form_dict['Уровень доступа'] > 0 else 'Неизвестно'}
+    Имперский класс: {str_form_dict['Имперский класс']}
+    Имперская власть: {str_form_dict['Имперская власть']}
+    Население: {str_form_dict['Население'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
+    Относительный уровень опасности: {str_form_dict['Уровень опасности']}
+    Угрожающие враги: {str_form_dict['Угроза врагов'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
+    Основные типы местности: {str_form_dict['Местность'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
+    Экспортные товары: {str_form_dict['Экспортные товары'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
+    Импортные товары: {str_form_dict['Импортные товары'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
+    Дополнительное описание и особенности: {str_form_dict['Дополнительное описание'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
+    '''
+    if str_form_dict['Уровень доступа'] == 0:
+        answer = 'Вам ничего не известно по этому миру'
+    return answer
