@@ -1,16 +1,7 @@
 from settings_and_imports import *
 
 
-def get_script_dir() -> str:
-    """
-    Функция собирающая абсолютный путь к текущей директории
-    :return: возвращает этот путь
-    """
-    abs_path = path.abspath(__file__)  # полный путь к файлу скрипта
-    return path.dirname(abs_path)
-
-
-def bot_user_info_controller(bot_user_info_controller_world):
+def bot_user_info_controller_worlds(bot_user_info_controller_world):
     """
     Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
     :param bot_user_info_controller_world:
@@ -20,8 +11,8 @@ def bot_user_info_controller(bot_user_info_controller_world):
     abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
     db = sqlite3.connect(abspath)  # connect to sql base
     cursor = db.cursor()  # Creation sqlite cursor
-
     result = db_select(cursor, bot_user_info_controller_world)
+
     return result
 
 
@@ -109,8 +100,8 @@ def select_form_import(select_form_world):
 
 def dict_form(dict_form_main, dict_form_terrains, dict_form_enemies, dict_form_export, dict_form_import):
     main_dict_keys = ('Наименование мира', 'Дополнительное описание', 'Уровень опасности', 'Имперский класс',
-                      'Население', 'Имперская власть', 'Уровень доступа')
-    print(tuple(dict_form_main))
+                      'Население', 'Имперская власть', 'Уровень доступа', 'Родительская система')
+
     main_dict = dict(zip(main_dict_keys, dict_form_main[0]))
 
     terrains_dict = {'Местность': [elem[0] for elem in dict_form_terrains]}
@@ -134,9 +125,10 @@ def str_form(str_form_dict):
     """
     answer = f'''
     Уровень доступа: {str_form_dict['Уровень доступа']}
-    Наименование мира: {str_form_dict['Наименование мира'] if str_form_dict['Уровень доступа'] > 0 else 'Неизвестно'}
+    Наименование мира: {str_form_dict['Наименование мира']}
+    Родительская система: {str_form_dict['Родительская система']}
     Имперский класс: {str_form_dict['Имперский класс']}
-    Имперская власть: {str_form_dict['Имперская власть']}
+    Имперская власть: {str_form_dict['Имперская власть'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
     Население: {str_form_dict['Население'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
     Относительный уровень опасности: {str_form_dict['Уровень опасности']}
     Угрожающие враги: {str_form_dict['Угроза врагов'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
