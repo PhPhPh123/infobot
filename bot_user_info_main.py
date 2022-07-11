@@ -100,7 +100,8 @@ def select_form_import(select_form_world):
 
 def dict_form(dict_form_main, dict_form_terrains, dict_form_enemies, dict_form_export, dict_form_import):
     main_dict_keys = ('Наименование мира', 'Дополнительное описание', 'Уровень опасности', 'Имперский класс',
-                      'Население', 'Имперская власть', 'Уровень доступа', 'Родительская система')
+                      'Население', 'Имперская власть', 'Уровень доступа', 'Родительская система', 'Нужда в импорте',
+                      'Экспортное перепроизводство')
 
     main_dict = dict(zip(main_dict_keys, dict_form_main[0]))
 
@@ -135,6 +136,8 @@ def str_form(str_form_dict):
 Основные типы местности: {str_form_dict['Местность'] if str_form_dict['Уровень доступа'] > 1 else 'Неизвестно'}
 Экспортные товары: {str_form_dict['Экспортные товары'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
 Импортные товары: {str_form_dict['Импортные товары'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
+Эспортное производство: {str_form_dict['Экспортное перепроизводство'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
+Импортный дефицит: {str_form_dict['Нужда в импорте'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
 Дополнительное описание и особенности: {str_form_dict['Дополнительное описание'] if str_form_dict['Уровень доступа'] > 2 else 'Неизвестно'}
     '''
     if str_form_dict['Уровень доступа'] == 0:
