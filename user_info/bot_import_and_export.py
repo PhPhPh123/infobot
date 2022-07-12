@@ -4,6 +4,7 @@ from settings_and_imports import *
 def bot_user_info_controller_trade(bot_user_info_controller_system, name_deal):
     """
     Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
+    :param name_deal:
     :param bot_user_info_controller_system:
     :return:
     """
