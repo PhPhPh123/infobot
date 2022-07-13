@@ -2,6 +2,7 @@ from user_info.bot_user_info_main import *
 from user_info.bot_user_info_systems import *
 from user_info.bot_import_and_export import *
 from user_info.bot_user_access import *
+from user_info.bot_user_info_goods import *
 
 infobot = commands.Bot(command_prefix=settings['prefix'])
 
@@ -33,6 +34,12 @@ async def helpme(ctx):
 !infoaccess - показывает уровень доступа на всех известных мирах, где уровень выше 0
 
 !access - показывает информацию по уровням доступа для миров
+
+!infoallgoods - показывает весь список товаров
+
+!infoexportgoods *название товара* - показывает системы с необходимым уровнем доступа, которые экспортируют данный товар
+
+!infoimportgoods *название товара* - показывает системы с необходимым уровнем доступа, которые импортируют данный товар
         
 Название систем можно посмотреть на сайте - на карте
         '''
@@ -66,6 +73,41 @@ async def infoimport(ctx, world_name):
 @infobot.command()
 async def infoaccess(ctx):
     bot_answer = bot_user_info_controller_access()
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def infoallgoods(ctx):
+    bot_answer = '''
+Нормальное-продовольствие
+Питательная-паста
+Деликатесы
+Стрелковое-оружие-и-экипировка
+Боеприпасы
+Одежда-и-украшения
+Гражданская-техника
+Медицина-и-парфюмерия
+Опасные-вещества
+Электронные-компоненты
+Тяжелые-машинные-детали
+Прометий-и-субпродукты
+Строй-материалы
+Металлы
+Редкие-минералы'''
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def infoimportgoods(ctx, goods_name):
+    deal_name = 'import'
+    bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def infoexportgoods(ctx, goods_name):
+    deal_name = 'export'
+    bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
     await ctx.send(bot_answer)
 
 
