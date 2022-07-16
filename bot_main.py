@@ -122,7 +122,7 @@ async def news_send(channel):
 @infobot.command()
 @commands.has_permissions(administrator=True)
 async def startnews(ctx):
-    await ctx.send("Поиск новостей...")
+    await ctx.send("Поиск слухов...")
     news_send.start(ctx.channel)
 
 
