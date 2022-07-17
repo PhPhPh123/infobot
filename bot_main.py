@@ -3,6 +3,7 @@ from user_info.bot_user_info_systems import *
 from user_info.bot_import_and_export import *
 from user_info.bot_user_access import *
 from user_info.bot_user_info_goods import *
+from news.bot_news import *
 
 infobot = commands.Bot(command_prefix=settings['prefix'])
 
@@ -109,6 +110,20 @@ async def infoexportgoods(ctx, goods_name):
     deal_name = 'export'
     bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
     await ctx.send(bot_answer)
+
+
+@tasks.loop(minutes=60)
+async def news_send(channel):
+    news = bot_news_controller()
+
+    await channel.send(news)
+
+
+@infobot.command()
+@commands.has_permissions(administrator=True)
+async def startnews(ctx):
+    await ctx.send("Поиск слухов...")
+    news_send.start(ctx.channel)
 
 
 if __name__ == '__main__':
