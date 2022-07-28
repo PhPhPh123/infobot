@@ -105,7 +105,7 @@ async def infoexportgoods(ctx, goods_name):
     await ctx.send(bot_answer)
 
 
-@tasks.loop(minutes=30)
+@tasks.loop(seconds=5)
 async def news_send(channel):
     news = bot_news_controller()
 

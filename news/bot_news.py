@@ -22,9 +22,9 @@ def rand_news(curs):
     Будет формирования основные сообщения по уже имеющимся данным по системам
     :return:
     """
-    news_for_enemy = select_enemy_news(curs)
-
-    return news_for_enemy
+    rand_list = [select_enemy_news(curs), select_gm_news(curs)]
+    news = random.choice(rand_list)
+    return news
 
 
 def select_enemy_news(curs):
@@ -79,3 +79,12 @@ def str_form_enemy_news(enemy_tuple):
 
     return str_answer
 
+
+def select_gm_news(curs):
+    select_string = '''
+    SELECT news_text FROM gm_news
+    ORDER BY RANDOM()
+    LIMIT 1
+    '''
+    gm_string = tuple(curs.execute(select_string))[0][0]
+    return gm_string
