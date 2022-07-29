@@ -1,32 +1,8 @@
 from settings_and_imports import *
 
 
-def bot_news_controller():
-    """
-    Случайный выбор типа события из 4х видов и вызов его
-    :return:
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = rand_news(cursor)
-
-    return result
-
-
-def rand_news(curs):
-    """
-    Будет формирования основные сообщения по уже имеющимся данным по системам
-    :return:
-    """
-    rand_list = [select_enemy_news(curs), select_gm_news(curs)]
-    news = random.choice(rand_list)
-    return news
-
-
 def select_enemy_news(curs):
-    select_enemy = '''
+    select_enemy_string = '''
     SELECT worlds.world_name, enemies.group_name
     FROM worlds
     INNER JOIN worlds_enemies_relations ON worlds.world_name == worlds_enemies_relations.world_name
@@ -35,7 +11,7 @@ def select_enemy_news(curs):
     LIMIT 1
     '''
 
-    enemy_news_tuple = tuple(curs.execute(select_enemy))
+    enemy_news_tuple = tuple(curs.execute(select_enemy_string))
     str_enemy_news = str_form_enemy_news(enemy_news_tuple)
     return str_enemy_news
 
@@ -76,13 +52,3 @@ def str_form_enemy_news(enemy_tuple):
 '''
 
     return str_answer
-
-
-def select_gm_news(curs):
-    select_string = '''
-    SELECT news_text FROM gm_news
-    ORDER BY RANDOM()
-    LIMIT 1
-    '''
-    gm_string = tuple(curs.execute(select_string))[0][0]
-    return gm_string

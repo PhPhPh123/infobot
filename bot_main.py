@@ -3,7 +3,7 @@ from user_info.bot_user_info_systems import *
 from user_info.bot_import_and_export import *
 from user_info.bot_user_access import *
 from user_info.bot_user_info_goods import *
-from news.bot_news import *
+from news.bot_news_main import *
 
 infobot = commands.Bot(command_prefix=settings['prefix'])
 
