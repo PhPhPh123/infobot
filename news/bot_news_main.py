@@ -24,7 +24,6 @@ def rand_news(curs, db):
     :return:
     """
     random_roll = random.randint(1, 100)
-    print(random_roll)
     if random_roll > 5:
         news = random.choice([bot_news_enemies.select_enemy_news(curs),
                               bot_news_static_info.select_subsector_news(curs),

@@ -9,19 +9,36 @@ infobot = commands.Bot(command_prefix=settings['prefix'])
 
 
 @infobot.command()
-async def infoworld(ctx, world_name):
+async def infoworld(ctx, world_name: str):
+    """
+    Функция, выдающая ответ по характеристикам запрашиваемого мира на основании запроса в базу данных
+    :param ctx: стандартный аргумент библиотеки
+    :param world_name: название запрашиваемого мира
+    :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
+    """
     bot_answer = bot_user_info_controller_worlds(world_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infosystem(ctx, system_name):
+async def infosystem(ctx, system_name: str):
+    """
+    Функция, выдающая список миров внутри системы на основании запроса в базу данных
+    :param ctx: стандартный аргумент библиотеки
+    :param system_name: название запрашиваемой системы
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     bot_answer = bot_user_info_controller_systems(system_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
 async def helpme(ctx):
+    """
+    Функция, отправляющая ботом в дискорде информацию по доступным игрокам командам
+    :param ctx: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     bot_answer = '''
 Команды:
 !infoworld *название системы* - вызывает инфу по конкретному миру согласно имеющемуся уровню доступа
@@ -33,15 +50,18 @@ async def helpme(ctx):
 !infoallgoods - показывает весь список товаров
 !infoexportgoods *название товара* - показывает системы с необходимым уровнем доступа, которые экспортируют данный товар
 !infoimportgoods *название товара* - показывает системы с необходимым уровнем доступа, которые импортируют данный товар
-!infostartnews - ГМская команда, запускающая новости
         
-Название систем можно посмотреть на сайте - на карте
-        '''
+Название систем можно посмотреть на сайте - на карте'''
     await ctx.send(bot_answer)
 
 
 @infobot.command()
 async def access(ctx):
+    """
+    Функция, отправляющая ботом в дискорде информацию по тому, за что отвечают уровни доступа на мирах
+    :param ctx: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     bot_answer = '''
 Нулевой уровень: недоступно ничего, мир скрыт для запросов полностью
 Первый уровень доступно: название системы, имперский класс, общий уровень опасности
@@ -51,14 +71,28 @@ async def access(ctx):
 
 
 @infobot.command()
-async def infoexport(ctx, world_name):
+async def infoexport(ctx, world_name: str):
+    """
+    Функция, отправляющая ботом в чат список товаров, которые экспортирует запрашиваемый мир и их цену после пересчета
+    всех модификаторов влияющих на среднюю стоимость
+    :param ctx: стандартный аргумент библиотеки
+    :param world_name: название запрашиваемого мира
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     deal_name = 'export'
     bot_answer = bot_user_info_controller_trade(world_name, deal_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infoimport(ctx, world_name):
+async def infoimport(ctx, world_name: str):
+    """
+    Функция, отправляющая ботом в чат список товаров, которые импортирует запрашиваемый мир и их цену после пересчета
+    всех модификаторов влияющих на среднюю стоимость
+    :param ctx: стандартный аргумент библиотеки
+    :param world_name: название запрашиваемого мира
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     deal_name = 'import'
     bot_answer = bot_user_info_controller_trade(world_name, deal_name)
     await ctx.send(bot_answer)
