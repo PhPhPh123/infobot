@@ -5,7 +5,13 @@ from user_info.bot_user_access import *
 from user_info.bot_user_info_goods import *
 from news.bot_news_main import *
 
-infobot = commands.Bot(command_prefix=settings['prefix'])
+"""
+Данный модуль содержит все команды к боту и отправляет их обработку в нижестоящие модули. Запуск бота осуществляется
+именно через этот модуль. Боты организованы через асинхронные функции API discord с добавлением декораторов для команд и
+прав доступа. Все необходимые модули импортируются включая модуль с настройками
+"""
+
+infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
 
 @infobot.command()
@@ -16,7 +22,7 @@ async def infoworld(ctx, world_name: str):
     :param world_name: название запрашиваемого мира
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
-    bot_answer = bot_user_info_controller_worlds(world_name)
+    bot_answer = returns_string_for_infoworld_command(world_name)
     await ctx.send(bot_answer)
 
 
@@ -100,12 +106,22 @@ async def infoimport(ctx, world_name: str):
 
 @infobot.command()
 async def infoaccess(ctx):
+    """
+    Функция, отправляющая ботов в чат общий список миров, в которых уровень доступа отличен от 0(т.е. фактически есть)
+    :param ctx: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     bot_answer = bot_user_info_controller_access()
     await ctx.send(bot_answer)
 
 
 @infobot.command()
 async def infoallgoods(ctx):
+    """
+    Функция выводит список имеющихся торговых товаров в игре
+    :param ctx: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     bot_answer = '''
 Нормальное-продовольствие
 Питательная-паста
@@ -126,7 +142,13 @@ async def infoallgoods(ctx):
 
 
 @infobot.command()
-async def infoimportgoods(ctx, goods_name):
+async def infoimportgoods(ctx, goods_name: str):
+    """
+    Функция выводит список миров, которые импортируют данный товар
+    :param ctx: стандартный аргумент библиотеки
+    :param goods_name: название товара
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     deal_name = 'import'
     bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
     await ctx.send(bot_answer)
@@ -134,6 +156,12 @@ async def infoimportgoods(ctx, goods_name):
 
 @infobot.command()
 async def infoexportgoods(ctx, goods_name):
+    """
+    Функция выводит список миров, которые экспортируют данный товар
+    :param ctx: стандартный аргумент библиотеки
+    :param goods_name: название товара
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     deal_name = 'export'
     bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
     await ctx.send(bot_answer)
@@ -141,6 +169,12 @@ async def infoexportgoods(ctx, goods_name):
 
 @tasks.loop(seconds=5)
 async def news_send(channel):
+    """
+    Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
+    выбранные из списка в нижестоящей функции bot_news_controller. За запуск данного цикла отвечает функция startnews
+    :param channel: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
     news = bot_news_controller()
 
     await channel.send(news)
@@ -149,6 +183,13 @@ async def news_send(channel):
 @infobot.command()
 @commands.has_permissions(administrator=True)
 async def startnews(ctx):
+    """
+    Функция, запускающая цикл отправки ботом в чат сообщений с новостями, декоратор commands.has_premissions отвечает
+    за роль, которая может его запустить, а именно только администратор группы
+    :param ctx: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда сначала сообщения 'Поиск слухов...', а затем вызов
+    функции news_send
+    """
     await ctx.send("Поиск слухов...")
     news_send.start(ctx.channel)
 

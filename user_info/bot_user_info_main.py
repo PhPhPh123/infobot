@@ -1,122 +1,114 @@
+"""
+Данный модуль полностью обрабатывает и отправляет в основной модуль bot_main строковую информацию для вывода боту.
+Работа модуля основываетсмя на приеме строки с выбранным миром, доступа в базу данных, формированию строки запросов по
+нескольким пунктам через шаблонизатор, получения из БД кортежей и формированию на их основе готового строкового ответа
+"""
+
 from settings_and_imports import *
+from . import sql_queries
 
 
-def bot_user_info_controller_worlds(bot_user_info_controller_world):
+def returns_string_for_infoworld_command(world_name: str) -> str:
     """
-    Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
-    :param bot_user_info_controller_world:
-    :return:
+    Функция, которая подключается к базе данных, вызывает нижестоящие функции для формирования итогового ответа
+    и возвращает его в вышестоящий модуль и функцию
+    :param world_name: название мира
+    :return: готовая строка, для отправки ботом в чате в вышестоящем модуле и функции
     """
     db_name = 'infobot_db.db'
     abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = db_select(cursor, bot_user_info_controller_world)
+    db = sqlite3.connect(abspath)  # Подключение к базе данных
+    cursor = db.cursor()  # Создание курсора
 
-    return result
+    bot_answer = to_control_other_functions(cursor, world_name)
+
+    return bot_answer
 
 
-def db_select(curs, db_select_world):
+def to_control_other_functions(curs: sqlite3.Cursor, world_name: str) -> str:
     """
-    Осуществляет SELECT запрос на основе данных переданных из контроллера
-    :param db_select_world:
-    :param curs:
-    :return:
+    Функция осуществляет контроль основых операций для получения итоговой строки:
+    1 этап: получает строки для sql-запроса в БД через form-функции шаблонизаторы
+    2 этап: с помощью экзекьюта в БД через курсор получает результат их работы в виде кортежей
+    3 этап: формирует из кортежей единый словарь с помощью функции dict_form
+    4 этап: получает итоговую строку с помощью функции str_form
+    :param world_name: название мира
+    :param curs: объект курсора sqllite3
+    :return: готовая строка для ответа со всей информацией
     """
-    select_main = select_form_main(db_select_world)
-    select_terrains = select_form_terrains(db_select_world)
-    select_enemies = select_form_enemies(db_select_world)
-    select_export = select_form_exports(db_select_world)
-    select_import = select_form_import(db_select_world)
+    # 1 этап
+    select_main = form_query(world_name, 'worlds')
+    select_terrains = form_query(world_name, 'terrains')
+    select_enemies = form_query(world_name, 'enemies')
+    select_export = form_query(world_name, 'export')
+    select_import = form_query(world_name, 'import')
 
-    tuple_main = tuple(curs.execute(select_main))
+    # 2 этап
+    tuple_worlds = tuple(curs.execute(select_main))
     tuple_terrains = tuple(curs.execute(select_terrains))
     tuple_enemies = tuple(curs.execute(select_enemies))
     tuple_export = tuple(curs.execute(select_export))
     tuple_import = tuple(curs.execute(select_import))
 
-    final_dict = dict_form(tuple_main, tuple_terrains, tuple_enemies, tuple_export, tuple_import)
+    # 3 этап
+    final_dict = form_dict(tuple_worlds, tuple_terrains, tuple_enemies, tuple_export, tuple_import)
+
+    # 4 этап
     final_str = str_form(final_dict)
 
     return final_str
 
 
-def select_form_main(select_form_world):
+def form_query(world_name: str, sql_table: str) -> str:
     """
-    Формирует текст с помощью шаблонизатора jinja для передачи в db_select
-    :param select_form_world:
-    :return:
+    Шаблонизаторная функция для формирования текста запросов. Функция берет основное тело запроса из модуля sql_queties
+    :param sql_table: название таблички, для которой будет формироваться запрос
+    :param world_name: название мира
+    :return: строку для sql-экзекьюта в БД
     """
-    select_temp_main = Template("""
-    SELECT * FROM worlds WHERE worlds.world_name == '{{name_world}}'
-    """)
-    select_render_main = select_temp_main.render(name_world=select_form_world)
+    format_name = '{{ name_world }}'  # Строка для вставки в шаблонизатор
+
+    # Данная строка создает темплейт строки в который через format вставляет format_name для дальнейшего рендеринга
+    select_temp_main = Template(sql_queries.info_main_query_dict[sql_table].format(format_name))
+
+    # Рендериться строка, подставляя вместо name_world аргумент world_name, в котором строка с названием мира
+    select_render_main = select_temp_main.render(name_world=world_name)
+
     return select_render_main
 
 
-def select_form_terrains(select_form_world):
-    select_temp_terrains = Template("""
-    SELECT terrains.terrain_name FROM worlds
-    INNER JOIN worlds_terrains_relations ON worlds.world_name==worlds_terrains_relations.world_name
-    INNER JOIN terrains ON worlds_terrains_relations.terrain_name==terrains.terrain_name
-    WHERE worlds.world_name =='{{name_world}}'
-    """)
-    select_render_terrains = select_temp_terrains.render(name_world=select_form_world)
-    return select_render_terrains
-
-
-def select_form_enemies(select_form_world):
-    select_temp_enemies = Template("""
-    SELECT enemies.enemy_name FROM worlds
-    INNER JOIN worlds_enemies_relations ON worlds.world_name==worlds_enemies_relations.world_name
-    INNER JOIN enemies ON worlds_enemies_relations.enemy_name==enemies.enemy_name
-    WHERE worlds.world_name =='{{name_world}}'
-    """)
-    select_render_enemies = select_temp_enemies.render(name_world=select_form_world)
-    return select_render_enemies
-
-
-def select_form_exports(select_form_world):
-    select_temp_export = Template("""
-    SELECT trade_export.export_name FROM worlds
-    INNER JOIN worlds_trade_export_relations ON worlds.world_name==worlds_trade_export_relations.world_name
-    INNER JOIN trade_export ON worlds_trade_export_relations.export_name==trade_export.export_name
-    WHERE worlds.world_name =='{{name_world}}'
-    """)
-    select_render_export = select_temp_export.render(name_world=select_form_world)
-    return select_render_export
-
-
-def select_form_import(select_form_world):
-    select_temp_import = Template("""
-    SELECT trade_import.import_name FROM worlds
-    INNER JOIN worlds_trade_import_relations ON worlds.world_name==worlds_trade_import_relations.world_name
-    INNER JOIN trade_import ON worlds_trade_import_relations.import_name==trade_import.import_name
-    WHERE worlds.world_name =='{{name_world}}'
-    """)
-    select_render_import = select_temp_import.render(name_world=select_form_world)
-    return select_render_import
-
-
-def dict_form(dict_form_main, dict_form_terrains, dict_form_enemies, dict_form_export, dict_form_import):
+def form_dict(tuple_worlds, tuple_terrains, tuple_enemies, tuple_export, tuple_import):
+    """
+    Данная функция создает из кортежей, полученных по результатам запросов в БД, один общий словарь
+    :param tuple_worlds: кортеж из основного запроса в табличку worlds
+    :param tuple_terrains: кортеж из запроса в табличку terrains
+    :param tuple_enemies: кортеж из запроса в табличку enemies
+    :param tuple_export: кортеж из запроса в табличку export
+    :param tuple_import: кортеж из запросав табличку import
+    :return: один готовый словарь
+    """
     main_dict_keys = ('Наименование мира', 'Дополнительное описание', 'Уровень опасности', 'Имперский класс',
                       'Население', 'Имперская власть', 'Уровень доступа', 'Родительская система', 'Нужда в импорте',
-                      'Экспортное перепроизводство')
+                      'Экспортное перепроизводство')  # Список ключей для словаря
 
-    main_dict = dict(zip(main_dict_keys, dict_form_main[0]))
+    # Сдесь просто связываются ключ-значение т.к. у каждого ключа может быть лишь одно значение, у кортежа берется
+    # индекс 0 потому что это кортеж с одним значением
+    worlds_dict = dict(zip(main_dict_keys, tuple_worlds[0]))
 
-    terrains_dict = {'Местность': [elem[0] for elem in dict_form_terrains]}
+    # elem[0] используется везде для того, чтобы вытащить первое значение из элемента(elem) кортежа, так как сам elem
+    # тоже является кортежем
+    terrains_dict = {'Местность': [elem[0] for elem in tuple_terrains]}
 
-    enemies_dict = {'Угроза врагов': [elem[0] for elem in dict_form_enemies]}
+    enemies_dict = {'Угроза врагов': [elem[0] for elem in tuple_enemies]}
 
-    export_dict = {'Экспортные товары': [elem[0] for elem in dict_form_export]}
+    export_dict = {'Экспортные товары': [elem[0] for elem in tuple_export]}
 
-    import_dict = {'Импортные товары': [elem[0] for elem in dict_form_import]}
+    import_dict = {'Импортные товары': [elem[0] for elem in tuple_import]}
 
-    for dict_elem in terrains_dict, enemies_dict, export_dict, import_dict:
-        main_dict.update(dict_elem)
+    # Объединение словарей в один
+    final_dict = {**worlds_dict, **terrains_dict, **enemies_dict, **export_dict, **import_dict}
 
-    return main_dict
+    return final_dict
 
 
 def str_form(str_form_dict):
