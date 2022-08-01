@@ -1,3 +1,5 @@
+import discord.ext.commands.context
+
 from user_info.bot_user_info_main import *
 from user_info.bot_user_info_systems import *
 from user_info.bot_import_and_export import *
@@ -8,41 +10,57 @@ from news.bot_news_main import *
 """
 Данный модуль содержит все команды к боту и отправляет их обработку в нижестоящие модули. Запуск бота осуществляется
 именно через этот модуль. Боты организованы через асинхронные функции API discord с добавлением декораторов для команд и
-прав доступа. Все необходимые модули импортируются включая модуль с настройками
+прав доступа. Первая функция подключается к базе данных, а остальные представляют собой команды боту. 
+Все необходимые модули импортируются включая модуль с настройками
 """
 
 infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
 
+def connect_to_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
+    """
+    Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
+    настроек
+    :return: объекты курсора и коннекта
+    """
+    db_name = 'infobot_db.db'
+    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
+    connect = sqlite3.connect(abspath)  # Подключение к базе данных
+    cursor = connect.cursor()  # Создание курсора
+    return cursor, connect
+
+
 @infobot.command()
-async def infoworld(ctx, world_name: str):
+async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     """
     Функция, выдающая ответ по характеристикам запрашиваемого мира на основании запроса в базу данных
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :param world_name: название запрашиваемого мира
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
-    bot_answer = returns_string_for_infoworld_command(world_name)
+    global db_cursor
+    bot_answer = to_control_other_functions_and_returns_bot_answer(db_cursor, world_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infosystem(ctx, system_name: str):
+async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str):
     """
     Функция, выдающая список миров внутри системы на основании запроса в базу данных
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :param system_name: название запрашиваемой системы
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = bot_user_info_controller_systems(system_name)
+    global db_cursor
+    bot_answer = db_select_systems(db_cursor, system_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def helpme(ctx):
+async def helpme(ctx: discord.ext.commands.context.Context):
     """
     Функция, отправляющая ботом в дискорде информацию по доступным игрокам командам
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     bot_answer = '''
@@ -62,10 +80,10 @@ async def helpme(ctx):
 
 
 @infobot.command()
-async def access(ctx):
+async def access(ctx: discord.ext.commands.context.Context):
     """
     Функция, отправляющая ботом в дискорде информацию по тому, за что отвечают уровни доступа на мирах
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     bot_answer = '''
@@ -77,49 +95,52 @@ async def access(ctx):
 
 
 @infobot.command()
-async def infoexport(ctx, world_name: str):
+async def infoexport(ctx: discord.ext.commands.context.Context, world_name: str):
     """
     Функция, отправляющая ботом в чат список товаров, которые экспортирует запрашиваемый мир и их цену после пересчета
     всех модификаторов влияющих на среднюю стоимость
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :param world_name: название запрашиваемого мира
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
+    global db_cursor
     deal_name = 'export'
-    bot_answer = bot_user_info_controller_trade(world_name, deal_name)
+    bot_answer = choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infoimport(ctx, world_name: str):
+async def infoimport(ctx: discord.ext.commands.context.Context, world_name: str):
     """
     Функция, отправляющая ботом в чат список товаров, которые импортирует запрашиваемый мир и их цену после пересчета
     всех модификаторов влияющих на среднюю стоимость
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :param world_name: название запрашиваемого мира
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
+    global db_cursor
     deal_name = 'import'
-    bot_answer = bot_user_info_controller_trade(world_name, deal_name)
+    bot_answer = choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infoaccess(ctx):
+async def infoaccess(ctx: discord.ext.commands.context.Context):
     """
     Функция, отправляющая ботов в чат общий список миров, в которых уровень доступа отличен от 0(т.е. фактически есть)
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = bot_user_info_controller_access()
+    global db_cursor
+    bot_answer = db_select_access(db_cursor)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infoallgoods(ctx):
+async def infoallgoods(ctx: discord.ext.commands.context.Context):
     """
     Функция выводит список имеющихся торговых товаров в игре
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     bot_answer = '''
@@ -142,51 +163,54 @@ async def infoallgoods(ctx):
 
 
 @infobot.command()
-async def infoimportgoods(ctx, goods_name: str):
+async def infoimportgoods(ctx: discord.ext.commands.context.Context, goods_name: str):
     """
     Функция выводит список миров, которые импортируют данный товар
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :param goods_name: название товара
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
+    global db_cursor
     deal_name = 'import'
-    bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
+    bot_answer = db_select_goods(db_cursor, goods_name, deal_name)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
-async def infoexportgoods(ctx, goods_name):
+async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name: str):
     """
     Функция выводит список миров, которые экспортируют данный товар
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :param goods_name: название товара
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
+    global db_cursor
     deal_name = 'export'
-    bot_answer = bot_user_info_controller_goods(goods_name, deal_name)
+    bot_answer = db_select_goods(db_cursor, goods_name, deal_name)
     await ctx.send(bot_answer)
 
 
 @tasks.loop(seconds=5)
-async def news_send(channel):
+async def news_send(channel: discord.channel.TextChannel):
     """
     Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
     выбранные из списка в нижестоящей функции bot_news_controller. За запуск данного цикла отвечает функция startnews
     :param channel: стандартный аргумент библиотеки
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    news = bot_news_controller()
+    global db_cursor, db_connect
+    news = rand_news(db_cursor, db_connect)
 
     await channel.send(news)
 
 
 @infobot.command()
 @commands.has_permissions(administrator=True)
-async def startnews(ctx):
+async def startnews(ctx: discord.ext.commands.context.Context):
     """
     Функция, запускающая цикл отправки ботом в чат сообщений с новостями, декоратор commands.has_premissions отвечает
     за роль, которая может его запустить, а именно только администратор группы
-    :param ctx: стандартный аргумент библиотеки
+    :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда сначала сообщения 'Поиск слухов...', а затем вызов
     функции news_send
     """
@@ -195,4 +219,5 @@ async def startnews(ctx):
 
 
 if __name__ == '__main__':
+    db_cursor, db_connect = connect_to_db()
     infobot.run(settings['token'])

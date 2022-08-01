@@ -1,22 +1,6 @@
 from settings_and_imports import *
 
 
-def bot_user_info_controller_goods(good_name, deal_name):
-    """
-    Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
-    :param deal_name:
-    :param good_name:
-    :return:
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = db_select_goods(cursor, good_name, deal_name)
-
-    return result
-
-
 def db_select_goods(curs, db_select_good_name, name_deal):
     select_systems = None
 

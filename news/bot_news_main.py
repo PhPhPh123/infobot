@@ -1,21 +1,5 @@
-import random
-
 from settings_and_imports import *
 from . import bot_news_access, bot_news_static_info, bot_news_enemies
-
-
-def bot_news_controller():
-    """
-    Случайный выбор типа события из 4х видов и вызов его
-    :return:
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = rand_news(cursor, db)
-
-    return result
 
 
 def rand_news(curs, db):

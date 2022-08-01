@@ -1,21 +1,6 @@
 from settings_and_imports import *
 
 
-def bot_user_info_controller_systems(bot_user_info_controller_system):
-    """
-    Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
-    :param bot_user_info_controller_system:
-    :return:
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = db_select_systems(cursor, bot_user_info_controller_system)
-
-    return result
-
-
 def db_select_systems(curs, system_name):
     select_systems = select_form_systems(system_name)
     system_tuple = tuple(curs.execute(select_systems))

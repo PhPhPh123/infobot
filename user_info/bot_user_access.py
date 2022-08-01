@@ -1,20 +1,6 @@
 from settings_and_imports import *
 
 
-def bot_user_info_controller_access():
-    """
-    Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
-    :return:
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = db_select_access(cursor)
-
-    return result
-
-
 def db_select_access(curs):
     select_access = '''
     SELECT world_name, access_level

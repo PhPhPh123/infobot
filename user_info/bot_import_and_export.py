@@ -1,74 +1,80 @@
+"""
+    Данный модуль обрабатывает команды !infoexport *название мира* и !infoimport *название мира*
+    и отправляет в основной модуль bot_main строковую информацию для вывода боту. Работа модуля основываетсмя
+    на приеме строки с выбранным миром, доступа в базу данных, формированию строки запросов по нескольким пунктам
+    через шаблонизатор, получения из БД кортежей и формированию на их основе готового строкового ответа. Текст
+    SQL-запроса берется из модуля sql_queries
+"""
 from settings_and_imports import *
+from . import sql_queries
 
 
-def bot_user_info_controller_trade(bot_user_info_controller_system, name_deal):
+def choice_deal_and_returns_bot_answer(curs: sqlite3.Cursor, world_name: str, deal_name: str) -> str:
     """
-    Осуществляет вызовы функций SELECT-a и отправки сообщений ботом
-    :param name_deal:
-    :param bot_user_info_controller_system:
-    :return:
+    Функция осуществляет контроль основых операций для получения итоговой строки которую отдает в модуль bot_main
+    для исполнения функцией и выдачей ответа ботом:
+    1 этап: получает строку для sql-запроса в БД через функцию form_query
+    2 этап: с помощью экзекьюта в БД через курсор получает результат их работы в виде кортежа
+    3 этап: получает итоговую строку с помощью функции form_string
+    :param curs: объект класса Cursor
+    :param world_name: название мира
+    :param deal_name: название текущей сделки, import или export
+    :return: итоговый ответ для бота
     """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
-    db = sqlite3.connect(abspath)  # connect to sql base
-    cursor = db.cursor()  # Creation sqlite cursor
-    result = db_select_systems(cursor, bot_user_info_controller_system, name_deal)
-
-    return result
-
-
-def db_select_systems(curs, system_name, name_deal):
     select_systems = None
 
-    if name_deal == 'import':
-        select_systems = select_form_import(system_name)
-    elif name_deal == 'export':
-        select_systems = select_form_export(system_name)
+    # 1 этап
+    if deal_name == 'import':
+        select_systems = form_query(world_name, deal_name, 1.25)
+    elif deal_name == 'export':
+        select_systems = form_query(world_name, deal_name)
 
-    system_tuple = tuple(curs.execute(select_systems))
-    system_ans = str_form_systems(system_tuple, name_deal)
+    # 2 этап
+    world_tuple = tuple(curs.execute(select_systems))
 
-    if system_tuple[0][2] != 3:
-        system_ans = 'Недостаточный уровень доступа'
+    # 3 этап
+    trade_answer = form_string(world_tuple, deal_name)
+    if world_tuple[0][2] != 3:
+        trade_answer = 'Недостаточный уровень доступа'
 
-    return system_ans
-
-
-def select_form_export(system_name):
-    select_temp_systems = Template('''
-    SELECT trade_export.export_name, (base_price * overproduction_multiplier * danger_multiplier_export),
-    worlds.access_level
-    FROM worlds
-    INNER JOIN worlds_trade_export_relations ON worlds.world_name == worlds_trade_export_relations.world_name
-    INNER JOIN trade_export ON worlds_trade_export_relations.export_name == trade_export.export_name
-    INNER JOIN export_overproduction ON worlds.overproduction_name == export_overproduction. overproduction_name
-    INNER JOIN danger_zone ON worlds.danger_name == danger_zone.danger_name
-    WHERE worlds.world_name == '{{ system_name }}'
-    ''')
-    select_render_systems = select_temp_systems.render(system_name=system_name)
-    return select_render_systems
+    return trade_answer
 
 
-def select_form_import(system_name):
-    import_profit = 1.25
+def form_query(world_name: str, deal_name: str, margin: float = 1.0) -> str:
+    """
+    Данная функция формирует текстовый запрос для запроса в базу данных
+    :param world_name: название мира
+    :param deal_name: название текущей сделки, import или export
+    :param margin: параметр, увеличивающий стоимость покупки товаров чтобы симулировать спрос на него в факторе цены
+    :return: строка sql-запроса
+    """
+    for_format = '{{ world_name }}'  # вставка для метода format
+    template_for_select = ''  # Инициализация пустой строкой
 
-    select_temp_systems = Template('''
-    SELECT trade_import.import_name, (base_price * need_multiplier * danger_multiplier_import * {{ import_profit }}),
-    worlds.access_level
-    FROM worlds
-    INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
-    INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
-    INNER JOIN import_needs ON worlds.needs_name == import_needs.needs_name
-    INNER JOIN danger_zone ON worlds.danger_name == danger_zone.danger_name
-    WHERE worlds.world_name == '{{ system_name }}'
-    ''')
-    select_render_systems = select_temp_systems.render(system_name=system_name, import_profit=import_profit)
-    return select_render_systems
+    # В запросах используется метод format, чтобы создать темплейт на основе строк, хранимых в словарях
+    # в модуле sql_queries. Методом добавляется значение наценки(margin) и строчка for_format нужная для шаблонизатора.
+    # операторами if/elif выбираются разные тексты запросов, поэтому между ними идет выбор на основе
+    # переменной deal_name, указывающей тип команды.
+    if deal_name == "import":
+        template_for_select = Template(sql_queries.import_and_export_query_dict['import'].format(margin, for_format))
+    elif deal_name == 'export':
+        template_for_select = Template(sql_queries.import_and_export_query_dict['export'].format(margin, for_format))
+
+    query_string = template_for_select.render(world_name=world_name, margin=margin)
+    return query_string
 
 
-def str_form_systems(sys_tuple, deal_name):
+def form_string(world_tuple: tuple, deal_name: str):
+    """
+    Данная фукнция формирует строку на основе кортежа с помощью шаблонизатора
+    :param world_tuple: кортеж, где первый элемент это название товара, второй это его стоимость после рассчетов, а
+    третий это уровень доступа на мире
+    :param deal_name: название текущей сделки, import или export
+    :return: итоговая строка для отправки боту
+    """
     message = 'Примерная цена покупки импортных товаров' if deal_name == 'import' else 'Примерная цена продажи товаров'
 
+    # сначала выводится сообщение message, а затем в цикле выводятся 0 и 1 элементы кортежа(название товара и стоимость)
     answer_systems_temp = Template('''
     {{ message }}:
     {% for world in sys_tuple %}
@@ -76,5 +82,5 @@ def str_form_systems(sys_tuple, deal_name):
     {% endfor %}
     ''')
 
-    answer_render_systems = answer_systems_temp.render(sys_tuple=sys_tuple, message=message)
+    answer_render_systems = answer_systems_temp.render(sys_tuple=world_tuple, message=message)
     return answer_render_systems
