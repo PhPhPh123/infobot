@@ -1,7 +1,8 @@
+
 from settings_and_imports import *
 
 
-def db_select_goods(curs, db_select_good_name, name_deal):
+def db_select_goods(curs: sqlite3.Cursor, db_select_good_name: str, name_deal: str) -> str:
     select_systems = None
 
     if name_deal == 'import':
@@ -15,7 +16,7 @@ def db_select_goods(curs, db_select_good_name, name_deal):
     return system_ans
 
 
-def select_form_export(select_form_good_name):
+def select_form_export(select_form_good_name: str) -> str:
     select_temp_systems = Template('''
     SELECT worlds.world_name
     FROM worlds
@@ -27,7 +28,7 @@ def select_form_export(select_form_good_name):
     return select_render_systems
 
 
-def select_form_import(select_form_good_name):
+def select_form_import(select_form_good_name: str) -> str:
     select_temp_systems = Template('''
     SELECT worlds.world_name
     FROM worlds
@@ -39,7 +40,7 @@ def select_form_import(select_form_good_name):
     return select_render_systems
 
 
-def str_form_goods(sys_tuple, deal_name):
+def str_form_goods(sys_tuple: tuple, deal_name: str) -> str:
     message = 'В данных системах покупают этот товар' if deal_name == 'import' else 'В данных система продают этот товар'
     print(sys_tuple)
     answer_systems_temp = Template('''

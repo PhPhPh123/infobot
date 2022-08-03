@@ -1,7 +1,8 @@
+
 from settings_and_imports import *
 
 
-def access_main_news(curs, db):
+def access_main_news(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
 
     chosen_world = select_world(curs)
 
@@ -13,7 +14,7 @@ def access_main_news(curs, db):
     return access_responce
 
 
-def select_world(curs):
+def select_world(curs: sqlite3.Cursor):
     access_select_string = '''
     SELECT world_name FROM worlds 
     WHERE access_level < 3
@@ -24,7 +25,7 @@ def select_world(curs):
     return selected_world
 
 
-def update_access_granted_form(world):
+def update_access_granted_form(world: str) -> str:
     update_access_temp = Template('''
     UPDATE worlds
     SET access_level =+ 1
@@ -34,7 +35,7 @@ def update_access_granted_form(world):
     return update_access_render
 
 
-def access_responce_form(world):
+def access_responce_form(world: str) -> str:
     responce_access_list = [f'''
 Невероятная удача! Приняты астропатические данные о информационном доступе к миру {world}.
  Уровень доступа повышен на 1''',

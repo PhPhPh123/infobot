@@ -1,4 +1,8 @@
-def select_subsector_news(curs):
+
+from settings_and_imports import *
+
+
+def select_subsector_news(curs: sqlite3.Cursor) -> str:
     select_gm_news_string = '''
     SELECT news_text FROM subsector_news
     ORDER BY RANDOM()
@@ -8,7 +12,7 @@ def select_subsector_news(curs):
     return subsector_string
 
 
-def select_lore_info(curs):
+def select_lore_info(curs: sqlite3.Cursor) -> str:
     select_gm_news_string = '''
     SELECT lore_text FROM lore_info
     ORDER BY RANDOM()

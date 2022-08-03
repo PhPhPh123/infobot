@@ -1,8 +1,9 @@
+
 from settings_and_imports import *
 from . import bot_news_access, bot_news_static_info, bot_news_enemies
 
 
-def rand_news(curs, db):
+def rand_news(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
     """
     Будет формирования основные сообщения по уже имеющимся данным по системам
     :return:

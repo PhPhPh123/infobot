@@ -1,7 +1,8 @@
+
 from settings_and_imports import *
 
 
-def select_enemy_news(curs):
+def select_enemy_news(curs: sqlite3.Cursor) -> str:
     select_enemy_string = '''
     SELECT worlds.world_name, enemies.group_name
     FROM worlds
@@ -16,7 +17,7 @@ def select_enemy_news(curs):
     return str_enemy_news
 
 
-def str_form_enemy_news(enemy_tuple):
+def str_form_enemy_news(enemy_tuple: tuple) -> str:
     """
     Будет повышать уровень доступа путем формирования запроса на update в БД и формировать сообщение о повышении доступа
     :return:
