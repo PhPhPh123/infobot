@@ -6,10 +6,12 @@
 from settings_and_imports import *
 
 
-def db_select_access(curs: sqlite3.Cursor) -> str:
+def db_select_access(curs: sqlite3.Cursor, alch_connect, alch_worlds) -> str:
     """
     Функция осуществяет запрос в БД получая кортежи с данными, а затем получает готовую строку путем отправки их
     в нижестоящую функцию
+    :param alch_worlds:
+    :param alch_connect:
     :param curs: объект курсора
     :return: итоговая строка ответа бота
     """
@@ -21,7 +23,11 @@ def db_select_access(curs: sqlite3.Cursor) -> str:
     WHERE access_level > 0
     '''
     # Запрос к БД и получения кортежей
-    system_tuple = tuple(curs.execute(select_access).fetchall())
+    system_tuple_temp = sqlalchemy.sql.select(alch_worlds.c.world_name,
+                                              alch_worlds.c.access_level).where(alch_worlds.c.access_level > 0)
+
+    system_tuple = tuple(alch_connect.execute(system_tuple_temp))
+    print(system_tuple)
 
     # Запрос к нижестоящей функции и получение строки ответа
     system_ans = str_form_access(system_tuple)

@@ -17,7 +17,7 @@ from news.bot_news_main import *
 infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
 
-def connect_to_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
+def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
     настроек
@@ -28,6 +28,16 @@ def connect_to_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
     cursor = connect.cursor()  # Создание курсора
     return cursor, connect
+
+
+def connect_to_db_sqlalchemy():
+    db_engine = sqlalchemy.create_engine('sqlite:///infobot_db.db')
+    db_connector = db_engine.connect()
+
+    metadata = sqlalchemy.MetaData(db_engine)
+    worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
+
+    return db_connector, worlds
 
 
 @infobot.command()
@@ -131,8 +141,8 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor
-    bot_answer = db_select_access(db_cursor)
+    global db_cursor, alch_connect, alch_world
+    bot_answer = db_select_access(db_cursor, alch_connect, alch_world)
     await ctx.send(bot_answer)
 
 
@@ -219,5 +229,9 @@ async def startnews(ctx: discord.ext.commands.context.Context):
 
 
 if __name__ == '__main__':
-    db_cursor, db_connect = connect_to_db()
+    session = connect_to_db_sqlalchemy()
+
+    db_cursor, db_connect = connect_to_db_sqlite3()
+    alch_connect, alch_world = connect_to_db_sqlalchemy()
     infobot.run(settings['token'])
+
