@@ -1,19 +1,31 @@
-
+"""
+    Данный модуль обрабатывает команды !infoexportgoods и !infoimportgoods и отправляет в основной модуль bot_main
+    строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
+    Вывод выглядит в формате перечисления названий миров, покупающих или продающих данный товар
+"""
 from settings_and_imports import *
 
 
-def db_select_goods(curs: sqlite3.Cursor, db_select_good_name: str, name_deal: str) -> str:
+def choise_deal_and_execute_in_db(curs: sqlite3.Cursor, good_name: str, name_deal: str) -> str:
+    """
+    Данная функция выбирает тип сделки, экспорт или импорт, осуществляет экзекьют в базу данных и запрашивает строку у
+    нижестоящей функции
+    :param curs: объект курсора
+    :param good_name: название товара
+    :param name_deal: название сделки
+    :return: строка ответа боту
+    """
     select_systems = None
 
     if name_deal == 'import':
-        select_systems = select_form_import(db_select_good_name)
+        select_systems = select_form_import(good_name)
     elif name_deal == 'export':
-        select_systems = select_form_export(db_select_good_name)
+        select_systems = select_form_export(good_name)
 
     system_tuple = tuple(curs.execute(select_systems))
-    system_ans = str_form_goods(system_tuple, name_deal)
+    final_string = str_form_goods(system_tuple, name_deal)
 
-    return system_ans
+    return final_string
 
 
 def select_form_export(select_form_good_name: str) -> str:

@@ -27,7 +27,6 @@ def db_select_access(curs: sqlite3.Cursor, alch_connect, alch_worlds) -> str:
                                               alch_worlds.c.access_level).where(alch_worlds.c.access_level > 0)
 
     system_tuple = tuple(alch_connect.execute(system_tuple_temp))
-    print(system_tuple)
 
     # Запрос к нижестоящей функции и получение строки ответа
     system_ans = str_form_access(system_tuple)

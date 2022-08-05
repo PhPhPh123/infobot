@@ -1,31 +1,59 @@
-
+"""
+    Данный модуль формирует новости, связанные с повышением уровня доступа в случайном мире и возвращает строку
+    в управляющий модуль bot_news_main
+"""
 from settings_and_imports import *
 
 
-def access_main_news(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
+def control_other_func(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
+    """
+    Данная функция управляет остальными функция и осуществляет их работу в 3 этапа
+    1 этап это выбор случайного мира, в котором будет повышаться уровень доступа
+    2 этап это update в базу данных и изменение параметра уровень доступа для этого мира
+    3 этап это формирование строкового ответа для ответа ботом
 
+    :param curs: объект курсора
+    :param db: объект соединения с БД
+    :return: строка ответа ботом
+    """
+    # 1 этап
     chosen_world = select_world(curs)
 
-    update_access = update_access_granted_form(chosen_world)
+    # 2 этап
+    update_access = form_update_string(chosen_world)
     curs.execute(update_access)
     db.commit()
 
-    access_responce = access_responce_form(chosen_world)
+    # 3 этап
+    access_responce = form_string_answer(chosen_world)
     return access_responce
 
 
-def select_world(curs: sqlite3.Cursor):
+def select_world(curs: sqlite3.Cursor) -> str:
+    """
+    Данная функция выбирает случайный мир, в котором будет повышен уровень доступа
+    :param curs: объект курсора
+    :return: название мира в виде строки
+    """
+    # Данный селект выбирает мир, в котором уровень доступа меньше 3 (т.е. в котором есть смысл его повышать)
+    # мир выбирается случайно функцией рандом и лимитируется 1 значением
     access_select_string = '''
     SELECT world_name FROM worlds 
     WHERE access_level < 3
     ORDER BY RANDOM()
     LIMIT 1
     '''
+    # [0][0] нужно, чтобы извлеч из кортежа с кортежом элемент с названием мира
     selected_world = tuple(curs.execute(access_select_string))[0][0]
     return selected_world
 
 
-def update_access_granted_form(world: str) -> str:
+def form_update_string(world: str) -> str:
+    """
+    Данная функция формирует строку для аптейда в БД с помощью шаблонизатора
+    :param world: название мира
+    :return: строка для аптейда в БД
+    """
     update_access_temp = Template('''
     UPDATE worlds
     SET access_level =+ 1
@@ -35,7 +63,13 @@ def update_access_granted_form(world: str) -> str:
     return update_access_render
 
 
-def access_responce_form(world: str) -> str:
+def form_string_answer(world: str) -> str:
+    """
+    Данная функция случайно выбирает один из ответов, вставляю туда название мира и отправляя ответ для вывода
+    в чат ботом
+    :param world: название мира
+    :return: строка итогового ответа
+    """
     responce_access_list = [f'''
 Невероятная удача! Приняты астропатические данные о информационном доступе к миру {world}.
  Уровень доступа повышен на 1''',

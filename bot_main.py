@@ -1,11 +1,13 @@
 import discord.ext.commands.context
 
-from user_info.bot_user_info_main import *
-from user_info.bot_user_info_systems import *
-from user_info.bot_import_and_export import *
-from user_info.bot_user_access import *
-from user_info.bot_user_info_goods import *
-from news.bot_news_main import *
+from settings_and_imports import *
+
+import user_info.bot_user_info_world
+import user_info.bot_user_info_systems
+import user_info.bot_user_access
+import user_info.bot_import_and_export
+import user_info.bot_user_info_goods
+import news.bot_news_main
 
 """
 Данный модуль содержит все команды к боту и отправляет их обработку в нижестоящие модули. Запуск бота осуществляется
@@ -49,7 +51,7 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
     global db_cursor
-    bot_answer = to_control_other_functions_and_returns_bot_answer(db_cursor, world_name)
+    bot_answer = user_info.bot_user_info_world.to_control_other_functions_and_returns_bot_answer(db_cursor, world_name)
     await ctx.send(bot_answer)
 
 
@@ -62,7 +64,7 @@ async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor
-    bot_answer = db_select_systems(db_cursor, system_name)
+    bot_answer = user_info.bot_user_info_systems.db_select_systems(db_cursor, system_name)
     await ctx.send(bot_answer)
 
 
@@ -115,7 +117,7 @@ async def infoexport(ctx: discord.ext.commands.context.Context, world_name: str)
     """
     global db_cursor
     deal_name = 'export'
-    bot_answer = choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
+    bot_answer = user_info.bot_import_and_export.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -130,7 +132,7 @@ async def infoimport(ctx: discord.ext.commands.context.Context, world_name: str)
     """
     global db_cursor
     deal_name = 'import'
-    bot_answer = choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
+    bot_answer = user_info.bot_import_and_export.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -142,7 +144,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor, alch_connect, alch_world
-    bot_answer = db_select_access(db_cursor, alch_connect, alch_world)
+    bot_answer = user_info.bot_user_access.db_select_access(db_cursor, alch_connect, alch_world)
     await ctx.send(bot_answer)
 
 
@@ -182,7 +184,7 @@ async def infoimportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     """
     global db_cursor
     deal_name = 'import'
-    bot_answer = db_select_goods(db_cursor, goods_name, deal_name)
+    bot_answer = user_info.bot_user_info_goods.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -196,7 +198,7 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     """
     global db_cursor
     deal_name = 'export'
-    bot_answer = db_select_goods(db_cursor, goods_name, deal_name)
+    bot_answer = user_info.bot_user_info_goods.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -209,9 +211,9 @@ async def news_send(channel: discord.channel.TextChannel):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor, db_connect
-    news = rand_news(db_cursor, db_connect)
+    chosen_news = news.bot_news_main.choise_random_news(db_cursor, db_connect)
 
-    await channel.send(news)
+    await channel.send(chosen_news)
 
 
 @infobot.command()
@@ -234,4 +236,3 @@ if __name__ == '__main__':
     db_cursor, db_connect = connect_to_db_sqlite3()
     alch_connect, alch_world = connect_to_db_sqlalchemy()
     infobot.run(settings['token'])
-
