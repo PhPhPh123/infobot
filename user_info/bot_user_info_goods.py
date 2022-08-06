@@ -4,57 +4,68 @@
     Вывод выглядит в формате перечисления названий миров, покупающих или продающих данный товар
 """
 from settings_and_imports import *
+import user_info.sql_queries
 
 
-def choise_deal_and_execute_in_db(curs: sqlite3.Cursor, good_name: str, name_deal: str) -> str:
+def choise_deal_and_execute_in_db(curs: sqlite3.Cursor, goods_name: str, name_deal: str) -> str:
     """
     Данная функция выбирает тип сделки, экспорт или импорт, осуществляет экзекьют в базу данных и запрашивает строку у
     нижестоящей функции
     :param curs: объект курсора
-    :param good_name: название товара
-    :param name_deal: название сделки
+    :param goods_name: название товара
+    :param name_deal: название сделки, export или import
     :return: строка ответа боту
     """
     select_systems = None
 
     if name_deal == 'import':
-        select_systems = select_form_import(good_name)
+        select_systems = form_import_query(goods_name)
     elif name_deal == 'export':
-        select_systems = select_form_export(good_name)
+        select_systems = form_export_query(goods_name)
 
-    system_tuple = tuple(curs.execute(select_systems))
-    final_string = str_form_goods(system_tuple, name_deal)
+    tuple_with_worlds = tuple(curs.execute(select_systems))
+    final_string = form_string_answer(tuple_with_worlds, name_deal)
 
     return final_string
 
 
-def select_form_export(select_form_good_name: str) -> str:
-    select_temp_systems = Template('''
-    SELECT worlds.world_name
-    FROM worlds
-    INNER JOIN worlds_trade_export_relations ON worlds.world_name == worlds_trade_export_relations.world_name
-    INNER JOIN trade_export ON worlds_trade_export_relations.export_name == trade_export.export_name
-    WHERE trade_export.export_name == '{{ good_name }}' AND worlds.access_level == 3
-    ''')
-    select_render_systems = select_temp_systems.render(good_name=select_form_good_name)
+def form_export_query(goods_name: str) -> str:
+    """
+    Данная функция формирует текст запроса в БД для сделки экспорта
+    :param goods_name: название товара
+    :return: строка для экзекьюта в БД
+    """
+
+    # Текст sql-запроса берется из модуля sql_queries
+    select_temp_systems = Template(user_info.sql_queries.info_goods_query_dict['export'])
+    select_render_systems = select_temp_systems.render(goods_name=goods_name)
     return select_render_systems
 
 
-def select_form_import(select_form_good_name: str) -> str:
-    select_temp_systems = Template('''
-    SELECT worlds.world_name
-    FROM worlds
-    INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
-    INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
-    WHERE trade_import.import_name == '{{ good_name }}' AND worlds.access_level == 3
-    ''')
-    select_render_systems = select_temp_systems.render(good_name=select_form_good_name)
+def form_import_query(goods_name: str) -> str:
+    """
+    Данная функция формирует текст запроса в БД для сделки импорта
+    :param goods_name: название товара
+    :return: строка для экзекьюта в БД
+    """
+
+    # Текст sql-запроса берется из модуля sql_queries
+    select_temp_systems = Template(user_info.sql_queries.info_goods_query_dict['import'])
+    select_render_systems = select_temp_systems.render(goods_name=goods_name)
     return select_render_systems
 
 
-def str_form_goods(sys_tuple: tuple, deal_name: str) -> str:
+def form_string_answer(tuple_with_worlds: tuple, deal_name: str) -> str:
+    """
+    Данная функция формирует итоговую строку с помощью шаблонизатора для ответа ботом
+    :param tuple_with_worlds: кортеж из кортежей. Во внутренних кортежах только 1 значение - название мира
+    :param deal_name: название сделки, export или import
+    :return: итоговая строка ответа бота
+    """
+    # В зависимости от типа сделки, первичное сообщение будет отличаться
     message = 'В данных системах покупают этот товар' if deal_name == 'import' else 'В данных система продают этот товар'
-    print(sys_tuple)
+
+    # world[0] нужно, чтобы извлечь из кортежа единственный елемент и вставить его в строку с помощью шаблонизатора
     answer_systems_temp = Template('''
     {{ message }}:
     {% for world in sys_tuple %}
@@ -62,5 +73,5 @@ def str_form_goods(sys_tuple: tuple, deal_name: str) -> str:
     {% endfor %}
     ''')
 
-    answer_render_systems = answer_systems_temp.render(sys_tuple=sys_tuple, message=message)
+    answer_render_systems = answer_systems_temp.render(sys_tuple=tuple_with_worlds, message=message)
     return answer_render_systems

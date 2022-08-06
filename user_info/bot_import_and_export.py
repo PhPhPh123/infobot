@@ -6,7 +6,7 @@
     SQL-запроса берется из модуля sql_queries
 """
 from settings_and_imports import *
-from . import sql_queries
+from user_info import sql_queries
 
 
 def choice_deal_and_returns_bot_answer(curs: sqlite3.Cursor, world_name: str, deal_name: str) -> str:

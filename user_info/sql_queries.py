@@ -53,3 +53,20 @@ import_and_export_query_dict = {
     WHERE worlds.world_name =='{}'"""
 
 }
+
+info_goods_query_dict = {
+                        'export': """
+    SELECT worlds.world_name
+    FROM worlds
+    INNER JOIN worlds_trade_export_relations ON worlds.world_name == worlds_trade_export_relations.world_name
+    INNER JOIN trade_export ON worlds_trade_export_relations.export_name == trade_export.export_name
+    WHERE trade_export.export_name == '{{ goods_name }}' AND worlds.access_level == 3""",
+
+                        'import': """
+    SELECT worlds.world_name
+    FROM worlds
+    INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
+    INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
+    WHERE trade_import.import_name == '{{ goods_name }}' AND worlds.access_level == 3"""
+
+}

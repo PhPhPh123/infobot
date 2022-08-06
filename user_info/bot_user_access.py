@@ -6,37 +6,29 @@
 from settings_and_imports import *
 
 
-def db_select_access(curs: sqlite3.Cursor, alch_connect, alch_worlds) -> str:
+def form_tuple_in_db(alch_connect, alch_worlds) -> str:
     """
-    Функция осуществяет запрос в БД получая кортежи с данными, а затем получает готовую строку путем отправки их
-    в нижестоящую функцию
+    Функция осуществляет запрос в БД через ORM получая кортежи с данными, а затем получает готовую строку путем отправки
+    кортежа в нижестоящую функцию
     :param alch_worlds:
     :param alch_connect:
-    :param curs: объект курсора
     :return: итоговая строка ответа бота
     """
-
-    # Строка для запроса в БД. Миры, уровень доступа которых равен 0 не выводятся
-    select_access = '''
-    SELECT world_name, access_level
-    FROM worlds
-    WHERE access_level > 0
-    '''
-    # Запрос к БД и получения кортежей
+    # Создание запроса к БД
     system_tuple_temp = sqlalchemy.sql.select(alch_worlds.c.world_name,
                                               alch_worlds.c.access_level).where(alch_worlds.c.access_level > 0)
-
+    # Экзекьют в БД для получения кортежей
     system_tuple = tuple(alch_connect.execute(system_tuple_temp))
 
     # Запрос к нижестоящей функции и получение строки ответа
-    system_ans = str_form_access(system_tuple)
+    system_ans = form_string_answer(system_tuple)
 
     return system_ans
 
 
-def str_form_access(sys_tuple: tuple) -> str:
+def form_string_answer(sys_tuple: tuple) -> str:
     """
-    Данная функция принимает кортеж из кортежей из на их основе, с помощью шаблонизатора, формирует строковый ответ
+    Данная функция принимает кортеж из кортежей и на их основе, с помощью шаблонизатора, формирует строковый ответ
     :param sys_tuple: кортеж с данными
     :return: строковый ответ бота
     """

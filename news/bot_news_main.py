@@ -4,7 +4,7 @@
 """
 
 from settings_and_imports import *
-from . import bot_news_access, bot_news_static_info, bot_news_enemies
+from news import bot_news_access, bot_news_static_info, bot_news_enemies
 
 
 def choise_random_news(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:

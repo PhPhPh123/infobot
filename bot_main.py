@@ -1,4 +1,9 @@
-import discord.ext.commands.context
+"""
+Данный модуль содержит все команды к боту и отправляет их обработку в нижестоящие модули. Запуск бота осуществляется
+именно через этот модуль. Боты организованы через асинхронные функции API discord с добавлением декораторов для команд и
+прав доступа. Первая функция подключается к базе данных, а остальные представляют собой команды боту.
+Все необходимые модули импортируются включая модуль с настройками
+"""
 
 from settings_and_imports import *
 
@@ -8,13 +13,6 @@ import user_info.bot_user_access
 import user_info.bot_import_and_export
 import user_info.bot_user_info_goods
 import news.bot_news_main
-
-"""
-Данный модуль содержит все команды к боту и отправляет их обработку в нижестоящие модули. Запуск бота осуществляется
-именно через этот модуль. Боты организованы через асинхронные функции API discord с добавлением декораторов для команд и
-прав доступа. Первая функция подключается к базе данных, а остальные представляют собой команды боту. 
-Все необходимые модули импортируются включая модуль с настройками
-"""
 
 infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
@@ -144,7 +142,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor, alch_connect, alch_world
-    bot_answer = user_info.bot_user_access.db_select_access(db_cursor, alch_connect, alch_world)
+    bot_answer = user_info.bot_user_access.form_tuple_in_db(alch_connect, alch_world)
     await ctx.send(bot_answer)
 
 
