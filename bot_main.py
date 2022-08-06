@@ -192,11 +192,11 @@ async def news_send(channel: discord.channel.TextChannel):
 
 
 @infobot.command()
-async def roll(ctx: discord.ext.commands.context.Context, user_roll):
+async def roll(ctx: discord.ext.commands.context.Context, user_roll: str):
     """
-    :param ctx:
-    :param user_roll:
-    :return:
+    :param ctx: ctx: discord.ext.commands.context.Context
+    :param user_roll: строка ролла, например '3d6'
+    :return: отправка строки боту для вывода в текущем чате дискорда
     """
     bot_answer = roll_module.roll_func(user_roll)
     await ctx.send(bot_answer)
