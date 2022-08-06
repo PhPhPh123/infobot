@@ -7,6 +7,7 @@
 
 from settings_and_imports import *
 
+import static_messages
 import user_info.bot_user_info_world
 import user_info.bot_user_info_systems
 import user_info.bot_user_access
@@ -24,13 +25,17 @@ def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     :return: объекты курсора и коннекта
     """
     db_name = 'infobot_db.db'
-    abspath = get_script_dir() + path.sep + db_name  # Формирование абсолютного пути для файла базы данных
+    abspath = get_script_dir() + os.path.sep + db_name  # Формирование абсолютного пути для файла базы данных
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
     cursor = connect.cursor()  # Создание курсора
     return cursor, connect
 
 
 def connect_to_db_sqlalchemy():
+    """
+    Данный модуль подключается к orm sqlalchemy
+    :return: объекты коннектора и таблички worlds
+    """
     db_engine = sqlalchemy.create_engine('sqlite:///infobot_db.db')
     db_connector = db_engine.connect()
 
@@ -69,38 +74,24 @@ async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str
 @infobot.command()
 async def helpme(ctx: discord.ext.commands.context.Context):
     """
-    Функция, отправляющая ботом в дискорде информацию по доступным игрокам командам
+    Функция, отправляющая ботом в дискорде информацию по доступным игрокам командам,
+    строку для вывода берет из модуля static_messages
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = '''
-Команды:
-!infoworld *название системы* - вызывает инфу по конкретному миру согласно имеющемуся уровню доступа
-!infosystem *название системы* - показывает количество имеющихся миров внутри системы
-!infoexport *название системы* - показывает какие экспортные товары производятся в системе и их приблизительная цена
-!infoimport *название системы* - показывается какие импортные товары покупают в системе и по какой примерно цене
-!infoaccess - показывает уровень доступа на всех известных мирах, где уровень выше 0
-!access - показывает информацию по уровням доступа для миров
-!infoallgoods - показывает весь список товаров
-!infoexportgoods *название товара* - показывает системы с необходимым уровнем доступа, которые экспортируют данный товар
-!infoimportgoods *название товара* - показывает системы с необходимым уровнем доступа, которые импортируют данный товар
-        
-Название систем можно посмотреть на сайте - на карте'''
+    bot_answer = static_messages.help_commands
     await ctx.send(bot_answer)
 
 
 @infobot.command()
 async def access(ctx: discord.ext.commands.context.Context):
     """
-    Функция, отправляющая ботом в дискорде информацию по тому, за что отвечают уровни доступа на мирах
+    Функция, отправляющая ботом в дискорде информацию по тому, за что отвечают уровни доступа на мирах,
+    строку для вывода берет из модуля static_messages
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = '''
-Нулевой уровень: недоступно ничего, мир скрыт для запросов полностью
-Первый уровень доступно: название системы, имперский класс, общий уровень опасности
-Второй уровень доступно: уровень имперской власти, население, угроза отдельных врагов, основные типы местности
-Третий уровень доступно: экспорт, импорт и дополнительные особенности мира'''
+    bot_answer = static_messages.access_level
     await ctx.send(bot_answer)
 
 
@@ -149,26 +140,11 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
 @infobot.command()
 async def infoallgoods(ctx: discord.ext.commands.context.Context):
     """
-    Функция выводит список имеющихся торговых товаров в игре
+    Функция выводит список имеющихся торговых товаров в игре, строку для вывода берет из модуля static_messages
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = '''
-Нормальное-продовольствие
-Питательная-паста
-Деликатесы
-Стрелковое-оружие-и-экипировка
-Боеприпасы
-Одежда-и-украшения
-Гражданская-техника
-Медицина-и-парфюмерия
-Опасные-вещества
-Электронные-компоненты
-Тяжелые-машинные-детали
-Прометий-и-субпродукты
-Строй-материалы
-Металлы
-Редкие-минералы'''
+    bot_answer = static_messages.goods
     await ctx.send(bot_answer)
 
 
@@ -200,7 +176,7 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     await ctx.send(bot_answer)
 
 
-@tasks.loop(seconds=5)
+@tasks.loop(minutes=30)
 async def news_send(channel: discord.channel.TextChannel):
     """
     Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
@@ -233,4 +209,5 @@ if __name__ == '__main__':
 
     db_cursor, db_connect = connect_to_db_sqlite3()
     alch_connect, alch_world = connect_to_db_sqlalchemy()
+
     infobot.run(settings['token'])
