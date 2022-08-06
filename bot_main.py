@@ -14,6 +14,7 @@ import user_info.bot_user_access
 import user_info.bot_import_and_export
 import user_info.bot_user_info_goods
 import news.bot_news_main
+import roll_module
 
 infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
@@ -188,6 +189,17 @@ async def news_send(channel: discord.channel.TextChannel):
     chosen_news = news.bot_news_main.choise_random_news(db_cursor, db_connect)
 
     await channel.send(chosen_news)
+
+
+@infobot.command()
+async def roll(ctx: discord.ext.commands.context.Context, user_roll):
+    """
+    :param ctx:
+    :param user_roll:
+    :return:
+    """
+    bot_answer = roll_module.roll_func(user_roll)
+    await ctx.send(bot_answer)
 
 
 @infobot.command()
