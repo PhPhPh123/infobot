@@ -9,6 +9,7 @@ import random
 import os
 import discord.ext.commands.context
 
+from abc import abstractmethod, ABC
 from jinja2 import Template
 from discord.ext import commands, tasks
 from sqlalchemy.orm import mapper, sessionmaker

@@ -1,20 +1,60 @@
 """
 
 """
+from abc import ABC
+
+from settings_and_imports import *
 
 
-def control_creation(grade: str, artifact_group: str, artifact_type: str, unique_bonus: str) -> str:
-    form_dict(artifact_group, artifact_type, unique_bonus)
+class Artifact:
+    def __init__(self, name):
+        self.name = name
+        self.grade = ''
+        self.weight = ''
+        self.unique_bonus = ''
+        self.stat_requeriments = ''
 
 
-def form_dict(artifact_group: str, artifact_type: str, unique_bones: str) -> dict:
-    artifact_dict = {}
-    if artifact_group == 'броня':
-        artifact_dict['ВУ'] = None
-    elif artifact_dict == 'оружие ББ':
-        artifact_dict['Урон'] = None
-    elif artifact_dict == 'оружие ДБ':
-        artifact_dict['Урон'] = None
-    elif artifact_dict == 'особое':
-        artifact_dict['Особенность'] = None
+class Armor(Artifact, ABC):
+    def __init__(self):
+        super().__init__()
+        self.armor = ''
+        self.speed_modifier = ''
+        self.evasion_modifier = ''
 
+    def get_armor(self):
+        pass
+
+
+class Weapon(Artifact, ABC):
+    def __init__(self):
+        super().__init__()
+        self.damage = ''
+        self.penetration = ''
+        self.prescision_modifier = ''
+
+    def get_damage(self):
+        pass
+
+
+class Jewerly(Artifact, ABC):
+    def __init__(self):
+        super().__init__()
+        self.jewerly_bonus = ''
+
+
+class RangeWeapon(Weapon):
+    def __init__(self):
+        super().__init__()
+        self.range = ''
+        self.attack_speed = ''
+
+
+class Lazgun(RangeWeapon):
+    def __init__(self):
+        super().__init__()
+        self.laz_mechanics = True
+
+
+laz = Lazgun()
+print(laz.__dict__)
