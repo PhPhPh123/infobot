@@ -14,7 +14,7 @@ import user_info.bot_user_access
 import user_info.bot_import_and_export
 import user_info.bot_user_info_goods
 import news.bot_news_main
-import roll_module
+from minor_commands import roll_module
 
 infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
@@ -214,6 +214,17 @@ async def startnews(ctx: discord.ext.commands.context.Context):
     """
     await ctx.send("Поиск слухов...")
     news_send.start(ctx.channel)
+
+
+@infobot.command()
+@commands.has_permissions(administrator=True)
+async def artifact(ctx: discord.ext.commands.context.Context,
+                   grade: str,
+                   group_art: str = 'random',
+                   type_art: str = 'random',
+                   unique_bonus: str = 'random',
+                   ):
+    await ctx.send(f'{grade}, {group_art}, {type_art}, {unique_bonus}')
 
 
 if __name__ == '__main__':
