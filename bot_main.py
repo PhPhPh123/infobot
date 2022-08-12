@@ -7,7 +7,7 @@
 
 from settings_and_imports import *
 
-import static_messages
+import static_answer_messages
 import user_info.bot_user_info_world
 import user_info.bot_user_info_systems
 import user_info.bot_user_access
