@@ -1,39 +1,44 @@
 """
 
 """
-import random
 
 from settings_and_imports import *
 
 
+def control_art_form(art_dict):
+    print(art_dict)
+    lz = Lazgun()
+    print(lz.__dict__)
+    final_string = lz.__dict__
+    return final_string
+
+
 class Artifact:
-    def __init__(self, name, grade, weight, unique_bonus, stat_requeriments):
-        self.name = name
-        self.grade = grade
-        self.weight = weight
-        self.unique_bonus = unique_bonus
-        self.stat_requeriments = stat_requeriments
+    def __init__(self):
+        self.name = 'Артефакт по умолчанию'
+        self.grade = 'Зеленый'
+        self.weight = 10
+        self.unique_bonus = 'Особенности отсутствуют'
+        self.stat_requeriments = 'Требования отсутствуют'
 
 
 class Armor(Artifact):
-    def __init__(self, name, grade, weight, unique_bonus, stat_requeriments):
-        super().__init__(name, grade, weight, unique_bonus, stat_requeriments)
-        self.armor = 'armor'
-        self.speed_modifier = 'speed_modifier'
-        self.evasion_modifier = 'evasion_modifier'
+    def __init__(self):
+        super().__init__()
+        self.armor = 0
+        self.speed_modifier = 0
+        self.evasion_modifier = 0
 
     def get_armor(self):
         pass
 
 
 class Weapon(Artifact):
-    def __init__(self, name, grade, weight, unique_bonus,
-                 stat_requeriments, damage, penetration,
-                 prescision_modifier):
-        super().__init__(name, grade, weight, unique_bonus, stat_requeriments)
-        self.damage = damage
-        self.penetration = penetration
-        self.prescision_modifier = prescision_modifier
+    def __init__(self):
+        super().__init__()
+        self.damage = 18
+        self.penetration = 'Отсутствует'
+        self.prescision_modifier = 0
 
     def get_damage(self, group_of_weapon, grade):
         base_damage_lazgun = 18
@@ -59,31 +64,20 @@ class Weapon(Artifact):
 
 
 class Jewerly(Artifact):
-    def __init__(self, name, grade, weight, unique_bonus, stat_requeriments):
-        super().__init__(name, grade, weight, unique_bonus, stat_requeriments)
-        self.jewerly_bonus = ''
+    def __init__(self):
+        super().__init__()
+        self.jewerly_bonus = 'Отсутствует'
 
 
 class RangeWeapon(Weapon):
-    def __init__(self, name, grade, weight, unique_bonus,
-                 stat_requeriments, damage, penetration, prescision_modifier, weapon_range, attack_speed):
-        super().__init__(name, grade, weight,
-                         unique_bonus, stat_requeriments, damage,
-                         penetration, prescision_modifier)
-        self.weapon_range = weapon_range
-        self.attack_speed = attack_speed
+    def __init__(self):
+        super().__init__()
+        self.weapon_range = 10
+        self.attack_speed = 1
 
 
 class Lazgun(RangeWeapon):
-    def __init__(self, name, grade, weight, unique_bonus, stat_requeriments,
-                 damage, penetration, prescision_modifier, weapon_range, attack_speed):
-        super().__init__(name, grade, weight, unique_bonus, stat_requeriments,
-                         damage, penetration, prescision_modifier, weapon_range, attack_speed)
+    def __init__(self):
+        super().__init__()
         self.laz_mechanics = True
 
-
-laz = Lazgun(name="Лазган", grade='зеленый', weight=10, unique_bonus=None, stat_requeriments='STR 10',
-             damage='3d6', penetration='half', prescision_modifier=0, weapon_range=10, attack_speed=1)
-laz.get_damage('Лазган', 'зеленый')
-
-print(laz.__dict__)

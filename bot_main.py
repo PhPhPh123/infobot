@@ -14,7 +14,9 @@ import user_info.bot_user_access
 import user_info.bot_import_and_export
 import user_info.bot_user_info_goods
 import news.bot_news_main
+import craft.creation_artifact
 from minor_commands import roll_module
+
 
 infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
 
@@ -80,7 +82,7 @@ async def helpme(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = static_messages.help_commands
+    bot_answer = static_answer_messages.help_commands
     await ctx.send(bot_answer)
 
 
@@ -92,7 +94,7 @@ async def access(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = static_messages.access_level
+    bot_answer = static_answer_messages.access_level
     await ctx.send(bot_answer)
 
 
@@ -145,7 +147,7 @@ async def infoallgoods(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = static_messages.goods
+    bot_answer = static_answer_messages.goods
     await ctx.send(bot_answer)
 
 
@@ -224,7 +226,9 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    type_art: str = 'random',
                    unique_bonus: str = 'random',
                    ):
-    await ctx.send(f'{grade}, {group_art}, {type_art}, {unique_bonus}')
+    param_dict = {'грейд': grade, 'группа': group_art, 'тип': type_art, 'особенность': unique_bonus}
+    bot_answer = craft.creation_artifact.control_art_form(param_dict)
+    await ctx.send(bot_answer)
 
 
 if __name__ == '__main__':
