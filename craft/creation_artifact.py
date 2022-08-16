@@ -6,11 +6,30 @@ from settings_and_imports import *
 
 
 def control_art_form(art_dict):
+    art_dict['грейд'] = count_gear_score(art_dict['грейд'])
     print(art_dict)
     lz = Lazgun()
-    print(lz.__dict__)
+
     final_string = lz.__dict__
     return final_string
+
+
+def count_gear_score(grade):
+    base_gear_score = 0
+    if grade == 'Зеленый'.lower():
+        base_gear_score = 100
+    elif grade == 'Синий'.lower():
+        base_gear_score = 120
+    elif grade == 'Фиолетовый'.lower():
+        base_gear_score = 140
+    elif grade == 'Красный'.lower():
+        base_gear_score = 160
+    else:
+        return 'Данный грейд отсутствует'
+
+    luck_mod = random.uniform(0.8, 1.2)
+
+    return int(base_gear_score * luck_mod)
 
 
 class Artifact:
@@ -81,3 +100,27 @@ class Lazgun(RangeWeapon):
         super().__init__()
         self.laz_mechanics = True
 
+
+class Autogun(RangeWeapon):
+    def __init__(self):
+        super().__init__()
+
+
+class Meltagun(RangeWeapon):
+    def __init__(self):
+        super().__init__()
+
+
+class Bolter(RangeWeapon):
+    def __init__(self):
+        super().__init__()
+
+
+class Hellgun(RangeWeapon):
+    def __init__(self):
+        super().__init__()
+
+
+class Plasmagun(RangeWeapon):
+    def __init__(self):
+        super().__init__()
