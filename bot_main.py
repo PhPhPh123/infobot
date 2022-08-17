@@ -226,12 +226,13 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    type_art: str = 'random',
                    unique_bonus: str = 'random',
                    ):
+
     param_dict = {'грейд': grade.lower(),
                   'группа': group_art.lower(),
                   'тип': type_art.lower(),
                   'особенность': unique_bonus.lower()}
 
-    bot_answer = craft.creation_artifact.control_art_form(param_dict)
+    bot_answer = craft.creation_artifact.choise_class_objects(param_dict)
     await ctx.send(bot_answer)
 
 
