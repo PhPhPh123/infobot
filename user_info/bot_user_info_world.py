@@ -30,6 +30,8 @@ def to_control_other_functions_and_returns_bot_answer(curs: sqlite3.Cursor, worl
 
     # 2 этап
     tuple_with_worlds = tuple(curs.execute(select_main))
+    if not tuple_with_worlds:  # Если название мира некорректно, то вернется пустой кортеж и нужно вернуть ответ
+        return 'Некорректное название мира'
     tuple_with_terrains = tuple(curs.execute(select_terrains))
     tuple_with_enemies = tuple(curs.execute(select_enemies))
     tuple_with_export = tuple(curs.execute(select_export))

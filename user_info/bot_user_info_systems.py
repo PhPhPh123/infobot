@@ -34,4 +34,6 @@ def str_form_systems(sys_tuple: tuple) -> str:
     ''')
 
     answer_render_systems = answer_systems_temp.render(sys_tuple=sys_tuple)
+    if not sys_tuple:
+        answer_render_systems = 'Некорректное название системы'
     return answer_render_systems

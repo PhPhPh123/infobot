@@ -24,6 +24,7 @@ def choise_deal_and_execute_in_db(curs: sqlite3.Cursor, goods_name: str, name_de
         select_systems = form_export_query(goods_name)
 
     tuple_with_worlds = tuple(curs.execute(select_systems))
+
     final_string = form_string_answer(tuple_with_worlds, name_deal)
 
     return final_string
