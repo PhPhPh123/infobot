@@ -45,6 +45,7 @@ def connect_to_db_sqlalchemy():
     metadata = sqlalchemy.MetaData(db_engine)
     worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
 
+
     return db_connector, worlds
 
 
@@ -224,7 +225,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    grade: str,
                    group_art: str = 'random',
                    type_art: str = 'random',
-                   unique_bonus: str = 'random',
+                   unique_bonus: str = 'random'
                    ):
 
     param_dict = {'грейд': grade.lower(),
@@ -232,7 +233,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'тип': type_art.lower(),
                   'особенность': unique_bonus.lower()}
 
-    bot_answer = craft.creation_artifact.choise_class_objects(param_dict)
+    bot_answer = craft.creation_artifact.choise_class_objects(param_dict, db_cursor)
     await ctx.send(bot_answer)
 
 
