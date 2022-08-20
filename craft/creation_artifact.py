@@ -85,8 +85,6 @@ INNER JOIN artifact_type ON unique_suffix_art_type_relations.art_type_name == ar
 WHERE artifact_type.art_type_name == '{art_type}'
 ORDER BY RANDOM()
 LIMIT 1'''))
-        print(suffix_tuple)
-        print(art_type)
         return suffix_tuple
 
     def form_name(self, prefix, art_type, suffix):
@@ -100,27 +98,19 @@ class Weapon(Artifact):
         self.penetration = 'Отсутствует'
         self.prescision_modifier = 0
 
-    # def get_damage(self, group_of_weapon, grade):
-    #     base_damage_lazgun = 18
-    #     base_damage_lazgpistol = 12
-    #     base_damage_autopistol = 18
-    #     base_damage_autogun = 30
-    #
-    #     random_modifier = random.uniform(0.9, 1.1)
-    #
-    #     grade_damage = 0
-    #     if grade == 'зеленый':
-    #         grade_damage = 1.05
-    #     elif grade_damage == 'синий':
-    #         grade_damage = 1.10
-    #     elif grade_damage == 'фиолетовый':
-    #         grade_damage = 1.15
-    #     elif grade_damage == 'красный':
-    #         grade_damage = 1.2
-    #
-    #     if group_of_weapon == 'Лазган':
-    #         self.damage = base_damage_lazgun * grade_damage * random_modifier
-    #         print(self.damage)
+    def get_damage(self, weapon_type, grade):
+        random_modifier = random.uniform(0.9, 1.1)
+
+        base_damage = tuple(self.cursor.execute(f'''
+SELECT art_damage FROM artifact_type
+WHERE art_type_name == '{weapon_type}'
+        '''))[0][0]
+
+        print(base_damage)
+
+        final_damage = int(base_damage * random_modifier)
+
+        return final_damage
 
 
 class Armor(Artifact):
@@ -157,6 +147,7 @@ class RangeWeapon(Weapon):
         self.unique_prefix = self.choise_prefix()
         self.unique_suffix = self.choise_suffix(self.art_type)
         self.form_name(self.unique_prefix, self.art_type, self.unique_suffix)
+        self.damage = self.get_damage(self.art_type, self.grade)
 
 
 class CloseCombatWeapon(Weapon):
@@ -167,4 +158,5 @@ class CloseCombatWeapon(Weapon):
         self.unique_prefix = self.choise_prefix()
         self.unique_suffix = self.choise_suffix(self.art_type)
         self.form_name(self.unique_prefix, self.art_type, self.unique_suffix)
+        self.damage = self.get_damage(self.art_type, self.grade)
 
