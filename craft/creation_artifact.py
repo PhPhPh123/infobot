@@ -1,11 +1,12 @@
 """
 
 """
+
 from settings_and_imports import *
 
 
 def choise_class_objects(art_user_dict, cursor):
-    art_user_dict['грейд'] = count_gear_score(art_user_dict['грейд'])
+    art_user_dict['грейд'] = count_grade_modifier(art_user_dict['грейд'])
 
     art_object = None
 
@@ -33,33 +34,33 @@ def choise_class_objects(art_user_dict, cursor):
     return final_string
 
 
-def count_gear_score(grade):
+def count_grade_modifier(grade):
     if grade == 'зеленый':
-        base_gear_score = 40
+        grade_modifier = 1
     elif grade == 'синий':
-        base_gear_score = 60
+        grade_modifier = 1.1
     elif grade == 'фиолетовый':
-        base_gear_score = 80
+        grade_modifier = 1.2
     elif grade == 'красный':
-        base_gear_score = 100
+        grade_modifier = 1.3
     else:
-        return 'Данный грейд отсутствует'
+        raise ValueError('Неверное название грейда')
 
-    luck_mod = random.uniform(0.8, 1.2)
+    luck_mod = random.uniform(0.9, 1.1)
 
-    return int(base_gear_score * luck_mod)
+    return grade_modifier * luck_mod
 
 
 class Artifact:
-    def __init__(self, gear_score, cursor):
+    def __init__(self, grade_modifier, cursor):
         self.cursor = cursor
         self.name = 'Артефакт'
         self.grade = 'Зеленый'
         self.weight = 1
-        self.unique_prefix = ''
+        self.unique_prefix = self.choise_prefix()
         self.unique_suffix = ''
         self.stat_requeriments = 'Требования отсутствуют'
-        self.gear_score = gear_score
+        self.gear_score = grade_modifier
 
     def choise_random_type_of_artifact(self, artifact_group):
         chosen_artifact = tuple(self.cursor.execute(f'''
@@ -92,13 +93,13 @@ LIMIT 1'''))
 
 
 class Weapon(Artifact):
-    def __init__(self, gear_score, cursor):
-        super().__init__(gear_score, cursor)
+    def __init__(self, grade_modifier, cursor):
+        super().__init__(grade_modifier, cursor)
         self.damage = 18
         self.penetration = 'Отсутствует'
         self.prescision_modifier = 0
 
-    def get_damage(self, weapon_type, grade):
+    def get_damage(self, weapon_type, grade_modifier):
         random_modifier = random.uniform(0.9, 1.1)
 
         base_damage = tuple(self.cursor.execute(f'''
@@ -106,57 +107,86 @@ SELECT art_damage FROM artifact_type
 WHERE art_type_name == '{weapon_type}'
         '''))[0][0]
 
-        print(base_damage)
-
-        final_damage = int(base_damage * random_modifier)
+        final_damage = int(base_damage * random_modifier * grade_modifier)
 
         return final_damage
 
+    def get_penetration(self, weapon_type):
+        luck = random.randint(1, 100)
+
+        if weapon_type in ('мельтаган', 'мельтапистолет',
+                           'одноручный-силовой-меч', 'двуручный-силовой-меч'):
+            self.penetration = 'Игнор ВУ'
+        elif weapon_type in ('плазмаган', 'плазма-пистолет') or luck <= 3:
+            if weapon_type not in ('лазган', 'лазпистолет'):
+                self.penetration = 'Игнор половины ВУ'
+        else:
+            self.penetration = 'Пробитие отсутствует'
+        return self.penetration
+
+    def get_prescision(self, weapon_type):
+        luck = random.randint(1, 100)
+
+        base_prescision = tuple(self.cursor.execute(f'''
+        SELECT art_prescision FROM artifact_type
+        WHERE art_type_name == '{weapon_type}'
+                '''))[0][0]
+        print(luck)
+        final_prescision = base_prescision + 1 if luck <= 10 else base_prescision
+
+        return final_prescision
+
 
 class Armor(Artifact):
-    def __init__(self, gear_score, armor_type, cursor):
-        super().__init__(gear_score, cursor)
-        self.armor = 0
+    def __init__(self, grade_modifier, armor_type, cursor):
+        super().__init__(grade_modifier, cursor)
         self.speed_modifier = 0
         self.evasion_modifier = 0
         self.art_type = armor_type if armor_type != 'random' else self.choise_random_type_of_artifact('броня')
-        self.unique_prefix = self.choise_prefix()
         self.unique_suffix = self.choise_suffix(self.art_type)
         self.form_name(self.unique_prefix, self.art_type, self.unique_suffix)
+        self.armor = self.get_armor(self.art_type, grade_modifier)
 
-    def get_armor(self):
-        pass
+    def get_armor(self, armor_type, grade_modifier):
+        base_armor = tuple(self.cursor.execute(f'''
+SELECT art_armor FROM artifact_type
+WHERE art_type_name == '{armor_type}'
+        '''))[0][0]
+
+        final_armor = int(base_armor * grade_modifier)
+
+        return final_armor
 
 
 class Jewerly(Artifact):
-    def __init__(self, gear_score, jewelry_type, cursor):
-        super().__init__(gear_score, cursor)
+    def __init__(self, grade_modifier, jewelry_type, cursor):
+        super().__init__(grade_modifier, cursor)
         self.jewerly_bonus = 'Отсутствует'
         self.art_type = jewelry_type if jewelry_type != 'random' else self.choise_random_type_of_artifact('бижутерия')
-        self.unique_prefix = self.choise_prefix()
         self.unique_suffix = self.choise_suffix(self.art_type)
         self.form_name(self.unique_prefix, self.art_type, self.unique_suffix)
 
 
 class RangeWeapon(Weapon):
-    def __init__(self, gear_score, weapon_type, cursor):
-        super().__init__(gear_score, cursor)
+    def __init__(self, grade_modifier, weapon_type, cursor):
+        super().__init__(grade_modifier, cursor)
         self.weapon_range = 10
         self.attack_speed = 1
         self.art_type = weapon_type if weapon_type != 'random' else self.choise_random_type_of_artifact('оружие-дб')
-        self.unique_prefix = self.choise_prefix()
         self.unique_suffix = self.choise_suffix(self.art_type)
         self.form_name(self.unique_prefix, self.art_type, self.unique_suffix)
-        self.damage = self.get_damage(self.art_type, self.grade)
+        self.damage = self.get_damage(self.art_type, grade_modifier)
+        self.penetration = self.get_penetration(weapon_type)
+        self.prescision_modifier = self.get_prescision(weapon_type)
 
 
 class CloseCombatWeapon(Weapon):
-    def __init__(self, gear_score, weapon_type, cursor):
-        super().__init__(gear_score, cursor)
+    def __init__(self, grade_modifier, weapon_type, cursor):
+        super().__init__(grade_modifier, cursor)
         self.parry_bonus = 0
         self.art_type = weapon_type if weapon_type != 'random' else self.choise_random_type_of_artifact('оружие-бб')
-        self.unique_prefix = self.choise_prefix()
         self.unique_suffix = self.choise_suffix(self.art_type)
         self.form_name(self.unique_prefix, self.art_type, self.unique_suffix)
-        self.damage = self.get_damage(self.art_type, self.grade)
-
+        self.damage = self.get_damage(self.art_type, grade_modifier)
+        self.penetration = self.get_penetration(weapon_type)
+        self.prescision_modifier = self.get_prescision(weapon_type)
