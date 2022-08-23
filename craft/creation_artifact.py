@@ -1,6 +1,7 @@
 """
 
 """
+import random
 
 from settings_and_imports import *
 
@@ -77,13 +78,13 @@ ORDER BY RANDOM()
 LIMIT 1'''))
         return prefix_tuple
 
-    def get_suffix(self, art_type):
+    def get_suffix(self, art_group, art_type):
         suffix_tuple = tuple(self.cursor.execute(f'''
 SELECT unique_suffix.effect_name, unique_suffix.effect_text 
 FROM unique_suffix
-INNER JOIN unique_suffix_art_type_relations ON unique_suffix.effect_name == unique_suffix_art_type_relations.effect_name
-INNER JOIN artifact_type ON unique_suffix_art_type_relations.art_type_name == artifact_type.art_type_name
-WHERE artifact_type.art_type_name == '{art_type}'
+INNER JOIN unique_suffix_{art_group}_relations ON unique_suffix.effect_name == unique_suffix_{art_group}_relations.effect_name
+INNER JOIN {art_group} ON unique_suffix_{art_group}_relations.art_type_name == {art_group}.art_type_name
+WHERE {art_group}.art_type_name == '{art_type}'
 ORDER BY RANDOM()
 LIMIT 1'''))
         return suffix_tuple
@@ -105,11 +106,11 @@ class Weapon(Artifact):
         self.penetration = 'Отсутствует'
         self.prescision_modifier = 0
 
-    def get_damage(self, weapon_type, grade_modifier):
+    def get_damage(self, weapon_group, weapon_type, grade_modifier):
         random_modifier = random.uniform(0.9, 1.1)
 
         base_damage = tuple(self.cursor.execute(f'''
-SELECT art_damage FROM artifact_type
+SELECT art_damage FROM {weapon_group}
 WHERE art_type_name == '{weapon_type}'
         '''))[0][0]
 
@@ -130,11 +131,11 @@ WHERE art_type_name == '{weapon_type}'
             self.penetration = 'Пробитие отсутствует'
         return self.penetration
 
-    def get_prescision(self, weapon_type):
+    def get_prescision(self, weapon_group, weapon_type):
         luck = random.randint(1, 100)
 
         base_prescision = tuple(self.cursor.execute(f'''
-        SELECT art_prescision FROM artifact_type
+        SELECT art_prescision FROM {weapon_group}
         WHERE art_type_name == '{weapon_type}'
                 '''))[0][0]
         final_prescision = base_prescision + 1 if luck <= 10 else base_prescision
@@ -143,18 +144,20 @@ WHERE art_type_name == '{weapon_type}'
 
 
 class Armor(Artifact):
+    group_name = 'artifact_armor'
+
     def __init__(self, grade_modifier, armor_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.speed_modifier = 0
         self.evasion_modifier = 0
         self.art_type = armor_type if armor_type != 'random' else self.get_random_type_of_artifact('броня')
-        self.unique_suffix = self.get_suffix(self.art_type)
+        self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.armor = self.get_armor(self.art_type, grade_modifier)
 
     def get_armor(self, armor_type, grade_modifier):
         base_armor = tuple(self.cursor.execute(f'''
-SELECT art_armor FROM artifact_type
+SELECT art_armor FROM artifact_armor
 WHERE art_type_name == '{armor_type}'
         '''))[0][0]
 
@@ -170,11 +173,13 @@ WHERE art_type_name == '{armor_type}'
 
 
 class Jewerly(Artifact):
+    group_name = 'artifact_jewelry'
+
     def __init__(self, grade_modifier, jewelry_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.jewerly_bonus = 'Отсутствует'
         self.art_type = jewelry_type if jewelry_type != 'random' else self.get_random_type_of_artifact('бижутерия')
-        self.unique_suffix = self.get_suffix(self.art_type)
+        self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
 
     def get_jewelry_bonus(self):
@@ -182,34 +187,53 @@ class Jewerly(Artifact):
 
 
 class RangeWeapon(Weapon):
+    group_name = 'artifact_range_weapon'
+
     def __init__(self, grade_modifier, weapon_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.weapon_range = 10
         self.attack_speed = 1
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact('оружие-дб')
-        self.unique_suffix = self.get_suffix(self.art_type)
+        self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
-        self.damage = self.get_damage(self.art_type, grade_modifier)
+        self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
         self.penetration = self.get_penetration(weapon_type)
-        self.prescision_modifier = self.get_prescision(weapon_type)
+        self.prescision_modifier = self.get_prescision(self.group_name, weapon_type)
+        self.range = self.get_range(weapon_type)
 
-    def get_range(self):
-        pass
+    def get_range(self, weapon_type):
+
+        base_range = tuple(self.cursor.execute(f'''
+                SELECT art_range FROM artifact_range_weapon
+                WHERE art_type_name == '{weapon_type}'
+                        '''))[0][0]
+
+        final_range = 0
+        if base_range <= 7:
+            final_range = random.randint((base_range - 1), (base_range + 1))
+        elif 8 <= base_range <= 14:
+            final_range = random.randint((base_range - 1), (base_range + 3))
+        elif base_range >= 15:
+            final_range = random.randint((base_range - 2), (base_range + 4))
+
+        return final_range
 
     def get_attack_speed(self):
         pass
 
 
 class CloseCombatWeapon(Weapon):
+    group_name = 'artifact_close_combat'
+
     def __init__(self, grade_modifier, weapon_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.parry_bonus = 0
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact('оружие-бб')
-        self.unique_suffix = self.get_suffix(self.art_type)
+        self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
-        self.damage = self.get_damage(self.art_type, grade_modifier)
+        self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
         self.penetration = self.get_penetration(weapon_type)
-        self.prescision_modifier = self.get_prescision(weapon_type)
+        self.prescision_modifier = self.get_prescision(self.group_name, weapon_type)
 
     def get_parry_bonus(self):
         pass
