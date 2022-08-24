@@ -17,8 +17,9 @@ import news.bot_news_main
 import craft.creation_artifact
 from minor_commands import roll_module
 
-
-infobot = commands.Bot(command_prefix=settings['prefix'])  # Экземпляр класса бота
+intents = discord.Intents.all()
+intents.members = True
+infobot = commands.Bot(command_prefix=settings['prefix'], intents=intents)  # Экземпляр класса бота
 
 
 def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
@@ -28,7 +29,7 @@ def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     :return: объекты курсора и коннекта
     """
     db_name = 'infobot_db.db'
-    abspath = get_script_dir() + os.path.sep + db_name  # Формирование абсолютного пути для файла базы данных
+    abspath = get_script_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
     cursor = connect.cursor()  # Создание курсора
     return cursor, connect
@@ -44,7 +45,6 @@ def connect_to_db_sqlalchemy():
 
     metadata = sqlalchemy.MetaData(db_engine)
     worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
-
 
     return db_connector, worlds
 
