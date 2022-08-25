@@ -192,7 +192,6 @@ class RangeWeapon(Weapon):
 
     def __init__(self, grade_modifier, weapon_type, cursor):
         super().__init__(grade_modifier, cursor)
-        self.weapon_range = 10
         self.attack_speed = 1
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name,
                                                                                                      'оружие-дб')

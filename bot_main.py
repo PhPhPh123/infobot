@@ -45,8 +45,9 @@ def connect_to_db_sqlalchemy():
 
     metadata = sqlalchemy.MetaData(db_engine)
     worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
+    systems = sqlalchemy.Table('systems', metadata, autoload=True)
 
-    return db_connector, worlds
+    return db_connector, worlds, systems
 
 
 @infobot.command()
@@ -137,7 +138,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor, alch_connect, alch_world
-    bot_answer = user_info.bot_user_access.form_tuple_in_db(alch_connect, alch_world)
+    bot_answer = user_info.bot_user_access.form_tuple_in_db(alch_connect, alch_world, db_cursor)
     await ctx.send(bot_answer)
 
 
@@ -256,6 +257,6 @@ if __name__ == '__main__':
     session = connect_to_db_sqlalchemy()
 
     db_cursor, db_connect = connect_to_db_sqlite3()
-    alch_connect, alch_world = connect_to_db_sqlalchemy()
+    alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()
 
     infobot.run(settings['token'])

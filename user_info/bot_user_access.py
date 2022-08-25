@@ -6,41 +6,99 @@
 from settings_and_imports import *
 
 
-def form_tuple_in_db(alch_connect, alch_worlds) -> str:
+def form_tuple_in_db(alch_connect, alch_worlds, cursor) -> str:
     """
-    Функция осуществляет запрос в БД через ORM получая кортежи с данными, а затем получает готовую строку путем отправки
-    кортежа в нижестоящую функцию
-    :param alch_worlds:
-    :param alch_connect:
+    Функция осуществляет запрос в БД через ORM sqlalchemy и sqlite получая кортежи с данными, которые затем передает
+    в нижестоящие функции, преобразующие их в списки и добавляющие иные данные, а потом функция возвращает результат в
+    виде готового ответа ботом
+    :param cursor: объект курсора sqlite
+    :param alch_worlds: объект sql-alchemy
+    :param alch_connect: объект sql-alchemy
     :return: итоговая строка ответа бота
     """
     # Создание запроса к БД
-    system_tuple_temp = sqlalchemy.sql.select(alch_worlds.c.world_name,
+    access_tuple_temp = sqlalchemy.sql.select(alch_worlds.c.world_name,
                                               alch_worlds.c.access_level).where(alch_worlds.c.access_level > 0)
     # Экзекьют в БД для получения кортежей
-    system_tuple = tuple(alch_connect.execute(system_tuple_temp))
+    access_tuple = tuple(alch_connect.execute(access_tuple_temp))
+
+    # Отправка кортежа из кортежей для формирования из него списка из списков и добавления во вложенные списки данных
+    # о родительских системах миров
+    access_list = form_list_and_add_system(access_tuple, cursor)
 
     # Запрос к нижестоящей функции и получение строки ответа
-    system_ans = form_string_answer(system_tuple)
+    access_ans = form_string_answer(access_list)
 
-    return system_ans
+    return access_ans
 
 
-def form_string_answer(sys_tuple: tuple) -> str:
+def form_list_and_add_system(access_tuple: tuple, cursor) -> list:
     """
-    Данная функция принимает кортеж из кортежей и на их основе, с помощью шаблонизатора, формирует строковый ответ
-    :param sys_tuple: кортеж с данными
+    Данная фунция формирует из кортежа с кортежами список со списками, добавляет во вложенные списки информацию о
+    системе, к которой относятся отобранные миры и сортирует список по ключу - названию системы в алфавитном порядке
+    :param system_tuple: кортеж с кортежами в котором первом элементом идет название мира, а вторым - уровень доступа
+    :param cursor: объект курсора sqlite
+    :return: список со списками с добавлением в каждый вложенный список элементом [2] название системы
+    """
+
+    access_list_with_lists = []  # Пустой список, в который будут добавляться списки из кортежа с кортежами
+
+    # Создаю из кортежа с кортежами список со списками
+    for tuple_elem in access_tuple:
+        access_list_with_lists.append(list(tuple_elem))
+
+    # Итерация, в которой изменяются вложенные списки
+    for list_elem in access_list_with_lists:
+        world_name = list_elem[0]  # Получаю название мира из текущего вложенного списка, чтобы использовать его для
+        # запроса в бд и определения связанной с ним системы(в которой он находится)
+
+        # Вызываю функцию, которая добавит в текущий вложенный список связанную с ним систему, которая отбирается в
+        # вызываемой функции
+        list_elem.append(select_system(world_name, cursor))
+
+    # Создаю новый отсортированный список по ключу - названию системы в алфавитном порядке elem[2]
+    sorted_access_list_with_lists = sorted(access_list_with_lists, key=lambda elem: elem[2])
+
+    return sorted_access_list_with_lists
+
+
+def select_system(world_name: str, cursor) -> str:
+    """
+    Данная функция производит запрос в БД с целью отбора систем, связанных с переданным миром
+    :param world_name: название мира
+    :param cursor: объект курсора sqlite
+    :return:
+    """
+
+    selected_system = tuple(cursor.execute(f"""
+    SELECT systems.system_name FROM systems
+    INNER JOIN systems_worlds_relations ON systems.system_name == systems_worlds_relations.system_name
+    INNER JOIN worlds ON systems_worlds_relations.world_name == worlds.world_name
+    WHERE worlds.world_name == '{world_name}'
+    """))[0][0]  # [0][0] нужно, чтобы извлечь название системы из кортежа с кортежами
+
+    return selected_system
+
+
+def form_string_answer(access_list: list) -> str:
+    """
+    Данная функция принимает список из списков и на их основе, с помощью шаблонизатора, формирует строковый ответ    
+    :param access_list: список со списками, вложенный список которого, представляет собой 
+    [0] - название системы
+    [1] - уровень доступа
+    [2] - родительская система
     :return: строковый ответ бота
     """
+    # Сообщение, которое выводится 1 раз в начале строки ответа бота
     message = 'Уровень доступа на мирах'
 
     # world[0] выводит название мира, а world[1] уровень доступа, от 1 до 3
     answer_access_temp = Template('''
     {{ message }}:
     {% for world in sys_tuple %}
-        {{ '{} - доступ {}'.format(world[0], world[1]) }}
+        {{ '{} - доступ {}. Родительская система: {}'.format(world[0], world[1], world[2]) }}
     {% endfor %}
     ''')
 
-    answer_render_access = answer_access_temp.render(sys_tuple=sys_tuple, message=message)
+    answer_render_access = answer_access_temp.render(sys_tuple=access_list, message=message)
     return answer_render_access
