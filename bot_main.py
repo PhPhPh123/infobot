@@ -237,6 +237,21 @@ async def artifact(ctx: discord.ext.commands.context.Context,
     await ctx.send(bot_answer)
 
 
+@infobot.event
+async def on_voice_state_update(member, before, after):
+    # присоединение к каналу
+    if before.channel is None and after.channel is not None:
+        print('1', member.id)
+
+    # покинул канал
+    elif before.channel is not None and after.channel is None:
+        print('2', member.id)
+
+    # перешел в другой канал
+    elif before.channel is not None and after.channel is not None:
+        print('3', member.id)
+
+
 if __name__ == '__main__':
     session = connect_to_db_sqlalchemy()
 
