@@ -55,11 +55,13 @@ def count_grade_modifier(grade):
 class Artifact:
     def __init__(self, grade_modifier, cursor):
         self.cursor = cursor
-        self.name = 'Артефакт'
+        self.name = None
+        self.art_type = None
+        self.group_name = None
         self.weight = 1
         self.unique_prefix = self.get_prefix()
         self.unique_suffix = ''
-        self.stat_requeriments = 'Требования отсутствуют'
+        self.str_requeriments = None
         self.gear_score = grade_modifier
 
     def get_random_type_of_artifact(self, table_name, artifact_group):
@@ -92,10 +94,22 @@ LIMIT 1'''))
         self.name = f'{prefix[0][0]} {art_type} {suffix[0][0]}'
 
     def get_weight(self):
-        print(self.__dict__)
+        art_weight = tuple(self.cursor.execute(f'''
+SELECT art_weight FROM {self.group_name}
+WHERE art_type_name == '{self.art_type}'
+'''))[0][0]
+        random_mod = random.uniform(1, 1.2)
+        self.weight = int(art_weight * (1 - (self.gear_score - 1)) * random_mod)
 
     def get_requiriments(self):
-        pass
+        art_reqs = tuple(self.cursor.execute(f'''
+SELECT art_str_req FROM {self.group_name}
+WHERE art_type_name == '{self.art_type}'
+'''))[0][0]
+        luck_mod = random.randint(0, 100)
+        if luck_mod >= 90:
+            art_reqs += 1
+        self.str_requeriments = art_reqs
 
 
 class Weapon(Artifact):
@@ -120,11 +134,11 @@ WHERE art_type_name == '{weapon_type}'
     def get_penetration(self, weapon_type):
         luck = random.randint(1, 100)
 
-        if weapon_type in ('мельтаган', 'мельтапистолет',
+        if weapon_type in ('мельтаган', 'мельта-пистолет',
                            'одноручный-силовой-меч', 'двуручный-силовой-меч'):
             self.penetration = 'Игнор ВУ'
         elif weapon_type in ('плазмаган', 'плазма-пистолет') or luck <= 3:
-            if weapon_type not in ('лазган', 'лазпистолет'):
+            if weapon_type not in ('лазган', 'лаз-пистолет'):
                 self.penetration = 'Игнор половины ВУ'
         else:
             self.penetration = 'Пробитие отсутствует'
@@ -153,6 +167,8 @@ class Armor(Artifact):
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.armor = self.get_armor(self.art_type, grade_modifier)
+        self.get_weight()
+        self.get_requiriments()
 
     def get_armor(self, armor_type, grade_modifier):
         base_armor = tuple(self.cursor.execute(f'''
@@ -180,6 +196,8 @@ class Jewerly(Artifact):
                                                                                                        'бижутерия')
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
+        self.get_weight()
+        self.get_requiriments()
 
     def get_jewelry_bonus(self):
         pass
@@ -200,6 +218,7 @@ class RangeWeapon(Weapon):
         self.attack_speed = self.get_attack_speed()
         self.range = self.get_range()
         self.get_weight()
+        self.get_requiriments()
 
     def get_range(self):
 
@@ -254,6 +273,8 @@ class CloseCombatWeapon(Weapon):
         self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
         self.penetration = self.get_penetration(weapon_type)
         self.prescision_modifier = self.get_prescision(self.group_name, self.art_type)
+        self.get_weight()
+        self.get_requiriments()
 
     def get_parry_bonus(self):
         pass
