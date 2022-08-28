@@ -1,8 +1,6 @@
 """
 
 """
-import random
-
 from settings_and_imports import *
 
 
@@ -80,6 +78,7 @@ LIMIT 1'''))
         return prefix_tuple
 
     def get_suffix(self, art_group, art_type):
+        print(art_group, art_type)
         suffix_tuple = tuple(self.cursor.execute(f'''
 SELECT unique_suffix.effect_name, unique_suffix.effect_text 
 FROM unique_suffix
@@ -91,6 +90,7 @@ LIMIT 1'''))
         return suffix_tuple
 
     def get_name(self, prefix, art_type, suffix):
+        print(prefix, art_type, suffix)
         self.name = f'{prefix[0][0]} {art_type} {suffix[0][0]}'
 
     def get_weight(self):
