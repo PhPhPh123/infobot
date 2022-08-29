@@ -1,6 +1,8 @@
 """
 
 """
+import random
+
 from settings_and_imports import *
 
 
@@ -191,16 +193,20 @@ class Jewerly(Artifact):
     def __init__(self, grade_modifier, jewelry_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.group_name = 'artifact_jewelry'
-        self.jewerly_bonus = 'Отсутствует'
         self.art_type = jewelry_type if jewelry_type != 'random' else self.get_random_type_of_artifact(self.group_name,
                                                                                                        'бижутерия')
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
+        self.jewerly_bonus = self.get_jewelry_bonus()
         self.get_weight()
         self.get_requiriments()
 
     def get_jewelry_bonus(self):
-        pass
+        jewerly_bonus = tuple(self.cursor.execute(f'''
+                SELECT * FROM unique_jewerly_bonuses
+                ORDER BY RANDOM()
+                LIMIT 1'''))[0]
+        return jewerly_bonus
 
 
 class RangeWeapon(Weapon):
@@ -265,7 +271,6 @@ class CloseCombatWeapon(Weapon):
     def __init__(self, grade_modifier, weapon_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.group_name = 'artifact_close_combat'
-        self.parry_bonus = 0
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name,
                                                                                                      'оружие-бб')
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
@@ -273,8 +278,20 @@ class CloseCombatWeapon(Weapon):
         self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
         self.penetration = self.get_penetration(weapon_type)
         self.prescision_modifier = self.get_prescision(self.group_name, self.art_type)
+        self.parry_modifier = self.get_parry_bonus()
         self.get_weight()
         self.get_requiriments()
 
-    def get_parry_bonus(self):
-        pass
+    @staticmethod
+    def get_parry_bonus():
+        luck_modifier = random.randint(1, 100)
+        parry_modifier = 0
+
+        if luck_modifier <= 5:
+            parry_modifier = 2
+        elif 6 <= luck_modifier <= 10:
+            parry_modifier = 1
+        elif luck_modifier >= 90:
+            parry_modifier = -1
+
+        return parry_modifier
