@@ -53,7 +53,7 @@ def form_query(world_name: str, deal_name: str, margin: float = 1.0) -> str:
 
     # В запросах используется метод format, чтобы создать темплейт на основе строк, хранимых в словарях
     # в модуле sql_queries. Методом добавляется значение наценки(margin) и строчка for_format нужная для шаблонизатора.
-    # операторами if/elif выбираются разные тексты запросов, поэтому между ними идет выбор на основе
+    # Операторами if/elif выбираются разные тексты запросов, поэтому между ними идет выбор на основе
     # переменной deal_name, указывающей тип команды.
     if deal_name == "import":
         template_for_select = Template(sql_queries.import_and_export_query_dict['import'].format(margin, for_format))

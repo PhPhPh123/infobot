@@ -14,6 +14,7 @@ from jinja2 import Template
 from discord.ext import commands, tasks
 from sqlalchemy.orm import mapper, sessionmaker
 from dotenv import load_dotenv, find_dotenv
+import matplotlib.pyplot as plt
 
 
 def get_script_dir() -> str:

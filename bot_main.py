@@ -13,6 +13,7 @@ import user_info.bot_user_info_systems
 import user_info.bot_user_access
 import user_info.bot_import_and_export
 import user_info.bot_user_info_goods
+import user_info.bot_goods_plot_pie
 import news.bot_news_main
 import craft.creation_artifact
 from minor_commands import roll_module
@@ -236,6 +237,13 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 
     bot_answer = craft.creation_artifact.choise_class_objects(param_dict, db_cursor)
     await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def goodspie(ctx: discord.ext.commands.context.Context):
+
+    user_info.bot_goods_plot_pie.choise_export_or_import(db_cursor)
+    await ctx.send(file=discord.File('anwer_pie.png'))
 
 
 @infobot.event
