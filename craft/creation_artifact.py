@@ -80,7 +80,6 @@ LIMIT 1'''))
         return prefix_tuple
 
     def get_suffix(self, art_group, art_type):
-        print(art_group, art_type)
         suffix_tuple = tuple(self.cursor.execute(f'''
 SELECT unique_suffix.effect_name, unique_suffix.effect_text 
 FROM unique_suffix
@@ -123,7 +122,7 @@ class Weapon(Artifact):
 
     def get_damage(self, weapon_group, weapon_type, grade_modifier):
         random_modifier = random.uniform(0.9, 1.1)
-
+        print(weapon_group, weapon_type, grade_modifier)
         base_damage = tuple(self.cursor.execute(f'''
 SELECT art_damage FROM {weapon_group}
 WHERE art_type_name == '{weapon_type}'
@@ -162,20 +161,20 @@ class Armor(Artifact):
     def __init__(self, grade_modifier, armor_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.group_name = 'artifact_armor'
-        self.speed_modifier = 0
         self.evasion_modifier = 0
         self.art_type = armor_type if armor_type != 'random' else self.get_random_type_of_artifact(self.group_name,
                                                                                                    'броня')
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
-        self.armor = self.get_armor(self.art_type, grade_modifier)
+        self.armor = self.get_armor(grade_modifier)
+        self.speed_modifier =  self.get_speed_bonus()
         self.get_weight()
         self.get_requiriments()
 
-    def get_armor(self, armor_type, grade_modifier):
+    def get_armor(self, grade_modifier):
         base_armor = tuple(self.cursor.execute(f'''
 SELECT art_armor FROM artifact_armor
-WHERE art_type_name == '{armor_type}'
+WHERE art_type_name == '{self.art_type}'
         '''))[0][0]
 
         final_armor = int(base_armor * grade_modifier)
@@ -183,10 +182,26 @@ WHERE art_type_name == '{armor_type}'
         return final_armor
 
     def get_speed_bonus(self):
-        pass
+        base_speed_mod = tuple(self.cursor.execute(f'''
+        SELECT art_speed FROM artifact_armor
+        WHERE art_type_name == '{self.art_type}'
+                '''))[0][0]
+        random_mod = 1 if random.randint(0, 100) <= 5 else 0
+
+        final_speed_mod = base_speed_mod + random_mod
+
+        return final_speed_mod
 
     def get_evasion(self):
-        pass
+        base_evation = tuple(self.cursor.execute(f'''
+        SELECT art_evasion FROM artifact_armor
+        WHERE art_type_name == '{self.art_type}'
+                '''))[0][0]
+        random_mod = 1 if random.randint(0, 100) <= 5 else 0
+
+        final_speed_mod = base_evation + random_mod
+
+        return final_speed_mod
 
 
 class Jewerly(Artifact):
@@ -282,10 +297,14 @@ class CloseCombatWeapon(Weapon):
         self.get_weight()
         self.get_requiriments()
 
-    @staticmethod
-    def get_parry_bonus():
+    def get_parry_bonus(self):
         luck_modifier = random.randint(1, 100)
         parry_modifier = 0
+
+        art_parry = tuple(self.cursor.execute(f'''
+                    SELECT art_parry_bonus FROM artifact_close_combat
+                    WHERE art_type_name == '{self.art_type}'
+'''))[0][0]
 
         if luck_modifier <= 5:
             parry_modifier = 2
@@ -294,4 +313,4 @@ class CloseCombatWeapon(Weapon):
         elif luck_modifier >= 90:
             parry_modifier = -1
 
-        return parry_modifier
+        return parry_modifier + art_parry

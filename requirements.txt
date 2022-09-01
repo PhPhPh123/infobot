@@ -2,3 +2,4 @@ discord~=1.7.3
 sqlalchemy
 Jinja2~=3.1.2
 python-dotenv~=0.20.0
+matplotlib
