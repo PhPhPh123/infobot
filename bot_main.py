@@ -242,7 +242,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 @infobot.command()
 async def goodspie(ctx: discord.ext.commands.context.Context):
 
-    user_info.bot_goods_plot_pie.choise_export_or_import(db_cursor)
+    user_info.bot_goods_plot_pie.to_control_other_functions(db_cursor)
     await ctx.send(file=discord.File('anwer_pie.png'))
 
 

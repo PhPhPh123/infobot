@@ -1,8 +1,6 @@
 """
 
 """
-import random
-
 from settings_and_imports import *
 
 
