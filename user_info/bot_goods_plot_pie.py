@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from settings_and_imports import *
 
 
@@ -74,4 +72,4 @@ def form_pie_plot(goods_list_export, counts_world_list_export,
 
     ax1.pie(counts_world_list_export, labels=goods_list_export)
     ax2.pie(counts_world_list_import, labels=goods_list_import)
-    plt.savefig('anwer_pie.png')
+    plt.savefig('answer_pie.png')

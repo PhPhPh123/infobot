@@ -1,6 +1,7 @@
 """
 
 """
+
 from settings_and_imports import *
 
 
@@ -28,7 +29,7 @@ def choise_class_objects(art_user_dict, cursor):
     else:
         'Некорректный запрос'
 
-    final_string = art_object.__dict__
+    final_string = form_string_answer(art_object.__dict__)
 
     return final_string
 
@@ -48,6 +49,42 @@ def count_grade_modifier(grade):
     luck_mod = random.uniform(0.9, 1.1)
 
     return grade_modifier * luck_mod
+
+
+def form_string_answer(artifact_dict):
+    final_string = ''
+
+    final_string += f"{artifact_dict['name'].capitalize()}\n"
+
+    if artifact_dict['group_name'] in ('artifact_close_combat', 'artifact_range_weapon'):
+        final_string += f"Урон: {artifact_dict['damage'] // 6}d6 + {artifact_dict['damage'] % 6}\n"
+        final_string += f"Точность: {artifact_dict['prescision_modifier']}\n"
+        final_string += f"Пробитие ВУ: {artifact_dict['penetration']}\n"
+
+        if artifact_dict['group_name'] == 'artifact_range_weapon':
+            final_string += f"Дистанция: {artifact_dict['range']}\n"
+            final_string += f"Скорость стрельбы: {artifact_dict['attack_speed']}\n"
+
+        if artifact_dict['group_name'] == 'artifact_close_combat':
+            final_string += f"Модификатор парирования: {artifact_dict['parry_modifier']}\n"
+
+    if artifact_dict['group_name'] == 'artifact_armor':
+        final_string += f"ВУ: {artifact_dict['armor']}\n"
+        final_string += f"Модификатор уворота: {artifact_dict['evasion_modifier']}\n"
+        final_string += f"Модификатор скорости: {artifact_dict['speed_modifier']}\n"
+
+    if artifact_dict['group_name'] == 'artifact_jewelry':
+        final_string += f"Бонус бижутерии: {artifact_dict['jewerly_bonus'][0]}\n"
+        final_string += f"Описание бонуса: {artifact_dict['jewerly_bonus'][1]}\n"
+
+    final_string += f"Требования силы: {artifact_dict['str_requeriments']}\n"
+    final_string += f"Вес: {artifact_dict['weight']}\n"
+
+    final_string += f"Особенность: 1 раз в сессию удача для навыка {artifact_dict['unique_prefix'][0][1]}\n"
+    final_string += f"Особенность: {artifact_dict['unique_suffix'][0][1]}"
+    pprint(artifact_dict)
+
+    return final_string
 
 
 class Artifact:
@@ -89,7 +126,6 @@ LIMIT 1'''))
         return suffix_tuple
 
     def get_name(self, prefix, art_type, suffix):
-        print(prefix, art_type, suffix)
         self.name = f'{prefix[0][0]} {art_type} {suffix[0][0]}'
 
     def get_weight(self):
@@ -120,7 +156,6 @@ class Weapon(Artifact):
 
     def get_damage(self, weapon_group, weapon_type, grade_modifier):
         random_modifier = random.uniform(0.9, 1.1)
-        print(weapon_group, weapon_type, grade_modifier)
         base_damage = tuple(self.cursor.execute(f'''
 SELECT art_damage FROM {weapon_group}
 WHERE art_type_name == '{weapon_type}'
@@ -159,13 +194,13 @@ class Armor(Artifact):
     def __init__(self, grade_modifier, armor_type, cursor):
         super().__init__(grade_modifier, cursor)
         self.group_name = 'artifact_armor'
-        self.evasion_modifier = 0
         self.art_type = armor_type if armor_type != 'random' else self.get_random_type_of_artifact(self.group_name,
                                                                                                    'броня')
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.armor = self.get_armor(grade_modifier)
-        self.speed_modifier =  self.get_speed_bonus()
+        self.speed_modifier = self.get_speed_bonus()
+        self.evasion_modifier = self.get_evasion()
         self.get_weight()
         self.get_requiriments()
 
@@ -191,13 +226,14 @@ WHERE art_type_name == '{self.art_type}'
         return final_speed_mod
 
     def get_evasion(self):
-        base_evation = tuple(self.cursor.execute(f'''
+        print(self.art_type)
+        base_evasion = tuple(self.cursor.execute(f'''
         SELECT art_evasion FROM artifact_armor
         WHERE art_type_name == '{self.art_type}'
                 '''))[0][0]
         random_mod = 1 if random.randint(0, 100) <= 5 else 0
 
-        final_speed_mod = base_evation + random_mod
+        final_speed_mod = base_evasion + random_mod
 
         return final_speed_mod
 
@@ -312,3 +348,5 @@ class CloseCombatWeapon(Weapon):
             parry_modifier = -1
 
         return parry_modifier + art_parry
+
+
