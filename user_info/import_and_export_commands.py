@@ -56,9 +56,9 @@ def form_query(world_name: str, deal_name: str, margin: float = 1.0) -> str:
     # Операторами if/elif выбираются разные тексты запросов, поэтому между ними идет выбор на основе
     # переменной deal_name, указывающей тип команды.
     if deal_name == "import":
-        template_for_select = Template(sql_queries.import_and_export_query_dict['import'].format(margin, for_format))
+        template_for_select = Template(sql_queries.import_and_export_query_dict['import'].format(for_format))
     elif deal_name == 'export':
-        template_for_select = Template(sql_queries.import_and_export_query_dict['export'].format(margin, for_format))
+        template_for_select = Template(sql_queries.import_and_export_query_dict['export'].format(for_format))
 
     query_string = template_for_select.render(world_name=world_name, margin=margin)
     return query_string

@@ -8,12 +8,12 @@
 from settings_and_imports import *
 
 import static_answer_messages
-import user_info.bot_user_info_world
-import user_info.bot_user_info_systems
-import user_info.bot_user_access
-import user_info.bot_import_and_export
-import user_info.bot_user_info_goods
-import user_info.bot_goods_plot_pie
+import user_info.infoworld_command
+import user_info.infosystem_command
+import user_info.info_access_command
+import user_info.import_and_export_commands
+import user_info.infoexportgoods_command
+import user_info.goodspie_command
 import news.bot_news_main
 import craft.creation_artifact
 from minor_commands import roll_module
@@ -60,7 +60,7 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
     global db_cursor
-    bot_answer = user_info.bot_user_info_world.to_control_other_functions_and_returns_bot_answer(db_cursor, world_name)
+    bot_answer = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(db_cursor, world_name)
     await ctx.send(bot_answer)
 
 
@@ -73,7 +73,7 @@ async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor
-    bot_answer = user_info.bot_user_info_systems.db_select_systems(db_cursor, system_name)
+    bot_answer = user_info.infosystem_command.db_select_systems(db_cursor, system_name)
     await ctx.send(bot_answer)
 
 
@@ -112,7 +112,7 @@ async def infoexport(ctx: discord.ext.commands.context.Context, world_name: str)
     """
     global db_cursor
     deal_name = 'export'
-    bot_answer = user_info.bot_import_and_export.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
+    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -127,7 +127,7 @@ async def infoimport(ctx: discord.ext.commands.context.Context, world_name: str)
     """
     global db_cursor
     deal_name = 'import'
-    bot_answer = user_info.bot_import_and_export.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
+    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -139,7 +139,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     global db_cursor, alch_connect, alch_world
-    bot_answer = user_info.bot_user_access.form_tuple_in_db(alch_connect, alch_world, db_cursor)
+    bot_answer = user_info.info_access_command.form_tuple_in_db(alch_connect, alch_world, db_cursor)
     await ctx.send(bot_answer)
 
 
@@ -164,8 +164,8 @@ async def infoimportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     """
     global db_cursor
     deal_name = 'import'
-    bot_answer = user_info.bot_user_info_goods.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
-    await ctx.send(bot_answer)
+    bot_answer = user_info.infoexportgoods_command.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
+    await ctx.send(file=discord.File('info_export_import_goods.png'))
 
 
 @infobot.command()
@@ -178,8 +178,8 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     """
     global db_cursor
     deal_name = 'export'
-    bot_answer = user_info.bot_user_info_goods.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
-    await ctx.send(bot_answer)
+    bot_answer = user_info.infoexportgoods_command.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
+    await ctx.send(file=discord.File('info_export_import_goods.png'))
 
 
 @tasks.loop(minutes=30)
@@ -242,7 +242,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 @infobot.command()
 async def goodspie(ctx: discord.ext.commands.context.Context):
 
-    user_info.bot_goods_plot_pie.to_control_other_functions(db_cursor)
+    user_info.goodspie_command.to_control_other_functions(db_cursor)
     await ctx.send(file=discord.File('answer_pie.png'))
 
 
