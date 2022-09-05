@@ -9,6 +9,7 @@ import random
 import os
 import discord.ext.commands.context
 
+from typing import Optional
 from pprint import pprint
 from abc import abstractmethod, ABC
 from jinja2 import Template
