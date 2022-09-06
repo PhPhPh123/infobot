@@ -2,7 +2,7 @@
     Данный модуль формирует новости, связанные с повышением уровня доступа в случайном мире и возвращает строку
     в управляющий модуль bot_news_main
 """
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 
 def control_other_func(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:

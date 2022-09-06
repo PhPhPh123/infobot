@@ -1,7 +1,7 @@
 """
     Данный модуль осуществляет ролл кубиков
 """
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 
 def roll_func(dice_string: str) -> str:

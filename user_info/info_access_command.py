@@ -3,7 +3,7 @@
     строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
     Вывод выглядит в формате перечисления названий миров
 """
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 
 def form_tuple_in_db(alch_connect, alch_worlds, cursor) -> str:

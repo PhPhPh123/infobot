@@ -3,7 +3,7 @@
     на модули и функции, формирующие сообщения
 """
 
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 from news import bot_news_access, bot_news_static_info, bot_news_enemies
 
 

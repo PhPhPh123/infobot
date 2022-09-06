@@ -5,7 +5,7 @@
     кортежей и формированию на их основе готового строкового ответа. Текст SQL-запроса берется из модуля sql_queries
 """
 
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 from user_info import sql_queries
 
 

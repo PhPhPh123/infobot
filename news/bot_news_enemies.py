@@ -2,7 +2,7 @@
     Данный модуль формирует новости связанные с наличием врагов в случайных системах, существующих в игровом мире
     и базе данных и возвращает результат в модуль bot_news_main
 """
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 
 def form_tuple_from_db(curs: sqlite3.Cursor) -> str:

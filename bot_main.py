@@ -5,7 +5,7 @@
 Все необходимые модули импортируются включая модуль с настройками
 """
 
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 import static_answer_messages
 import user_info.infoworld_command
@@ -15,25 +15,12 @@ import user_info.import_and_export_commands
 import user_info.infoexportgoods_command
 import user_info.goodspie_command
 import news.bot_news_main
-import craft.creation_artifact
+import craft.main_artifact_builder
 from minor_commands import roll_module
 
 intents = discord.Intents.all()
 intents.members = True
 infobot = commands.Bot(command_prefix=settings['prefix'], intents=intents)  # Экземпляр класса бота
-
-
-def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
-    настроек
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_script_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    cursor = connect.cursor()  # Создание курсора
-    return cursor, connect
 
 
 def connect_to_db_sqlalchemy():
@@ -235,14 +222,14 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'тип': type_art.lower(),
                   'особенность': unique_bonus.lower()}
 
-    bot_answer = craft.creation_artifact.choise_class_objects(param_dict, db_cursor)
+    bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict, db_cursor)
     await ctx.send(bot_answer)
 
 
 @infobot.command()
 async def goodspie(ctx: discord.ext.commands.context.Context):
 
-    user_info.goodspie_command.to_control_other_functions(db_cursor)
+    user_info.goodspie_command.to_control_other_functions()
     await ctx.send(file=discord.File('answer_pie.png'))
 
 

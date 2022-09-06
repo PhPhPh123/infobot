@@ -3,7 +3,7 @@
     строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
     Вывод выглядит в формате перечисления названий миров, покупающих или продающих данный товар
 """
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 import user_info.sql_queries
 
 

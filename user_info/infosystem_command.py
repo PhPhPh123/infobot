@@ -4,7 +4,7 @@
     доступа в базу данных, формированию строки запросов по нескольким пунктам через шаблонизатор, получения из БД
     кортежей и формированию на их основе готового строкового ответа. Текст SQL-запроса берется из модуля sql_queries
 """
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 
 def db_select_systems(curs: sqlite3.Cursor, system_name: str) -> str:

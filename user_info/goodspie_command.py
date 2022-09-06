@@ -1,14 +1,14 @@
-from settings_and_imports import *
+from settings_imports_globalVariables import *
 
 
-def to_control_other_functions(cursor) -> None:
+def to_control_other_functions() -> None:
     export_goods_str_for_query, export_base_prices_str_for_query = form_sql_query('export')
     import_goods_str_for_query, import_base_prices_str_for_query = form_sql_query('import')
 
     export_tuple_goods, export_tuple_prices = sql_query(export_goods_str_for_query,
-                                                        export_base_prices_str_for_query, cursor)
+                                                        export_base_prices_str_for_query)
     import_tuple_goods, import_tuple_prices = sql_query(import_goods_str_for_query,
-                                                        import_base_prices_str_for_query, cursor)
+                                                        import_base_prices_str_for_query)
 
     goods_list_export, counts_worlds_with_this_good_export = form_lists_for_labels(export_tuple_goods,
                                                                                    export_tuple_prices)
@@ -37,9 +37,13 @@ def form_sql_query(deal_name: str) -> tuple:
     return goods_name_str, goods_price_str
 
 
-def sql_query(goods_str, prices_str, cursor):
-    goods_tuple = tuple(cursor.execute(goods_str))
-    prices_tuple = tuple(cursor.execute(prices_str))
+def sql_query(goods_str, prices_str):
+    """
+    Данная функция использует ГЛОБАЛЬНУЮ МЕЖМОДУЛЬНУЮ переменную bd_sqlite3_cursor для доступа в базу данных и
+    осуществляет в нее экзекьют получая необходимые кортежи
+    """
+    goods_tuple = tuple(bd_sqlite3_cursor.execute(goods_str))
+    prices_tuple = tuple(bd_sqlite3_cursor.execute(prices_str))
     return goods_tuple, prices_tuple
 
 
