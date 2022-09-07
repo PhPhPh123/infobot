@@ -7,14 +7,30 @@
 from settings_imports_globalVariables import *
 
 
-def db_select_systems(curs: sqlite3.Cursor, system_name: str) -> str:
-    select_systems = select_form_systems(system_name)
-    system_tuple = tuple(curs.execute(select_systems))
-    system_ans = str_form_systems(system_tuple)
+def to_control_other_functions_and_returns_bot_answer(system_name: str) -> str:
+    """
+    Данная функция осуществляет экзекьют в базу данных используя МЕЖМОДУЛЬНУЮ ГЛОБАЛЬНУЮ
+    переменную курсора bd_sqlite3_cursor
+    :param system_name: название системы
+    :return: готовая строка для ответа со строкой, перечисляющей список миров в системе
+    """
+    # Формирование строки для запроса в БД
+    select_systems = form_query_to_db(system_name)
+
+    # Получение кортежа с данными
+    system_tuple = tuple(bd_sqlite3_cursor.execute(select_systems))
+
+    # Формирование строкового ответа для бота
+    system_ans = form_string_answer(system_tuple)
     return system_ans
 
 
-def select_form_systems(select_form_systems_name: str) -> str:
+def form_query_to_db(select_form_systems_name: str) -> str:
+    """
+    Данная функция формирует строковый заброс в БД используя шаблорнизатор
+    :param select_form_systems_name: название системы
+    :return: строка для запроса в БД
+    """
     select_temp_systems = Template('''
     SELECT worlds.world_name FROM worlds
     INNER JOIN systems_worlds_relations ON worlds.world_name == systems_worlds_relations.world_name
@@ -25,7 +41,13 @@ def select_form_systems(select_form_systems_name: str) -> str:
     return select_render_systems
 
 
-def str_form_systems(sys_tuple: tuple) -> str:
+def form_string_answer(sys_tuple: tuple) -> str:
+    """
+    Данная функция формирует итоговую строку для ответа ботом
+    :param sys_tuple: кортеж с кортежами по результатам работы БД
+    :return: строка для ответа ботом
+    """
+    # Посколько это кортеж с кортежами, то извлекаем в цикле значение по нулевому индексу
     answer_systems_temp = Template('''
     Миры внутри системы:
     {% for world in sys_tuple %}
@@ -34,6 +56,7 @@ def str_form_systems(sys_tuple: tuple) -> str:
     ''')
 
     answer_render_systems = answer_systems_temp.render(sys_tuple=sys_tuple)
-    if not sys_tuple:
+
+    if not sys_tuple:  # Если названия системы не существует то отправляем в чат сообщение об ошибки написания
         answer_render_systems = 'Некорректное название системы'
     return answer_render_systems

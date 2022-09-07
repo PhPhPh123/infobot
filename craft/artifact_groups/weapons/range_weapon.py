@@ -7,11 +7,13 @@ from craft.artifact_groups.weapons.base_weapons import Weapon
 
 
 class RangeWeapon(Weapon):
-    def __init__(self, grade_modifier, weapon_type, cursor):
-        super().__init__(grade_modifier, cursor)
+    """
+    Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
+    """
+    def __init__(self, grade_modifier, weapon_type):
+        super().__init__(grade_modifier)
         self.group_name = 'artifact_range_weapon'
-        self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name,
-                                                                                                     'оружие-дб')
+        self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name)
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
@@ -25,7 +27,7 @@ class RangeWeapon(Weapon):
 
     def get_range(self):
 
-        base_range = tuple(self.cursor.execute(f'''
+        base_range = tuple(bd_sqlite3_cursor.execute(f'''
                 SELECT art_range FROM artifact_range_weapon
                 WHERE art_type_name == '{self.art_type}'
                         '''))[0][0]
@@ -43,7 +45,7 @@ class RangeWeapon(Weapon):
 
     def get_attack_speed(self):
 
-        base_attack_speed = tuple(self.cursor.execute(f'''
+        base_attack_speed = tuple(bd_sqlite3_cursor.execute(f'''
                 SELECT art_attack_speed FROM artifact_range_weapon
                 WHERE art_type_name == '{self.art_type}'
                 '''))[0][0]

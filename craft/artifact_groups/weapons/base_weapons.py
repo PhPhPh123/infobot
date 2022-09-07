@@ -6,15 +6,19 @@ from craft.base_artifact import Artifact
 
 
 class Weapon(Artifact):
-    def __init__(self, grade_modifier, cursor):
-        super().__init__(grade_modifier, cursor)
+    """
+    Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
+    """
+    def __init__(self, grade_modifier):
+        super().__init__(grade_modifier)
         self.damage = 18
         self.penetration = 'Отсутствует'
         self.prescision_modifier = 0
 
-    def get_damage(self, weapon_group, weapon_type, grade_modifier):
+    @staticmethod
+    def get_damage(weapon_group, weapon_type, grade_modifier):
         random_modifier = random.uniform(0.9, 1.1)
-        base_damage = tuple(self.cursor.execute(f'''
+        base_damage = tuple(bd_sqlite3_cursor.execute(f'''
 SELECT art_damage FROM {weapon_group}
 WHERE art_type_name == '{weapon_type}'
         '''))[0][0]
@@ -36,10 +40,11 @@ WHERE art_type_name == '{weapon_type}'
             self.penetration = 'Пробитие отсутствует'
         return self.penetration
 
-    def get_prescision(self, weapon_group, weapon_type):
+    @staticmethod
+    def get_prescision(weapon_group, weapon_type):
         luck = random.randint(1, 100)
 
-        base_prescision = tuple(self.cursor.execute(f'''
+        base_prescision = tuple(bd_sqlite3_cursor.execute(f'''
         SELECT art_prescision FROM {weapon_group}
         WHERE art_type_name == '{weapon_type}'
                 '''))[0][0]

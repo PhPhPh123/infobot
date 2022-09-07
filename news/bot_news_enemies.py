@@ -5,11 +5,11 @@
 from settings_imports_globalVariables import *
 
 
-def form_tuple_from_db(curs: sqlite3.Cursor) -> str:
+def form_tuple_from_db() -> str:
     """
     Данная функция отправляет строку sql-запроса делает экзекьют и формирует кортеж, который отправляет в
     нижестоящую фукнцию и после ее работы возвращает ответ боту в модуль bot_main
-    :param curs: объект курсора
+    Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     :return: строка ответа боту
     """
     #  В селекте я выбираю название мира и название группы(вида) врагов, джойню таблицы worlds и enemies связью многие
@@ -23,7 +23,7 @@ def form_tuple_from_db(curs: sqlite3.Cursor) -> str:
     LIMIT 1
     '''
 
-    enemy_news_tuple = tuple(curs.execute(select_enemy_string))
+    enemy_news_tuple = tuple(bd_sqlite3_cursor.execute(select_enemy_string))
     str_enemy_news = form_string_answer(enemy_news_tuple)
 
     return str_enemy_news

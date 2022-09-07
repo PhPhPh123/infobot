@@ -18,6 +18,7 @@ import news.bot_news_main
 import craft.main_artifact_builder
 from minor_commands import roll_module
 
+
 intents = discord.Intents.all()
 intents.members = True
 infobot = commands.Bot(command_prefix=settings['prefix'], intents=intents)  # Экземпляр класса бота
@@ -46,8 +47,7 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     :param world_name: название запрашиваемого мира
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
-    global db_cursor
-    bot_answer = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(db_cursor, world_name)
+    bot_answer = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name)
     await ctx.send(bot_answer)
 
 
@@ -59,8 +59,7 @@ async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str
     :param system_name: название запрашиваемой системы
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor
-    bot_answer = user_info.infosystem_command.db_select_systems(db_cursor, system_name)
+    bot_answer = user_info.infosystem_command.to_control_other_functions_and_returns_bot_answer(system_name)
     await ctx.send(bot_answer)
 
 
@@ -99,7 +98,7 @@ async def infoexport(ctx: discord.ext.commands.context.Context, world_name: str)
     """
     global db_cursor
     deal_name = 'export'
-    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
+    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -112,9 +111,8 @@ async def infoimport(ctx: discord.ext.commands.context.Context, world_name: str)
     :param world_name: название запрашиваемого мира
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor
     deal_name = 'import'
-    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(db_cursor, world_name, deal_name)
+    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -125,8 +123,8 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor, alch_connect, alch_world
-    bot_answer = user_info.info_access_command.form_tuple_in_db(alch_connect, alch_world, db_cursor)
+    global alch_connect, alch_world
+    bot_answer = user_info.info_access_command.form_tuple_in_db(alch_connect, alch_world)
     await ctx.send(bot_answer)
 
 
@@ -149,9 +147,8 @@ async def infoimportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     :param goods_name: название товара
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor
     deal_name = 'import'
-    bot_answer = user_info.infoexportgoods_command.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
+    user_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
     await ctx.send(file=discord.File('info_export_import_goods.png'))
 
 
@@ -163,9 +160,8 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     :param goods_name: название товара
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor
     deal_name = 'export'
-    bot_answer = user_info.infoexportgoods_command.choise_deal_and_execute_in_db(db_cursor, goods_name, deal_name)
+    user_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
     await ctx.send(file=discord.File('info_export_import_goods.png'))
 
 
@@ -177,8 +173,7 @@ async def news_send(channel: discord.channel.TextChannel):
     :param channel: стандартный аргумент библиотеки
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor, db_connect
-    chosen_news = news.bot_news_main.choise_random_news(db_cursor, db_connect)
+    chosen_news = news.bot_news_main.choise_random_news()
 
     await channel.send(chosen_news)
 
@@ -222,7 +217,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'тип': type_art.lower(),
                   'особенность': unique_bonus.lower()}
 
-    bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict, db_cursor)
+    bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict)
     await ctx.send(bot_answer)
 
 
@@ -251,7 +246,6 @@ async def on_voice_state_update(member, before, after):
 if __name__ == '__main__':
     session = connect_to_db_sqlalchemy()
 
-    db_cursor, db_connect = connect_to_db_sqlite3()
     alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()
 
     infobot.run(settings['token'])

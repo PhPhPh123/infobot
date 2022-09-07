@@ -9,14 +9,14 @@ from settings_imports_globalVariables import *
 from user_info import sql_queries
 
 
-def choice_deal_and_returns_bot_answer(curs: sqlite3.Cursor, world_name: str, deal_name: str) -> str:
+def choice_deal_and_returns_bot_answer(world_name: str, deal_name: str) -> str:
     """
     Функция осуществляет контроль основых операций для получения итоговой строки которую отдает в модуль bot_main
-    для исполнения функцией и выдачей ответа ботом:
+    для исполнения функцией и выдачей ответа ботом. Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ
+    переменная:
     1 этап: получает строку для sql-запроса в БД через функцию form_query
     2 этап: с помощью экзекьюта в БД через курсор получает результат их работы в виде кортежа
     3 этап: получает итоговую строку с помощью функции form_string
-    :param curs: объект класса Cursor
     :param world_name: название мира
     :param deal_name: название текущей сделки, import или export
     :return: итоговый ответ для бота
@@ -30,7 +30,7 @@ def choice_deal_and_returns_bot_answer(curs: sqlite3.Cursor, world_name: str, de
         select_systems = form_query(world_name, deal_name)
 
     # 2 этап
-    world_tuple = tuple(curs.execute(select_systems))
+    world_tuple = tuple(bd_sqlite3_cursor.execute(select_systems))
 
     # 3 этап
     trade_answer = form_string(world_tuple, deal_name)

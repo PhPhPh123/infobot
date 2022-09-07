@@ -8,10 +8,10 @@
 from settings_imports_globalVariables import *
 
 
-def form_subsector_news(curs: sqlite3.Cursor) -> str:
+def form_subsector_news() -> str:
     """
     Данная функция обрабатывает новости касательно крупных субсекторных событий или сюжетных поворотов
-    :param curs: объект курсора
+    Объект курсора bd_sqlite3_cursor и объект коннекта bd_sqlite3_connect это МЕЖМОДУЛЬНЫЕ ГЛОБАЛЬНЫЕ переменные
     :return: итоговая строка ответа ботом
     """
     select_gm_news_string = '''
@@ -20,15 +20,14 @@ def form_subsector_news(curs: sqlite3.Cursor) -> str:
     LIMIT 1
     '''
     # Из кортежа с кортежами изымается строка с новостью
-    subsector_string = tuple(curs.execute(select_gm_news_string))[0][0]
+    subsector_string = tuple(bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
     return subsector_string
 
 
-def form_lore_info(curs: sqlite3.Cursor) -> str:
+def form_lore_info() -> str:
     """
     Данная функция обрабатывает подсказки или лорные особенности мира warhammer40k, про которые игрокам не стоит
     забывать или стоит обратить внимание
-    :param curs: объект курсора
     :return: итоговая строка ответа ботом
     """
     select_gm_news_string = '''
@@ -37,5 +36,5 @@ def form_lore_info(curs: sqlite3.Cursor) -> str:
     LIMIT 1
     '''
     # Из кортежа с кортежами изымается строка с новостью
-    lore_string = tuple(curs.execute(select_gm_news_string))[0][0]
+    lore_string = tuple(bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
     return lore_string

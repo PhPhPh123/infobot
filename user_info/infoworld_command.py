@@ -9,7 +9,7 @@ from settings_imports_globalVariables import *
 from user_info import sql_queries
 
 
-def to_control_other_functions_and_returns_bot_answer(curs: sqlite3.Cursor, world_name: str) -> str:
+def to_control_other_functions_and_returns_bot_answer(world_name: str) -> str:
     """
     Функция осуществляет контроль основых операций для получения итоговой строки которую отдает в модуль bot_main
     для исполнения функцией и выдачей ответа ботом:
@@ -29,13 +29,13 @@ def to_control_other_functions_and_returns_bot_answer(curs: sqlite3.Cursor, worl
     select_import = form_query(world_name, 'import')
 
     # 2 этап
-    tuple_with_worlds = tuple(curs.execute(select_main))
+    tuple_with_worlds = tuple(bd_sqlite3_cursor.execute(select_main))
     if not tuple_with_worlds:  # Если название мира некорректно, то вернется пустой кортеж и нужно вернуть ответ
         return 'Некорректное название мира'
-    tuple_with_terrains = tuple(curs.execute(select_terrains))
-    tuple_with_enemies = tuple(curs.execute(select_enemies))
-    tuple_with_export = tuple(curs.execute(select_export))
-    tuple_with_import = tuple(curs.execute(select_import))
+    tuple_with_terrains = tuple(bd_sqlite3_cursor.execute(select_terrains))
+    tuple_with_enemies = tuple(bd_sqlite3_cursor.execute(select_enemies))
+    tuple_with_export = tuple(bd_sqlite3_cursor.execute(select_export))
+    tuple_with_import = tuple(bd_sqlite3_cursor.execute(select_import))
 
     # 3 этап
     final_dict = form_dict(tuple_with_worlds, tuple_with_terrains, tuple_with_enemies,

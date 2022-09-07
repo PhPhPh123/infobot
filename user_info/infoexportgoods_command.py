@@ -7,11 +7,10 @@ from settings_imports_globalVariables import *
 import user_info.sql_queries
 
 
-def choise_deal_and_execute_in_db(curs: sqlite3.Cursor, goods_name: str, name_deal: str) -> str:
+def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
     """
     Данная функция выбирает тип сделки, экспорт или импорт, осуществляет экзекьют в базу данных и запрашивает строку у
-    нижестоящей функции
-    :param curs: объект курсора
+    нижестоящей функции. Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНУЮ ГЛОБАЛЬНУЮ переменную
     :param goods_name: название товара
     :param name_deal: название сделки, export или import
     :return: строка ответа боту
@@ -23,11 +22,11 @@ def choise_deal_and_execute_in_db(curs: sqlite3.Cursor, goods_name: str, name_de
     elif name_deal == 'export':
         select_systems = form_export_query(goods_name)
 
-    tuple_with_worlds = tuple(curs.execute(select_systems))
+    tuple_with_worlds = tuple(bd_sqlite3_cursor.execute(select_systems))
 
-    final_string = form_string_answer(tuple_with_worlds, name_deal)
-
-    return final_string
+    # final_string = form_string_answer(tuple_with_worlds, name_deal)
+    #
+    # return final_string
 
 
 def form_export_query(goods_name: str) -> str:

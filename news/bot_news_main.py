@@ -7,7 +7,7 @@ from settings_imports_globalVariables import *
 from news import bot_news_access, bot_news_static_info, bot_news_enemies
 
 
-def choise_random_news(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
+def choise_random_news() -> str:
     """
     Данная функция выбирает случайную новость путем случайного выбора функции, которая ее обработает и вернет
     Ролл от 1 до 100 ведется, чтобы определить удачливость событий новостей. Ролл 1-5 считается удачливым,
@@ -16,10 +16,10 @@ def choise_random_news(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
     """
     random_roll = random.randint(1, 100)
     if random_roll > 5:  # Обычный исход ролла
-        news = random.choice([bot_news_enemies.form_tuple_from_db(curs),
-                              bot_news_static_info.form_subsector_news(curs),
-                              bot_news_static_info.form_lore_info(curs)])
+        news = random.choice([bot_news_enemies.form_tuple_from_db(),
+                              bot_news_static_info.form_subsector_news(),
+                              bot_news_static_info.form_lore_info()])
     else:  # Удачливый исход ролла
-        news = bot_news_access.control_other_func(curs, db)
+        news = bot_news_access.control_other_func()
 
     return news

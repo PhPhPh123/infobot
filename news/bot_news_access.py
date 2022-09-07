@@ -5,24 +5,23 @@
 from settings_imports_globalVariables import *
 
 
-def control_other_func(curs: sqlite3.Cursor, db: sqlite3.Connection) -> str:
+def control_other_func() -> str:
     """
-    Данная функция управляет остальными функция и осуществляет их работу в 3 этапа
+    Данная функция управляет остальными функция и осуществляет их работу в 3 этапа:
     1 этап это выбор случайного мира, в котором будет повышаться уровень доступа
     2 этап это update в базу данных и изменение параметра уровень доступа для этого мира
     3 этап это формирование строкового ответа для ответа ботом
 
-    :param curs: объект курсора
-    :param db: объект соединения с БД
+    Объект курсора bd_sqlite3_cursor и объект коннекта bd_sqlite3_connect это МЕЖМОДУЛЬНЫЕ ГЛОБАЛЬНЫЕ переменные:
     :return: строка ответа ботом
     """
     # 1 этап
-    chosen_world = select_world(curs)
+    chosen_world = select_world(bd_sqlite3_cursor)
 
     # 2 этап
     update_access = form_update_string(chosen_world)
-    curs.execute(update_access)
-    db.commit()
+    bd_sqlite3_cursor.execute(update_access)
+    bd_sqlite3_connect.commit()
 
     # 3 этап
     access_responce = form_string_answer(chosen_world)

@@ -6,7 +6,7 @@
 from settings_imports_globalVariables import *
 
 
-def form_tuple_in_db(alch_connect, alch_worlds, cursor) -> str:
+def form_tuple_in_db(alch_connect, alch_worlds) -> str:
     """
     Функция осуществляет запрос в БД через ORM sqlalchemy и sqlite получая кортежи с данными, которые затем передает
     в нижестоящие функции, преобразующие их в списки и добавляющие иные данные, а потом функция возвращает результат в
@@ -24,7 +24,7 @@ def form_tuple_in_db(alch_connect, alch_worlds, cursor) -> str:
 
     # Отправка кортежа из кортежей для формирования из него списка из списков и добавления во вложенные списки данных
     # о родительских системах миров
-    access_list = form_list_and_add_system(access_tuple, cursor)
+    access_list = form_list_and_add_system(access_tuple)
 
     # Запрос к нижестоящей функции и получение строки ответа
     access_ans = form_string_answer(access_list)
@@ -32,12 +32,11 @@ def form_tuple_in_db(alch_connect, alch_worlds, cursor) -> str:
     return access_ans
 
 
-def form_list_and_add_system(access_tuple: tuple, cursor) -> list:
+def form_list_and_add_system(access_tuple: tuple) -> list:
     """
     Данная фунция формирует из кортежа с кортежами список со списками, добавляет во вложенные списки информацию о
     системе, к которой относятся отобранные миры и сортирует список по ключу - названию системы в алфавитном порядке
-    :param system_tuple: кортеж с кортежами в котором первом элементом идет название мира, а вторым - уровень доступа
-    :param cursor: объект курсора sqlite
+    :param access_tuple: кортеж с кортежами в котором первом элементом идет название мира, а вторым - уровень доступа
     :return: список со списками с добавлением в каждый вложенный список элементом [2] название системы
     """
 
@@ -54,7 +53,7 @@ def form_list_and_add_system(access_tuple: tuple, cursor) -> list:
 
         # Вызываю функцию, которая добавит в текущий вложенный список связанную с ним систему, которая отбирается в
         # вызываемой функции
-        list_elem.append(select_system(world_name, cursor))
+        list_elem.append(select_system(world_name))
 
     # Создаю новый отсортированный список по ключу - названию системы в алфавитном порядке elem[2]
     sorted_access_list_with_lists = sorted(access_list_with_lists, key=lambda elem: elem[2])
@@ -62,15 +61,15 @@ def form_list_and_add_system(access_tuple: tuple, cursor) -> list:
     return sorted_access_list_with_lists
 
 
-def select_system(world_name: str, cursor) -> str:
+def select_system(world_name: str) -> str:
     """
     Данная функция производит запрос в БД с целью отбора систем, связанных с переданным миром
+    Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     :param world_name: название мира
-    :param cursor: объект курсора sqlite
     :return:
     """
 
-    selected_system = tuple(cursor.execute(f"""
+    selected_system = tuple(bd_sqlite3_cursor.execute(f"""
     SELECT systems.system_name FROM systems
     INNER JOIN systems_worlds_relations ON systems.system_name == systems_worlds_relations.system_name
     INNER JOIN worlds ON systems_worlds_relations.world_name == worlds.world_name
