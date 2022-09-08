@@ -43,7 +43,7 @@ class Artifact:
     def get_prefix():
         """
          Данная функция случайно выбирает один из префиксов
-        :return:
+        :return: кортеж с именем префикса и навыком, на который он влияет
         """
         prefix_tuple = tuple(bd_sqlite3_cursor.execute('''
 SELECT * FROM unique_prefix
@@ -73,22 +73,44 @@ ORDER BY RANDOM()
 LIMIT 1'''))
         return suffix_tuple
 
-    def get_name(self, prefix, art_type, suffix):
+    def get_name(self, prefix: tuple, art_type: str, suffix: tuple) -> None:
+        """
+        Данный метод формирует имя артефакта на основе сложнения префикс + тип артифкта + суффикс
+        :param: префикс
+        :param название типа артефакта
+        :param суффикс
+        :return: ничего, изменяет self.name
+        """
+        # Префикс и суффикс идут как кортеж с кортежом с двумя значениями поэтому во вложенном кортеже, поэтому
+        # [0][0] используются для извлечения строки названия
         self.name = f'{prefix[0][0]} {art_type} {suffix[0][0]}'
 
-    def get_weight(self):
+    def get_weight(self) -> None:
+        """
+        Данный метод формирует вес артефакта на основе запроса в бд с применением случайного модификатора и модификатора
+        грейда
+        :return: ничего, изменяет self.weight
+        """
         art_weight = tuple(bd_sqlite3_cursor.execute(f'''
 SELECT art_weight FROM {self.group_name}
 WHERE art_type_name == '{self.art_type}'
 '''))[0][0]
-        random_mod = random.uniform(1, 1.2)
+        random_mod = random.uniform(1, 1.2)  # Случайный float в диапазоне
+        # чем меньше вес тем лучше, поэтому грейд модификатор вычисляется данной формулой:
+        # (1 - (self.grade_modifier - 1))
         self.weight = int(art_weight * (1 - (self.grade_modifier - 1)) * random_mod)
 
-    def get_requiriments(self):
+    def get_requiriments(self) -> None:
+        """
+        Данный метод формирует требования к силе при использовании артефакта с учетом  случайного модификатора, но
+        без учета модификатора грейда
+        :return: ничего, изменяет self.str_requeriments
+        """
         art_reqs = tuple(bd_sqlite3_cursor.execute(f'''
 SELECT art_str_req FROM {self.group_name}
 WHERE art_type_name == '{self.art_type}'
 '''))[0][0]
+        # Данная строка проверяет бросок на неудачу и если она больше или равно 90, то у артефакта повышенные требования
         luck_mod = random.randint(0, 100)
         if luck_mod >= 90:
             art_reqs += 1
