@@ -108,7 +108,6 @@ def choise_class_objects(art_user_dict: dict) -> str:
 
     # Итоговая строка ответа
     final_string = form_string_answer(art_object.__dict__)
-    print(art_object.__dict__)
     return final_string
 
 

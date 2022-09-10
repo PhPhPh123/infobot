@@ -66,7 +66,7 @@ def select_system(world_name: str) -> str:
     Данная функция производит запрос в БД с целью отбора систем, связанных с переданным миром
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     :param world_name: название мира
-    :return:
+    :return: название системы
     """
 
     selected_system = tuple(bd_sqlite3_cursor.execute(f"""
