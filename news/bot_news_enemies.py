@@ -5,7 +5,7 @@
 from settings_imports_globalVariables import *
 
 
-def form_tuple_from_db() -> str:
+def form_enemy_news() -> str:
     """
     Данная функция отправляет строку sql-запроса делает экзекьют и формирует кортеж, который отправляет в
     нижестоящую фукнцию и после ее работы возвращает ответ боту в модуль bot_main
