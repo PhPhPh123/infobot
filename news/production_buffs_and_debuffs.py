@@ -11,7 +11,6 @@ def form_production_changes_news() -> str:
     Объект курсора bd_sqlite3_cursor и объект коннекта bd_sqlite3_connect это МЕЖМОДУЛЬНЫЕ ГЛОБАЛЬНЫЕ переменные:
     :return: строка ответа ботом
     """
-    print('ПРИНТ')
     # 1 этап. Получение кортежа с кортежами с данными из БД
     all_worlds_with_production_level_tuple = form_tuple_from_db()
 
@@ -26,7 +25,10 @@ def form_production_changes_news() -> str:
     update_db_with_production_changes(world_list_with_export_overproduction_changes, 'export_overproduction', 'overproduction_name')
     update_db_with_production_changes(world_list_with_import_needs_changes, 'import_needs', 'needs_name')
 
-    return 'Готово!'
+    # 5 этап. Формирование строки для ответа ботом об изменениях производства в системах
+    bot_answer = form_string_answer(world_list_with_export_overproduction_changes, world_list_with_import_needs_changes)
+
+    return bot_answer
 
 
 def form_tuple_from_db() -> tuple:
@@ -52,7 +54,7 @@ def form_world_object_list(worlds_tuple: tuple) -> list:
     return list_with_worlds_object
 
 
-def check_production_changes(all_worlds: list):
+def check_production_changes(all_worlds: list) -> tuple:
     world_objects_with_export_overproduction_changes = []
     world_objects_with_import_needs_changes = []
 
@@ -63,25 +65,23 @@ def check_production_changes(all_worlds: list):
     export_filtered_list = list(filter(lambda x: x if not None else False, world_objects_with_export_overproduction_changes))
     import_filtered_list = list(filter(lambda x: x if not None else False, world_objects_with_import_needs_changes))
 
-    export_list_with_fixed_extreme_values = check_extreme_values(export_filtered_list)
-    import_list_with_fixed_extreme_values = check_extreme_values(import_filtered_list)
+    def check_extreme_values(list_for_check: list) -> list:
+        for world_elem in list_for_check:
+            if int(world_elem[1]) + int(world_elem[2]) < -2:
+                world_elem[1] = world_elem[1] - world_elem[2]
+
+            if int(world_elem[1]) + int(world_elem[2]) > 2:
+                world_elem[1] = world_elem[1] - world_elem[2]
+
+        return list_for_check
+
+    export_list_with_fixed_extreme_values = list(filter(lambda x: x if x[1] != 0 else False, check_extreme_values(export_filtered_list)))
+    import_list_with_fixed_extreme_values = list(filter(lambda x: x if x[1] != 0 else False, check_extreme_values(import_filtered_list)))
 
     return export_list_with_fixed_extreme_values, import_list_with_fixed_extreme_values
 
 
-def check_extreme_values(list_for_check):
-    print(list_for_check)
-    for world in list_for_check:
-        if int(world[1]) + int(world[2]) < -2:
-            world[1] = world[1] - world[2]
-
-        if int(world[1]) + int(world[2]) > 2:
-            world[1] = world[1] - world[2]
-
-    return list_for_check
-
-
-def update_db_with_production_changes(world_list, table_name, column_name):
+def update_db_with_production_changes(world_list: list, table_name: str, column_name: str) -> None:
     for world in world_list:
 
         query_string = f"""
@@ -93,6 +93,47 @@ def update_db_with_production_changes(world_list, table_name, column_name):
 
         bd_sqlite3_cursor.execute(query_string)
         bd_sqlite3_connect.commit()
+
+
+def form_string_answer(export_list: list, import_list: list) -> str:
+
+    def convert_int_to_string(world_elem) -> str:
+        changes_string = ''
+        if world_elem[1] == 2:
+            changes_string = 'сильное повышение'
+        elif world_elem[1] == 1:
+            changes_string = 'повышение'
+        elif world_elem[1] == -1:
+            changes_string = 'понижение'
+        elif world_elem[1] == -2:
+            changes_string = 'сильное понижение'
+        return changes_string
+
+    main_export = Template("""
+Торговый терминал сообщает об изменениях в экономической ситуации в субсекторе:
+
+Изменения собственного производства на мирах:
+{% if export_list %}
+    {% for world in export_list %}
+        {{ 'На мире {} {} уровня производства'.format(world[0], convert_func(world)) }}
+    {% endfor %}
+{% else %}
+    {{ 'Изменения отсутствуют' }}
+{% endif %}
+Изменения дефицита товаров на мирах:
+{% if import_list %}
+    {% for world in import_list %}
+        {{ 'На мире {} {} уровня дефицита'.format(world[0], convert_func(world)) }}
+    {% endfor %}
+{% else %}
+    {{ 'Изменения отсутствуют' }}
+{% endif %}""")
+
+    main_export_render = main_export.render(export_list=export_list,
+                                            import_list=import_list,
+                                            convert_func=convert_int_to_string)
+
+    return main_export_render
 
 
 class WorldClass:
@@ -128,13 +169,13 @@ class WorldClass:
         roll = random.uniform(0.0, 100.0)
 
         if (roll + danger_negative_modifier) * 2 <= self.chance_export:
-            return self.world_name, strong_up, self.export_overproduction
+            return [self.world_name, strong_up, self.export_overproduction]
         elif roll + danger_negative_modifier <= self.chance_export:
-            return self.world_name, weak_up, self.export_overproduction
+            return [self.world_name, weak_up, self.export_overproduction]
         elif roll >= 100.0 - self.chance_export + danger_negative_modifier:
-            return self.world_name, weak_fall, self.export_overproduction
+            return [self.world_name, weak_fall, self.export_overproduction]
         elif roll >= 100 - ((self.chance_export + danger_negative_modifier) / 2):
-            return self.world_name, strong_fall, self.export_overproduction
+            return [self.world_name, strong_fall, self.export_overproduction]
         else:
             pass
 
@@ -148,13 +189,13 @@ class WorldClass:
         roll = random.uniform(0.0, 100.0)
 
         if (roll + danger_negative_modifier) * 2 <= self.chance_export:
-            return self.world_name, strong_up, self.import_needs
+            return [self.world_name, strong_up, self.import_needs]
         elif roll + danger_negative_modifier <= self.chance_export:
-            return self.world_name, weak_up, self.import_needs
+            return [self.world_name, weak_up, self.import_needs]
         elif roll >= 100.0 - self.chance_export + danger_negative_modifier:
-            return self.world_name, weak_fall, self.import_needs
+            return [self.world_name, weak_fall, self.import_needs]
         elif roll >= 100 - ((self.chance_export + danger_negative_modifier) / 2):
-            return self.world_name, strong_fall, self.import_needs
+            return [self.world_name, strong_fall, self.import_needs]
         else:
             return None
 
