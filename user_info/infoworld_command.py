@@ -18,7 +18,6 @@ def to_control_other_functions_and_returns_bot_answer(world_name: str) -> str:
     3 этап: формирует из кортежей единый словарь с помощью функции dict_form
     4 этап: получает итоговую строку с помощью функции str_form
     :param world_name: название мира
-    :param curs: объект курсора sqllite3
     :return: готовая строка для ответа со всей информацией
     """
     # 1 этап

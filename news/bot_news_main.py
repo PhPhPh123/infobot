@@ -26,7 +26,6 @@ def choise_random_news() -> str:
 
     if random_roll > 5:  # Обычный исход ролла
         news = random.choice(list_of_type_news)
-        print(news)
         if news == 'Новости о наличии врагов в системе':
             bot_answer = bot_news_enemies.form_enemy_news()
         elif news == 'Статичные новости о делах в субсекторе':

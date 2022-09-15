@@ -24,8 +24,7 @@ class Artifact:
         self.unique_suffix = ''
         self.str_requeriments = None
 
-    @staticmethod
-    def get_random_type_of_artifact(table_name: str) -> str:
+    def get_random_type_of_artifact(self, table_name: str) -> str:
         """
         Данная функция случайно выбирает один из типов артефактов в случае, если он прямо не указан в запросе
         :param table_name: название таблицы в бд, из которой будет делаться экзекьют. Таблица представляет собой
@@ -33,8 +32,19 @@ class Artifact:
         :return: строка с названием типа артефакта
         """
 
+        excluded_artifact_types = ''
+        # данный кортеж и проверка нужны чтобы исключить некоторые особо сильные виды артефактов для низкого грейда
+        # чтобы игроки не получали их на слишком ранних этапах игры
+        if self.grade_modifier < 1.10:
+            excluded_artifact_types = ('одноручный-силовой-меч', 'двуручный-силовой меч',
+                                       'мельтаган', 'мельта-пистолет',
+                                       'болтер', 'болт-пистолет',
+                                       'плазмаган', 'плазма-пистолет',
+                                       'силовая-броня')
+
         chosen_artifact = tuple(bd_sqlite3_cursor.execute(f'''
     SELECT art_type_name FROM {table_name}
+    WHERE art_type_name NOT IN {excluded_artifact_types}
     ORDER BY RANDOM()
     LIMIT 1'''))[0][0]  # [0][0] нужно чтобы изъять строку из кортежа с кортежами
         return chosen_artifact

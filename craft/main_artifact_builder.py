@@ -78,6 +78,20 @@ def choise_class_objects(art_user_dict: dict) -> str:
     какой тип артефакта должен быть создан или все отдается на волю рандома
     :return: итоговая строка ответа для бота
     """
+
+    # Данная структура возвращает строковое сообщение об ошибке ботом, если запрашиваются данные типы и группы сильных
+    # артефактов. В билдере ниже они также исключаются из рандома при запросе в БД в модуле base_artifact
+    excluded_artifact_types = ('одноручный-силовой-меч', 'двуручный-силовой меч',
+                               'мельтаган', 'мельта-пистолет',
+                               'болтер', 'болт-пистолет',
+                               'плазмаган', 'плазма-пистолет',
+                               'силовая-броня')
+
+    if art_user_dict['грейд'] == 'зеленый' and art_user_dict['тип'] in excluded_artifact_types:
+        return 'С зеленым грейдом нельзя создавать данный тип артефакта т.к. он слишком мощный'
+    if art_user_dict['грейд'] == 'зеленый' and art_user_dict['группа'] == 'бижутерия':
+        return 'Бижутерия с зеленым грейдом не роллится обычным способом, только если на рандоме очень повезет'
+
     #  float модификатор, который используется для умножения некоторых числовых характеристик артефактов
     art_user_dict['грейд'] = count_grade_modifier(art_user_dict['грейд'])
     if not art_user_dict['грейд']:
@@ -88,13 +102,16 @@ def choise_class_objects(art_user_dict: dict) -> str:
     и создает экземляр соответствующего класса отправляя в них их модификатор грейда, тип артефакта(если выбран, если
     не выбран то random)
     """
+
     if art_user_dict['группа'] == 'броня':
         art_object = Armor(art_user_dict['грейд'], art_user_dict['тип'])
     elif art_user_dict['группа'] == 'оружие-дб':
         art_object = RangeWeapon(art_user_dict['грейд'], art_user_dict['тип'])
     elif art_user_dict['группа'] == 'оружие-бб':
         art_object = CloseCombatWeapon(art_user_dict['грейд'], art_user_dict['тип'])
-    elif art_user_dict['группа'] == 'бижутерия':
+        # строчка ниже исключает бижутерию из ролла для зеленых типов артефактов, хотя, если очень повезет,
+        # то можно будет получить
+    elif art_user_dict['группа'] == 'бижутерия' and art_user_dict['грейд'] > 1.1:
         art_object = Jewelry(art_user_dict['грейд'], art_user_dict['тип'])
     elif art_user_dict['группа'] == 'random':
         art_object = random.choice([
@@ -104,7 +121,7 @@ def choise_class_objects(art_user_dict: dict) -> str:
             Jewelry(art_user_dict['грейд'], art_user_dict['тип'])
         ])
     else:
-        return 'Некорректное название группы или типа артефакта'
+        return 'Некорректное название группы, типа артефакта'
 
     # Итоговая строка ответа
     final_string = form_string_answer(art_object.__dict__)
