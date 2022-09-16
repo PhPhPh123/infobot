@@ -203,6 +203,9 @@ async def startnews(ctx: discord.ext.commands.context.Context):
     await ctx.send("Поиск слухов...")
     news_send.start(ctx.channel)
 
+logger.info('[print]')
+
+
 @infobot.command()
 @commands.has_permissions(administrator=True)
 async def artifact(ctx: discord.ext.commands.context.Context,
@@ -218,7 +221,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'особенность': unique_bonus.lower()}
 
     bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict)
-    logger.info(bot_answer)
+    logger.info('[news]' + bot_answer)
     await ctx.send(bot_answer)
 
 
