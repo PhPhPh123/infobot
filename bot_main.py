@@ -174,7 +174,8 @@ async def news_send(channel: discord.channel.TextChannel):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     chosen_news = news.bot_news_main.choise_random_news()
-
+    # Новости записываются в лог
+    logger.info(chosen_news)
     await channel.send(chosen_news)
 
 
@@ -202,7 +203,6 @@ async def startnews(ctx: discord.ext.commands.context.Context):
     await ctx.send("Поиск слухов...")
     news_send.start(ctx.channel)
 
-
 @infobot.command()
 @commands.has_permissions(administrator=True)
 async def artifact(ctx: discord.ext.commands.context.Context,
@@ -218,6 +218,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'особенность': unique_bonus.lower()}
 
     bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict)
+    logger.info(bot_answer)
     await ctx.send(bot_answer)
 
 

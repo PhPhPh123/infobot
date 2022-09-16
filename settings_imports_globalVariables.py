@@ -17,6 +17,7 @@ from discord.ext import commands, tasks
 from sqlalchemy.orm import mapper, sessionmaker
 from dotenv import load_dotenv, find_dotenv
 import matplotlib.pyplot as plt
+from loguru import logger
 
 
 def get_script_dir() -> str:
@@ -52,6 +53,11 @@ settings = {
     'id': 992438215254487143,
     'prefix': '!'
 }
+
+"""
+Подключение логирования
+"""
+logger.add('debug.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True)
 
 """
 Глобальные межмодульные переменные
