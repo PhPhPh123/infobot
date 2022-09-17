@@ -175,7 +175,7 @@ async def news_send(channel: discord.channel.TextChannel):
     """
     chosen_news = news.bot_news_main.choise_random_news()
     # Новости записываются в лог
-    logger.info(chosen_news)
+    logger.info('[news]' + chosen_news)
     await channel.send(chosen_news)
 
 

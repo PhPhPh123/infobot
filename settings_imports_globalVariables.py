@@ -59,6 +59,7 @@ settings = {
 """
 logger.add('news.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[news]' in x['message'])
+
 logger.add('print.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[print]' in x['message'])
 """

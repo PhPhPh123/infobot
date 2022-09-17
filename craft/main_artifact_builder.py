@@ -89,12 +89,13 @@ def choise_class_objects(art_user_dict: dict) -> str:
 
     if art_user_dict['грейд'] == 'зеленый' and art_user_dict['тип'] in excluded_artifact_types:
         return 'С зеленым грейдом нельзя создавать данный тип артефакта т.к. он слишком мощный'
-    if art_user_dict['грейд'] == 'зеленый' and art_user_dict['группа'] == 'бижутерия':
+    if art_user_dict['грейд'] not in ('зеленый', 'синий') and art_user_dict['группа'] == 'бижутерия':
         return 'Бижутерия с зеленым грейдом не роллится обычным способом, только если на рандоме очень повезет'
 
     #  float модификатор, который используется для умножения некоторых числовых характеристик артефактов
-    art_user_dict['грейд'] = count_grade_modifier(art_user_dict['грейд'])
-    if not art_user_dict['грейд']:
+    art_user_dict['грейд_модификатор'] = count_grade_modifier(art_user_dict['грейд'])
+
+    if art_user_dict['грейд'] not in ('зеленый', 'синий', 'фиолетовый', 'красный'):
         return "Некорректное название грейда"
 
     """
@@ -104,22 +105,28 @@ def choise_class_objects(art_user_dict: dict) -> str:
     """
 
     if art_user_dict['группа'] == 'броня':
-        art_object = Armor(art_user_dict['грейд'], art_user_dict['тип'])
+        art_object = Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+
     elif art_user_dict['группа'] == 'оружие-дб':
-        art_object = RangeWeapon(art_user_dict['грейд'], art_user_dict['тип'])
+        art_object = RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+
     elif art_user_dict['группа'] == 'оружие-бб':
-        art_object = CloseCombatWeapon(art_user_dict['грейд'], art_user_dict['тип'])
+        art_object = CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
         # строчка ниже исключает бижутерию из ролла для зеленых типов артефактов, хотя, если очень повезет,
         # то можно будет получить
-    elif art_user_dict['группа'] == 'бижутерия' and art_user_dict['грейд'] > 1.1:
-        art_object = Jewelry(art_user_dict['грейд'], art_user_dict['тип'])
+
+    elif art_user_dict['группа'] == 'бижутерия':
+        art_object = Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+
     elif art_user_dict['группа'] == 'random':
-        art_object = random.choice([
-            Armor(art_user_dict['грейд'], art_user_dict['тип']),
-            RangeWeapon(art_user_dict['грейд'], art_user_dict['тип']),
-            CloseCombatWeapon(art_user_dict['грейд'], art_user_dict['тип']),
-            Jewelry(art_user_dict['грейд'], art_user_dict['тип'])
-        ])
+        rand_list = [Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип']),
+                     RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип']),
+                     CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'])]
+        if art_user_dict['грейд'] not in ('зеленый', 'синий'):
+            rand_list.append(Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип']))
+
+        art_object = random.choice(rand_list)
+
     else:
         return 'Некорректное название группы, типа артефакта'
 

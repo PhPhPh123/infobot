@@ -35,18 +35,19 @@ class Artifact:
         excluded_artifact_types = ''
         # данный кортеж и проверка нужны чтобы исключить некоторые особо сильные виды артефактов для низкого грейда
         # чтобы игроки не получали их на слишком ранних этапах игры
+        print(self.grade_modifier)
         if self.grade_modifier < 1.10:
-            excluded_artifact_types = ('одноручный-силовой-меч', 'двуручный-силовой меч',
+            excluded_artifact_types = """'одноручный-силовой-меч', 'двуручный-силовой меч',
                                        'мельтаган', 'мельта-пистолет',
                                        'болтер', 'болт-пистолет',
                                        'плазмаган', 'плазма-пистолет',
-                                       'силовая-броня')
-
+                                       'силовая-броня'"""
         chosen_artifact = tuple(bd_sqlite3_cursor.execute(f'''
     SELECT art_type_name FROM {table_name}
-    WHERE art_type_name NOT IN {excluded_artifact_types}
+    WHERE art_type_name NOT IN ({excluded_artifact_types})
     ORDER BY RANDOM()
     LIMIT 1'''))[0][0]  # [0][0] нужно чтобы изъять строку из кортежа с кортежами
+        print(chosen_artifact)
         return chosen_artifact
 
     @staticmethod
