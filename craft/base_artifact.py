@@ -35,13 +35,13 @@ class Artifact:
         excluded_artifact_types = ''
         # данный кортеж и проверка нужны чтобы исключить некоторые особо сильные виды артефактов для низкого грейда
         # чтобы игроки не получали их на слишком ранних этапах игры
-        print(self.grade_modifier)
         if self.grade_modifier < 1.10:
             excluded_artifact_types = """'одноручный-силовой-меч', 'двуручный-силовой меч',
                                        'мельтаган', 'мельта-пистолет',
                                        'болтер', 'болт-пистолет',
                                        'плазмаган', 'плазма-пистолет',
                                        'силовая-броня'"""
+
         chosen_artifact = tuple(bd_sqlite3_cursor.execute(f'''
     SELECT art_type_name FROM {table_name}
     WHERE art_type_name NOT IN ({excluded_artifact_types})
@@ -94,7 +94,26 @@ LIMIT 1'''))
         """
         # Префикс и суффикс идут как кортеж с кортежом с двумя значениями поэтому во вложенном кортеже, поэтому
         # [0][0] используются для извлечения строки названия
-        self.name = f'{prefix[0][0]} {art_type} {suffix[0][0]}'
+
+        grade_pre_prefix = ''
+        if self.grade_modifier < 0.8:
+            grade_pre_prefix = 'Низкокачественный'
+        elif 0.8 < self.grade_modifier <= 0.9:
+            grade_pre_prefix = 'Старенький'
+        elif 0.9 < self.grade_modifier <= 1:
+            grade_pre_prefix = 'Потёрный'
+        elif 1 < self.grade_modifier <= 1.1:
+            grade_pre_prefix = 'Обычный'
+        elif 1.1 < self.grade_modifier <= 1.2:
+            grade_pre_prefix = 'Качественный'
+        elif 1.2 < self.grade_modifier <= 1.3:
+            grade_pre_prefix = 'Отличный'
+        elif 1.3 < self.grade_modifier <= 1.4:
+            grade_pre_prefix = 'Архиотековский'
+        elif 1.4 < self.grade_modifier <= 1.5:
+            grade_pre_prefix = 'Тёмной эры технологий'
+
+        self.name = f'{grade_pre_prefix} {prefix[0][0]} {art_type} {suffix[0][0]}'
 
     def get_weight(self) -> None:
         """

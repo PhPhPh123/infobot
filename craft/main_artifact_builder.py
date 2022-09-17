@@ -144,20 +144,29 @@ def count_grade_modifier(grade: str) -> Optional[float]:
     :return: итоговый float-модификатор для применения на числовых характеристиках
     """
     if grade == 'зеленый':
-        grade_modifier = 1
+        grade_modifier = 0.97
     elif grade == 'синий':
-        grade_modifier = 1.1
+        grade_modifier = 1.08
     elif grade == 'фиолетовый':
-        grade_modifier = 1.2
+        grade_modifier = 1.20
     elif grade == 'красный':
         grade_modifier = 1.3
     else:
         return None
 
     # Выбирает случайное float-число в данном диапазоне с целью внесения фактора рандома
-    luck_mod = random.uniform(0.95, 1.1)
+    balance_mod = random.uniform(0.95, 1.1)
 
-    return grade_modifier * luck_mod
+    # Кидаю кубик на критудачу и критнеудачу, если она прокает то модификатор дополнительно изменяет итоговое значение
+    # Значение luck_mod-а ниже 5 это критудача, значение выше 95 это критнеудача
+    luck_mod = 1.0
+    luck_roll = random.randint(1, 100)
+    if luck_roll < 5:
+        luck_mod = 1.10
+    elif luck_roll > 95:
+        luck_mod = 0.9
+
+    return grade_modifier * balance_mod * luck_mod
 
 
 def form_string_answer(artifact_dict: dict) -> str:
