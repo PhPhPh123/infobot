@@ -12,6 +12,7 @@ class Jewelry(Artifact):
     наследуюется от класса Artifact
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
+
     def __init__(self, grade_modifier: float, jewelry_type: str):
         super().__init__(grade_modifier)
 
@@ -29,15 +30,19 @@ class Jewelry(Artifact):
         # Собственные методы
         self.jewerly_bonus = self.get_jewelry_bonus()
 
-    @staticmethod
-    def get_jewelry_bonus() -> tuple:
+    def get_jewelry_bonus(self) -> tuple:
         """
         Статический метод, получающий из БД случайный тип ювелирного бонуса
         :return: кортеж с ювелирным бонусом, где [0] элемент это название бонуса, а [0] это текст его описания
         """
         jewerly_bonus = tuple(bd_sqlite3_cursor.execute(f'''
-                SELECT * FROM unique_jewerly_bonuses
-                ORDER BY RANDOM()
-                LIMIT 1'''))[0]  # поскольку из БД собираются кортежи с кортежами то из внешнего кортежа берется
+SELECT * FROM unique_jewelry_bonuses
+INNER JOIN artifact_jewelry_unique_jewelry_bonuses_relations ON unique_jewelry_bonuses.jewelry_bonus_name == 
+artifact_jewelry_unique_jewelry_bonuses_relations.jewelry_bonus_name
+INNER JOIN artifact_jewelry ON artifact_jewelry_unique_jewelry_bonuses_relations.art_type_name == 
+artifact_jewelry.art_type_name
+WHERE artifact_jewelry.art_type_name == '{self.art_type}'
+ORDER BY RANDOM()
+LIMIT 1'''))[0]  # поскольку из БД собираются кортежи с кортежами то из внешнего кортежа берется
         # вложенный кортеж с 2 значениями
         return jewerly_bonus
