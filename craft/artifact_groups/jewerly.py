@@ -17,6 +17,7 @@ class Jewelry(Artifact):
         super().__init__(grade_modifier)
 
         self.group_name = 'artifact_jewelry'  # статичная инициализация группы артефакта
+
         # Данная строчка отвечает за выбор типа артефакта если он явно указан в запросе, иначе вызывается метод
         # родительского класса, который выбирает случайный тип
         self.art_type = jewelry_type if jewelry_type != 'random' else self.get_random_type_of_artifact(self.group_name)
@@ -32,7 +33,7 @@ class Jewelry(Artifact):
 
     def get_jewelry_bonus(self) -> tuple:
         """
-        Статический метод, получающий из БД случайный тип ювелирного бонуса
+        Статический метод, получающий из БД случайный тип ювелирного бонуса на основе выбранного типа бижутерии
         :return: кортеж с ювелирным бонусом, где [0] элемент это название бонуса, а [0] это текст его описания
         """
         jewerly_bonus = tuple(bd_sqlite3_cursor.execute(f'''

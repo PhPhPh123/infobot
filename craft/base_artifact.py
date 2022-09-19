@@ -110,7 +110,7 @@ LIMIT 1'''))
             grade_pre_prefix = 'Отличный'
         elif 1.3 < self.grade_modifier <= 1.4:
             grade_pre_prefix = 'Архиотековский'
-        elif self.grade_modifier >= 1.5:
+        elif self.grade_modifier >= 1.4:
             grade_pre_prefix = 'Тёмной эры технологий'
 
         self.name = f'{grade_pre_prefix} {prefix[0][0]} {art_type} {suffix[0][0]}'

@@ -221,7 +221,6 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'особенность': unique_bonus.lower()}
 
     bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict)
-    logger.info('[news]' + bot_answer)
     await ctx.send(bot_answer)
 
 
