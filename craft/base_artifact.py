@@ -47,7 +47,6 @@ class Artifact:
     WHERE art_type_name NOT IN ({excluded_artifact_types})
     ORDER BY RANDOM()
     LIMIT 1'''))[0][0]  # [0][0] нужно чтобы изъять строку из кортежа с кортежами
-        print(chosen_artifact)
         return chosen_artifact
 
     @staticmethod
