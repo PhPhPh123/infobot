@@ -8,6 +8,7 @@ from craft.artifact_groups.weapons.base_weapons import Weapon
 
 class CloseCombatWeapon(Weapon):
     """
+    Класс, отвечающий за оружие ближнего боя
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
     def __init__(self, grade_modifier, weapon_type):
