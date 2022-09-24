@@ -13,6 +13,7 @@ class CloseCombatWeapon(Weapon):
     """
     def __init__(self, grade_modifier, weapon_type):
         super().__init__(grade_modifier)
+        # Данные аттрибуты/методы идут из базовых классов
         self.group_name = 'artifact_close_combat'
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name)
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
@@ -20,19 +21,28 @@ class CloseCombatWeapon(Weapon):
         self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
         self.penetration = self.get_penetration(weapon_type)
         self.prescision_modifier = self.get_prescision(self.group_name, self.art_type)
-        self.parry_modifier = self.get_parry_bonus()
         self.get_weight()
         self.get_requiriments()
 
+        # Собственные аттрибуты и методы
+        self.parry_modifier = self.get_parry_bonus()
+
     def get_parry_bonus(self):
+        """
+        Данный метод формирует параметр парирования у оружия ближнего боя
+        :return: численный модификатор бонуса или штрафа к парированию
+        """
+
+        # Бросок на удачу, чем ниже результат тем лучше
         luck_modifier = random.randint(1, 100)
-        parry_modifier = 0
+        parry_modifier = 0  # иницилизация параметра дополнительного изменения парирования
 
         art_parry = tuple(bd_sqlite3_cursor.execute(f'''
                     SELECT art_parry_bonus FROM artifact_close_combat
                     WHERE art_type_name == '{self.art_type}'
-'''))[0][0]
+'''))[0][0]  # достаю из БД базовый показатель парирования, [0][0] чтобы вытащить значение из кортежа с кортежами
 
+        # Чем меньше ролл удачи тем выше бонус к парированию, высокие значения дают штраф
         if luck_modifier <= 5:
             parry_modifier = 2
         elif 6 <= luck_modifier <= 10:
