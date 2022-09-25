@@ -149,7 +149,7 @@ async def infoimportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     """
     deal_name = 'import'
     user_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
-    await ctx.send(file=discord.File('info_export_import_goods.png'))
+    await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
 @infobot.command()
@@ -162,7 +162,7 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     """
     deal_name = 'export'
     user_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
-    await ctx.send(file=discord.File('info_export_import_goods.png'))
+    await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
 @tasks.loop(minutes=30)

@@ -89,6 +89,6 @@ def form_string_answer(tuple_with_worlds: tuple, deal_name: str):
         width = bar.get_width()
         label_y = bar.get_y() + bar.get_height() / 2
         plt.text(width, label_y, s=f'{width}')
-    plt.savefig('info_export_import_goods.png')
+    plt.savefig('logs_and_temp_files/info_export_import_goods.png')
 
     return None
