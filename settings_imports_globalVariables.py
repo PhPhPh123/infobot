@@ -62,6 +62,7 @@ logger.add('logs_and_temp_files/news.log', format='{time}, {level}, {message}', 
 
 logger.add('logs_and_temp_files/print.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[print]' in x['message'])
+
 """
 Глобальные межмодульные переменные
 """

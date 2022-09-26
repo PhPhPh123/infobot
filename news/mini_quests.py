@@ -1,6 +1,7 @@
 """
     Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов
 """
+import random
 
 from settings_imports_globalVariables import *
 import craft.main_artifact_builder
@@ -10,8 +11,11 @@ def control_quests():
     """
     Данная функция осуществляет общее управление другими функциями
     """
+
     chones_quest = choise_quest()
+
     quest_tuple = form_quests_query(chones_quest)
+
     form_quest_object(chones_quest, quest_tuple)
 
 
@@ -19,7 +23,8 @@ def choise_quest():
     """
     Данная функция выбирает случайный тип квеста
     """
-    pass
+    chones_quest = random.choice(['artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest'])
+    return chones_quest
 
 
 def form_quests_query(quest_type):
