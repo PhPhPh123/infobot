@@ -9,14 +9,13 @@ import craft.main_artifact_builder
 
 def control_quests():
     """
-    Данная функция осуществляет общее управление другими функциями
+    Данная функция является базовой точкой входа и управляющей элементом модуля
     """
 
     chones_quest = choise_quest()
 
-    quest_tuple = form_quests_query(chones_quest)
-
-    form_quest_object(chones_quest, quest_tuple)
+    quest_former = QuestFormer(chones_quest)
+    quest_former.start_form()
 
 
 def choise_quest():
@@ -24,21 +23,80 @@ def choise_quest():
     Данная функция выбирает случайный тип квеста
     """
     chones_quest = random.choice(['artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest'])
+
     return chones_quest
 
 
-def form_quests_query(quest_type):
+class QuestFormer:
     """
-    Данная функция делает запрос в БД и получает кортеж со значениями
+    Данная класс выбирает один из методов, отвечающий за доступ в базу данных, достает оттуда значение и формирует
+    на его основе экземпляр целевого финального квестового класса
     """
-    pass
 
+    def __init__(self, quest_name: str):
+        self.quest_name = quest_name
+        # Вызываю соответствующий статичный метод на основе принятого имя квеста(имя квеста и имя метода совпадают)
+        self.quest_tuple = self.__getattribute__(quest_name)()
 
-def form_quest_object(quest_type: str, quest_tuple: tuple):
-    """
-    Данная функция получает значения из БД и создает экземляры класса на их основе
-    """
-    pass
+    def start_form(self):
+        self.form_quest_object()
+
+    @staticmethod
+    def artifact_quest():
+        artifact_quest_query = '''
+        SELECT worlds.world_name, worlds.danger_name, worlds.class_name
+        FROM worlds
+        WHERE worlds.danger_name != 'Красная угроза' AND
+        worlds.class_name != 'Боевая зона'
+        ORDER BY RANDOM()
+        LIMIT 1'''
+        artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))
+        return artifact_quest_tuple
+
+    @staticmethod
+    def kill_quest():
+        kill_quest_query = '''
+        SELECT worlds.world_name, worlds.danger_name, worlds.class_name
+        FROM worlds
+        WHERE worlds.danger_name != 'Нулевая угроза'
+        ORDER BY RANDOM()
+        LIMIT 1'''
+        kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))
+        return kill_quest_tuple
+
+    @staticmethod
+    def delivery_quest():
+        delivery_quest_query = f'''
+        SELECT worlds.world_name, worlds.danger_name, worlds.class_name, trade_import.import_name
+        FROM worlds
+        INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
+        INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
+        WHERE trade_import.import_name != 'Импорт-отсутствует'
+        ORDER BY RANDOM()
+        LIMIT 1'''
+
+        delivery_quest_tuple = tuple(bd_sqlite3_cursor.execute(delivery_quest_query))
+
+        return delivery_quest_tuple
+
+    @staticmethod
+    def escort_quest():
+        escort_quest_query = f'''
+        SELECT  world_name, danger_name, class_name, world_population
+        FROM worlds
+        WHERE world_population > 10000
+        ORDER BY RANDOM()
+        LIMIT 2'''
+
+        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))
+
+        return delivery_escort_tuple
+
+    def form_quest_object(self):
+        """
+        Данная функция создает экземпляры класса на их основе
+        """
+        pass
 
 
 class Quest:
