@@ -63,6 +63,12 @@ logger.add('logs_and_temp_files/news.log', format='{time}, {level}, {message}', 
 logger.add('logs_and_temp_files/print.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[print]' in x['message'])
 
+logger.add('logs_and_temp_files/sessions.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
+           filter=lambda x: '[bot_run]' in x['message'])
+
+logger.add('logs_and_temp_files/artifacts.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
+           filter=lambda x: '[artifact]' in x['message'])
+
 """
 Глобальные межмодульные переменные
 """

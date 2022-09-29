@@ -121,6 +121,7 @@ def choise_class_objects(art_user_dict: dict) -> str:
     какой тип артефакта должен быть создан или все отдается на волю рандома
     :return: итоговая строка ответа для бота
     """
+    print(art_user_dict)
 
     # Данная структура возвращает строковое сообщение об ошибке ботом, если запрашиваются данные типы и группы сильных
     # артефактов. В билдере ниже они также исключаются из рандома при запросе в БД в модуле base_artifact
@@ -175,6 +176,8 @@ def choise_class_objects(art_user_dict: dict) -> str:
 
     # Итоговая строка ответа
     final_string = form_string_answer(art_object.__dict__)
+
+    logger.info('\n' + '[artifact]' '\n' + final_string)
     return final_string
 
 

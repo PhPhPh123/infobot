@@ -11,11 +11,12 @@ def control_quests():
     """
     Данная функция является базовой точкой входа и управляющей элементом модуля
     """
+    logger.info('[print]')
 
     chones_quest = choise_quest()
 
     quest_former = QuestFormer(chones_quest)
-    quest_former.start_form()
+    quest_string = quest_former.start_form()
 
 
 def choise_quest():
@@ -39,7 +40,22 @@ class QuestFormer:
         self.quest_tuple = self.__getattribute__(quest_name)()
 
     def start_form(self):
-        self.form_quest_object()
+        """
+        Данная функция создает экземпляры класса на их основе и вызывает метод формирования итоговой строки квеста
+        """
+        quest = None
+
+        if self.quest_name == 'artifact_quest':
+            quest = ArtifactQuest(self.quest_tuple)
+        elif self.quest_name == 'kill_quest':
+            quest = KillQuest(self.quest_tuple)
+        elif self.quest_name == 'delivery_quest':
+            quest = DeliveryQuest(self.quest_tuple)
+        elif self.quest_name == 'escort_quest':
+            quest = EscortQuest(self.quest_tuple)
+
+        quest_string = quest.form_quest()
+        return quest_string
 
     @staticmethod
     def artifact_quest():
@@ -50,7 +66,7 @@ class QuestFormer:
         worlds.class_name != 'Боевая зона'
         ORDER BY RANDOM()
         LIMIT 1'''
-        artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))
+        artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
         return artifact_quest_tuple
 
     @staticmethod
@@ -92,12 +108,6 @@ class QuestFormer:
 
         return delivery_escort_tuple
 
-    def form_quest_object(self):
-        """
-        Данная функция создает экземпляры класса на их основе
-        """
-        pass
-
 
 class Quest:
     """
@@ -115,27 +125,53 @@ class Quest:
         """
         pass
 
+    @staticmethod
+    def quest_tuple_to_dict(is_tuple: tuple):
+        raise NotImplementedError
+
 
 class ArtifactQuest(Quest):
     """
     Данный класс отвечает за формирование квестом поиска артефактов. Он создает запрос в соседний модуль на
-    формирование артефакта и выдачу квестом его названия, а параметры сохраняются в отдельном тестовом файле
+    формирование артефакта и выдачу квестом его названия, а параметры сохраняются в отдельном текстовом файле
     для ГМа
     """
 
-    def __init__(self):
+    def __init__(self, quest_tuple):
         self.art_name = ""
+        self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
+        self.full_artifact_string = None
 
     def form_artifact(self):
-        request_dict = {}
-        artifact = craft.main_artifact_builder.choise_class_objects(request_dict)
-        self.art_name = ""
+        grade_name = None
+        if self.quest_dict['danger_name'] in ('Зеленая угроза', 'Нулевая угроза'):
+            grade_name = 'зеленый'
+        elif self.quest_dict['danger_name'] == 'Синяя угроза':
+            grade_name = 'синий'
+        elif self.quest_dict['danger_name'] == 'Фиолетовая угроза':
+            grade_name = 'фиолетовый'
+        elif self.quest_dict['danger_name'] == 'Красная угроза':
+            grade_name = 'красный'
 
-    def form_artifact_quest(self):
+        request_dict = {'грейд': grade_name,
+                        'группа': 'random',
+                        'тип': 'random',
+                        'особенность': 'random'}
+
+        self.full_artifact_string = craft.main_artifact_builder.choise_class_objects(request_dict)
+
+    def form_quest(self):
         """
         Данный метод будет формировать строку с квестом
         """
-        pass
+        quest_artifact_reward = self.form_artifact()
+
+    @staticmethod
+    def quest_tuple_to_dict(is_tuple: tuple):
+        dict_keys = ('world_name', 'danger_name', 'class_name')
+        quest_dict = dict(zip(dict_keys, is_tuple))
+
+        return quest_dict
 
 
 class KillQuest(Quest):
@@ -143,14 +179,21 @@ class KillQuest(Quest):
     Данный класс отвечает за формирование заказов на убийство и зачистку врагов
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, quest_tuple):
+        self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
-    def form_kill_quest(self):
+    def form_quest(self):
         """
         Данный метод будет формировать строку с квестом
         """
         pass
+
+    @staticmethod
+    def quest_tuple_to_dict(is_tuple: tuple):
+        dict_keys = ('world_name', 'danger_name', 'class_name')
+        quest_dict = dict(zip(dict_keys, is_tuple))
+
+        return quest_dict
 
 
 class DeliveryQuest(Quest):
@@ -159,14 +202,21 @@ class DeliveryQuest(Quest):
     стоимостью оплаты
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, quest_tuple):
+        self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
-    def form_delivery_quest(self):
+    def form_quest(self):
         """
         Данный метод будет формировать строку с квестом
         """
         pass
+
+    @staticmethod
+    def quest_tuple_to_dict(is_tuple: tuple):
+        dict_keys = ('world_name', 'danger_name', 'class_name', 'import_name')
+        quest_dict = dict(zip(dict_keys, is_tuple))
+
+        return quest_dict
 
 
 class EscortQuest(Quest):
@@ -174,11 +224,18 @@ class EscortQuest(Quest):
     Данный класс отвечает за формирование заказов на перевозку пассажира с одного мира на другой
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, quest_tuple):
+        self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
-    def form_escort_quest(self):
+    def form_quest(self):
         """
         Данный метод будет формировать строку с квестом
         """
         pass
+
+    @staticmethod
+    def quest_tuple_to_dict(is_tuple: tuple):
+        dict_keys = ('world_name', 'danger_name', 'class_name', 'world_population')
+        quest_dict = dict(zip(dict_keys, is_tuple))
+
+        return quest_dict

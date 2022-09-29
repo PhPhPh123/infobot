@@ -203,8 +203,6 @@ async def startnews(ctx: discord.ext.commands.context.Context):
     await ctx.send("Поиск слухов...")
     news_send.start(ctx.channel)
 
-logger.info('[print]')
-
 
 @infobot.command()
 @commands.has_permissions(administrator=True)
@@ -247,6 +245,8 @@ async def on_voice_state_update(member, before, after):
 
 
 if __name__ == '__main__':
+    logger.info('[bot_run]')
+
     session = connect_to_db_sqlalchemy()
 
     alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()
