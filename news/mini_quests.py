@@ -21,9 +21,11 @@ def control_quests():
 
 def choise_quest():
     """
-    Данная функция выбирает случайный тип квеста
+    Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
+    artifact_quest, kill_quest, delivery_quest, escort_quest
     """
-    chones_quest = random.choice(['artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest'])
+    quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))[0]
+    chones_quest = random.choice(quests)
 
     return chones_quest
 
@@ -113,6 +115,10 @@ class Quest:
     """
     Данный класс является базовым и содержит в себе аттрибуты и методы, характерные для всех квестов
     """
+    def __init__(self, quest_tuple):
+        self.quest_tuple = quest_tuple
+        self.quest_name = None
+        self.quest_dict = None
 
     def load_quest_to_file(self):
         """
@@ -129,6 +135,12 @@ class Quest:
     def quest_tuple_to_dict(is_tuple: tuple):
         raise NotImplementedError
 
+    def form_quest(self):
+        raise NotImplementedError
+
+    def get_quest_pattern_from_db(self):
+        raise NotImplementedError
+
 
 class ArtifactQuest(Quest):
     """
@@ -137,8 +149,12 @@ class ArtifactQuest(Quest):
     для ГМа
     """
 
-    def __init__(self, quest_tuple):
-        self.art_name = ""
+    def __init__(self, quest_tuple: tuple):
+        """
+        :param quest_tuple: название мира, опасности мира и имперского класса (world_name, danger_name, class_name)
+        """
+        super().__init__(quest_tuple)
+        self.quest_name = 'artifact_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
         self.full_artifact_string = None
 
@@ -164,7 +180,20 @@ class ArtifactQuest(Quest):
         """
         Данный метод будет формировать строку с квестом
         """
-        quest_artifact_reward = self.form_artifact()
+        self.form_artifact()
+
+    def get_quest_pattern_from_db(self):
+        quest_query = f"""
+        SELECT quest_patterns.quest_name, quest_patterns.quest_text
+        FROM quest_patterns
+        INNER JOIN quest_patterns_danger_zone_relations ON quest_patterns.quest_name == quest_patterns_danger_zone_relations.quest_name
+        INNER JOIN danger_zone ON quest_patterns_danger_zone_relations.danger_name == danger_zone.danger_name
+        INNER JOIN quest_patterns_imperial_class_relations ON quest_patterns.quest_name == quest_patterns_imperial_class_relations.quest_name
+        INNER JOIN imperial_class ON quest_patterns_imperial_class_relations.class_name == imperial_class.class_name
+        WHERE imperial_class.class_name == '{self.quest_dict['class_name']}' 
+          AND danger_zone.danger_name == '{self.quest_dict['danger_name']}'"""
+
+        quest_patterns_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))[0]
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -180,6 +209,8 @@ class KillQuest(Quest):
     """
 
     def __init__(self, quest_tuple):
+        super().__init__(quest_tuple)
+        self.quest_name = 'kill_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
     def form_quest(self):
@@ -203,6 +234,8 @@ class DeliveryQuest(Quest):
     """
 
     def __init__(self, quest_tuple):
+        super().__init__(quest_tuple)
+        self.quest_name = 'delivery_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
     def form_quest(self):
@@ -225,6 +258,8 @@ class EscortQuest(Quest):
     """
 
     def __init__(self, quest_tuple):
+        super().__init__(quest_tuple)
+        self.quest_name = 'escort_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
     def form_quest(self):
