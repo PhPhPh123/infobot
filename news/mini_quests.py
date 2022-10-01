@@ -1,7 +1,6 @@
 """
     Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов
 """
-import random
 
 from settings_imports_globalVariables import *
 import craft.main_artifact_builder
@@ -17,6 +16,8 @@ def control_quests():
 
     quest_former = QuestFormer(chones_quest)
     quest_string = quest_former.start_form()
+
+    return quest_string
 
 
 def choise_quest():
@@ -64,8 +65,6 @@ class QuestFormer:
         artifact_quest_query = '''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name
         FROM worlds
-        WHERE worlds.danger_name != 'Красная угроза' AND
-        worlds.class_name != 'Боевая зона'
         ORDER BY RANDOM()
         LIMIT 1'''
         artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
@@ -74,9 +73,13 @@ class QuestFormer:
     @staticmethod
     def kill_quest():
         kill_quest_query = '''
-        SELECT worlds.world_name, worlds.danger_name, worlds.class_name
+        SELECT worlds.world_name, worlds.danger_name, worlds.class_name, enemies.group_name
         FROM worlds
+        INNER JOIN worlds_enemies_relations ON worlds.world_name == worlds_enemies_relations.world_name
+        INNER JOIN enemies ON worlds_enemies_relations.enemy_name == enemies.enemy_name
         WHERE worlds.danger_name != 'Нулевая угроза'
+        AND enemies.group_name NOT NULL
+        AND enemies.enemy_name NOT LIKE 'Кароч%'
         ORDER BY RANDOM()
         LIMIT 1'''
         kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))
@@ -119,17 +122,12 @@ class Quest:
         self.quest_tuple = quest_tuple
         self.quest_name = None
         self.quest_dict = None
+        self.final_string = None
 
     def load_quest_to_file(self):
         """
         Данный метод будет записывать в файл текст квеста
         """
-
-    def finalize_quest_string(self):
-        """
-        Данный метод будет окончательное готовить квестовую строку
-        """
-        pass
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -139,6 +137,9 @@ class Quest:
         raise NotImplementedError
 
     def get_quest_pattern_from_db(self):
+        raise NotImplementedError
+
+    def form_quest_string(self):
         raise NotImplementedError
 
 
@@ -156,7 +157,10 @@ class ArtifactQuest(Quest):
         super().__init__(quest_tuple)
         self.quest_name = 'artifact_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
+
         self.full_artifact_string = None
+        self.quest_description = None
+        self.quest_subtype = None
 
     def form_artifact(self):
         grade_name = None
@@ -181,6 +185,10 @@ class ArtifactQuest(Quest):
         Данный метод будет формировать строку с квестом
         """
         self.form_artifact()
+        self.get_quest_pattern_from_db()
+        self.form_quest_string()
+
+        return self.final_string
 
     def get_quest_pattern_from_db(self):
         quest_query = f"""
@@ -193,7 +201,19 @@ class ArtifactQuest(Quest):
         WHERE imperial_class.class_name == '{self.quest_dict['class_name']}' 
           AND danger_zone.danger_name == '{self.quest_dict['danger_name']}'"""
 
-        quest_patterns_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))[0]
+        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        print(quest_tuple)
+        self.quest_subtype = quest_tuple[0][0]
+        self.quest_description = quest_tuple[0][1]
+
+    def form_quest_string(self):
+        quest_timer = random.randint(2, 5)
+
+        formatted_description = self.quest_description.format(self.quest_dict['world_name'],
+                                                              self.full_artifact_string.split("\n")[0],
+                                                              quest_timer)
+
+        self.final_string = formatted_description
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -201,6 +221,8 @@ class ArtifactQuest(Quest):
         quest_dict = dict(zip(dict_keys, is_tuple))
 
         return quest_dict
+
+
 
 
 class KillQuest(Quest):
@@ -221,7 +243,7 @@ class KillQuest(Quest):
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
-        dict_keys = ('world_name', 'danger_name', 'class_name')
+        dict_keys = ('world_name', 'danger_name', 'class_name', 'enemy_name')
         quest_dict = dict(zip(dict_keys, is_tuple))
 
         return quest_dict
