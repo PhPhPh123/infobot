@@ -165,7 +165,7 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
-@tasks.loop(minutes=30)
+@tasks.loop(seconds=3)
 async def news_send(channel: discord.channel.TextChannel):
     """
     Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
@@ -226,7 +226,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 async def goodspie(ctx: discord.ext.commands.context.Context):
 
     user_info.goodspie_command.to_control_other_functions()
-    await ctx.send(file=discord.File('answer_pie.png'))
+    await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
 
 
 @infobot.event

@@ -25,9 +25,14 @@ def choise_quest():
     Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
     artifact_quest, kill_quest, delivery_quest, escort_quest
     """
-    quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))[0]
-    chones_quest = random.choice(quests)
-
+    # quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
+    #
+    # quests_list = []
+    # for istuple in quests:
+    #     quests_list.append(istuple[0])
+    # print(quests_list)
+    # chones_quest = random.choice(quests_list)
+    chones_quest = 'kill_quest'
     return chones_quest
 
 
@@ -82,7 +87,7 @@ class QuestFormer:
         AND enemies.enemy_name NOT LIKE 'Кароч%'
         ORDER BY RANDOM()
         LIMIT 1'''
-        kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))
+        kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))[0]
         return kill_quest_tuple
 
     @staticmethod
@@ -96,7 +101,7 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 1'''
 
-        delivery_quest_tuple = tuple(bd_sqlite3_cursor.execute(delivery_quest_query))
+        delivery_quest_tuple = tuple(bd_sqlite3_cursor.execute(delivery_quest_query))[0]
 
         return delivery_quest_tuple
 
@@ -109,7 +114,7 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 2'''
 
-        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))
+        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))[0]
 
         return delivery_escort_tuple
 
@@ -121,7 +126,11 @@ class Quest:
     def __init__(self, quest_tuple):
         self.quest_tuple = quest_tuple
         self.quest_name = None
+
         self.quest_dict = None
+        self.quest_description = None
+        self.quest_subtype = None
+
         self.final_string = None
 
     def load_quest_to_file(self):
@@ -159,8 +168,6 @@ class ArtifactQuest(Quest):
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
         self.full_artifact_string = None
-        self.quest_description = None
-        self.quest_subtype = None
 
     def form_artifact(self):
         grade_name = None
@@ -202,7 +209,7 @@ class ArtifactQuest(Quest):
           AND danger_zone.danger_name == '{self.quest_dict['danger_name']}'"""
 
         quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
-        print(quest_tuple)
+
         self.quest_subtype = quest_tuple[0][0]
         self.quest_description = quest_tuple[0][1]
 
@@ -223,8 +230,6 @@ class ArtifactQuest(Quest):
         return quest_dict
 
 
-
-
 class KillQuest(Quest):
     """
     Данный класс отвечает за формирование заказов на убийство и зачистку врагов
@@ -236,17 +241,73 @@ class KillQuest(Quest):
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
     def form_quest(self):
-        """
-        Данный метод будет формировать строку с квестом
-        """
-        pass
+        self.get_quest_pattern_from_db()
+        self.form_quest_string()
+
+        return self.final_string
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
+        print(is_tuple)
         dict_keys = ('world_name', 'danger_name', 'class_name', 'enemy_name')
         quest_dict = dict(zip(dict_keys, is_tuple))
 
         return quest_dict
+
+    def get_quest_pattern_from_db(self):
+        print(self.quest_dict)
+        quest_query = f"""
+        SELECT quest_patterns.quest_name, quest_patterns.quest_text
+        FROM quest_patterns
+        INNER JOIN quest_patterns_danger_zone_relations ON quest_patterns.quest_name == quest_patterns_danger_zone_relations.quest_name
+        INNER JOIN danger_zone ON quest_patterns_danger_zone_relations.danger_name == danger_zone.danger_name
+        INNER JOIN quest_patterns_enemies_relations ON quest_patterns.quest_name == quest_patterns_enemies_relations.quest_name
+        INNER JOIN enemies ON quest_patterns_enemies_relations.enemy_name = enemies.enemy_name
+        WHERE danger_zone.danger_name == '{self.quest_dict['danger_name']}'
+        AND enemies.enemy_name == '{self.quest_dict['enemy_name']}'"""
+
+        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        print(quest_tuple)
+        self.quest_subtype = quest_tuple[0][0]
+        self.quest_description = quest_tuple[0][1]
+
+    def form_quest_string(self):
+        quest_timer = random.randint(2, 5)
+        quest_reward = self.count_reward(quest_timer)
+
+        formatted_description = self.quest_description.format(self.quest_dict['world_name'],
+                                                              self.quest_dict['enemy_name'],
+                                                              quest_reward,
+                                                              quest_timer)
+
+        self.final_string = formatted_description
+
+    def count_reward(self, quest_timer):
+        base_reward = 100000
+
+        timer_modifier = None
+        danger_modifier = None
+
+        if self.quest_dict['danger_name'] == 'Зеленая угроза':
+            danger_modifier = 1.15
+        elif self.quest_dict['danger_name'] == 'Синяя угроза':
+            danger_modifier = 1.40
+        elif self.quest_dict['danger_name'] == 'Фиолетовая угроза':
+            danger_modifier = 1.70
+        elif self.quest_dict['danger_name'] == 'Красная угроза':
+            danger_modifier = 2
+
+        if quest_timer == 5:
+            timer_modifier = 1.0
+        elif quest_timer == 4:
+            timer_modifier = 1.2
+        elif quest_timer == 3:
+            timer_modifier = 1.4
+        elif quest_timer == 2:
+            timer_modifier = 1.6
+
+        final_reward = base_reward * danger_modifier * timer_modifier
+        return final_reward
 
 
 class DeliveryQuest(Quest):
@@ -273,6 +334,13 @@ class DeliveryQuest(Quest):
 
         return quest_dict
 
+    def get_quest_pattern_from_db(self):
+        pass
+
+    def form_quest_string(self):
+        pass
+
+
 
 class EscortQuest(Quest):
     """
@@ -296,3 +364,11 @@ class EscortQuest(Quest):
         quest_dict = dict(zip(dict_keys, is_tuple))
 
         return quest_dict
+
+    def get_quest_pattern_from_db(self):
+        pass
+
+    def form_quest_string(self):
+        pass
+
+
