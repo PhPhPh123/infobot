@@ -1,6 +1,7 @@
 """
     Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов
 """
+import random
 
 from settings_imports_globalVariables import *
 import craft.main_artifact_builder
@@ -32,7 +33,7 @@ def choise_quest():
     #     quests_list.append(istuple[0])
     # print(quests_list)
     # chones_quest = random.choice(quests_list)
-    chones_quest = 'kill_quest'
+    chones_quest = random.choice(['kill_quest', 'artifact_quest'])
     return chones_quest
 
 
@@ -73,6 +74,8 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 1'''
         artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
+        assert artifact_quest_tuple, 'база должна вернуть непустое значение'
+
         return artifact_quest_tuple
 
     @staticmethod
@@ -88,6 +91,8 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 1'''
         kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))[0]
+        assert kill_quest_tuple, 'база должна вернуть непустое значение'
+
         return kill_quest_tuple
 
     @staticmethod
@@ -102,6 +107,7 @@ class QuestFormer:
         LIMIT 1'''
 
         delivery_quest_tuple = tuple(bd_sqlite3_cursor.execute(delivery_quest_query))[0]
+        assert delivery_quest_tuple, 'база должна вернуть непустое значение'
 
         return delivery_quest_tuple
 
@@ -115,6 +121,7 @@ class QuestFormer:
         LIMIT 2'''
 
         delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))[0]
+        assert delivery_escort_tuple, 'база должна вернуть непустое значение'
 
         return delivery_escort_tuple
 
@@ -123,6 +130,7 @@ class Quest:
     """
     Данный класс является базовым и содержит в себе аттрибуты и методы, характерные для всех квестов
     """
+
     def __init__(self, quest_tuple):
         self.quest_tuple = quest_tuple
         self.quest_name = None
@@ -199,16 +207,19 @@ class ArtifactQuest(Quest):
 
     def get_quest_pattern_from_db(self):
         quest_query = f"""
-        SELECT quest_patterns.quest_name, quest_patterns.quest_text
+        SELECT DISTINCT quest_patterns.quest_name, quest_patterns.quest_text
         FROM quest_patterns
-        INNER JOIN quest_patterns_danger_zone_relations ON quest_patterns.quest_name == quest_patterns_danger_zone_relations.quest_name
-        INNER JOIN danger_zone ON quest_patterns_danger_zone_relations.danger_name == danger_zone.danger_name
-        INNER JOIN quest_patterns_imperial_class_relations ON quest_patterns.quest_name == quest_patterns_imperial_class_relations.quest_name
-        INNER JOIN imperial_class ON quest_patterns_imperial_class_relations.class_name == imperial_class.class_name
+        INNER JOIN quest_patterns_danger_zone_relations USING(quest_name)       
+        INNER JOIN danger_zone USING(danger_name)    
+        INNER JOIN quest_patterns_imperial_class_relations USING(quest_name)
+        INNER JOIN imperial_class USING(class_name)
         WHERE imperial_class.class_name == '{self.quest_dict['class_name']}' 
-          AND danger_zone.danger_name == '{self.quest_dict['danger_name']}'"""
+          AND danger_zone.danger_name == '{self.quest_dict['danger_name']}'
+        ORDER BY RANDOM()
+        LIMIT 1"""
 
         quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]
         self.quest_description = quest_tuple[0][1]
@@ -257,17 +268,22 @@ class KillQuest(Quest):
     def get_quest_pattern_from_db(self):
         print(self.quest_dict)
         quest_query = f"""
-        SELECT quest_patterns.quest_name, quest_patterns.quest_text
+        SELECT DISTINCT quest_patterns.quest_name, quest_patterns.quest_text
         FROM quest_patterns
-        INNER JOIN quest_patterns_danger_zone_relations ON quest_patterns.quest_name == quest_patterns_danger_zone_relations.quest_name
-        INNER JOIN danger_zone ON quest_patterns_danger_zone_relations.danger_name == danger_zone.danger_name
-        INNER JOIN quest_patterns_enemies_relations ON quest_patterns.quest_name == quest_patterns_enemies_relations.quest_name
-        INNER JOIN enemies ON quest_patterns_enemies_relations.enemy_name = enemies.enemy_name
+        INNER JOIN quest_patterns_danger_zone_relations USING(quest_name)       
+        INNER JOIN danger_zone USING(danger_name)    
+        INNER JOIN quest_patterns_enemies_relations USING(quest_name)    
+        INNER JOIN enemies USING(enemy_name)
+        INNER JOIN quest_patterns_imperial_class_relations USING(quest_name)
+        INNER JOIN imperial_class USING(class_name)
         WHERE danger_zone.danger_name == '{self.quest_dict['danger_name']}'
-        AND enemies.enemy_name == '{self.quest_dict['enemy_name']}'"""
+        AND enemies.group_name == '{self.quest_dict['enemy_name']}'
+        ORDER BY RANDOM()
+        LIMIT 1"""
 
         quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
-        print(quest_tuple)
+        assert quest_tuple, 'база должна вернуть непустое значение'
+
         self.quest_subtype = quest_tuple[0][0]
         self.quest_description = quest_tuple[0][1]
 
@@ -341,7 +357,6 @@ class DeliveryQuest(Quest):
         pass
 
 
-
 class EscortQuest(Quest):
     """
     Данный класс отвечает за формирование заказов на перевозку пассажира с одного мира на другой
@@ -370,5 +385,3 @@ class EscortQuest(Quest):
 
     def form_quest_string(self):
         pass
-
-
