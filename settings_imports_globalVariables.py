@@ -18,6 +18,7 @@ from sqlalchemy.orm import mapper, sessionmaker
 from dotenv import load_dotenv, find_dotenv
 import matplotlib.pyplot as plt
 from loguru import logger
+from datetime import date
 
 
 def get_script_dir() -> str:
@@ -68,6 +69,12 @@ logger.add('logs_and_temp_files/sessions.log', format='{time}, {level}, {message
 
 logger.add('logs_and_temp_files/artifacts.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[artifact]' in x['message'])
+
+logger.add('logs_and_temp_files/quest_artifacts.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
+           filter=lambda x: '[artifact_for_quest]' in x['message'])
+
+logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
+           filter=lambda x: '[quest]' in x['message'])
 
 """
 Глобальные межмодульные переменные

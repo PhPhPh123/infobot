@@ -33,7 +33,7 @@ def choise_quest():
     #     quests_list.append(istuple[0])
     # print(quests_list)
     # chones_quest = random.choice(quests_list)
-    chones_quest = random.choice(['kill_quest', 'artifact_quest'])
+    chones_quest = random.choice(['kill_quest', 'artifact_quest', 'delivery_quest'])
     return chones_quest
 
 
@@ -141,10 +141,15 @@ class Quest:
 
         self.final_string = None
 
-    def load_quest_to_file(self):
+    def load_quest_to_log(self):
         """
         Данный метод будет записывать в файл текст квеста
         """
+        logger.info('[quest]' + self.final_string)
+
+    def form_quest_name(self):
+        current_date = date.today()
+        self.quest_name = f"{self.quest_dict['world_name']}. {self.quest_subtype.capitalize()}. Получение: {current_date} \n"
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -201,7 +206,11 @@ class ArtifactQuest(Quest):
         """
         self.form_artifact()
         self.get_quest_pattern_from_db()
+        self.form_quest_name()
         self.form_quest_string()
+        self.load_artifact_to_log()
+        self.load_quest_to_log()
+
 
         return self.final_string
 
@@ -231,14 +240,19 @@ class ArtifactQuest(Quest):
                                                               self.full_artifact_string.split("\n")[0],
                                                               quest_timer)
 
-        self.final_string = formatted_description
+        self.final_string = f"{self.quest_name}{formatted_description}"
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
         dict_keys = ('world_name', 'danger_name', 'class_name')
         quest_dict = dict(zip(dict_keys, is_tuple))
 
+        assert len(quest_dict) == 3, 'ключ-значений должно быть 3'
+
         return quest_dict
+
+    def load_artifact_to_log(self):
+        logger.info('[artifact_for_quest]' + self.quest_name + self.full_artifact_string)
 
 
 class KillQuest(Quest):
@@ -253,7 +267,9 @@ class KillQuest(Quest):
 
     def form_quest(self):
         self.get_quest_pattern_from_db()
+        self.form_quest_name()
         self.form_quest_string()
+        self.load_quest_to_log()
 
         return self.final_string
 
@@ -263,10 +279,11 @@ class KillQuest(Quest):
         dict_keys = ('world_name', 'danger_name', 'class_name', 'enemy_name')
         quest_dict = dict(zip(dict_keys, is_tuple))
 
+        assert len(quest_dict) == 4, 'ключ-значений должно быть 4'
+
         return quest_dict
 
     def get_quest_pattern_from_db(self):
-        print(self.quest_dict)
         quest_query = f"""
         SELECT DISTINCT quest_patterns.quest_name, quest_patterns.quest_text
         FROM quest_patterns
@@ -296,7 +313,7 @@ class KillQuest(Quest):
                                                               quest_reward,
                                                               quest_timer)
 
-        self.final_string = formatted_description
+        self.final_string = f"{self.quest_name}{formatted_description}"
 
     def count_reward(self, quest_timer):
         base_reward = 100000
@@ -322,7 +339,7 @@ class KillQuest(Quest):
         elif quest_timer == 2:
             timer_modifier = 1.6
 
-        final_reward = base_reward * danger_modifier * timer_modifier
+        final_reward = int(base_reward * danger_modifier * timer_modifier)
         return final_reward
 
 
@@ -338,23 +355,46 @@ class DeliveryQuest(Quest):
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
     def form_quest(self):
-        """
-        Данный метод будет формировать строку с квестом
-        """
-        pass
+        self.get_quest_pattern_from_db()
+        self.form_quest_name()
+        self.form_quest_string()
+        self.load_quest_to_log()
+
+        return self.final_string
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
         dict_keys = ('world_name', 'danger_name', 'class_name', 'import_name')
         quest_dict = dict(zip(dict_keys, is_tuple))
 
+        assert len(quest_dict) == 4, 'ключ-значений должно быть 4'
+
         return quest_dict
 
     def get_quest_pattern_from_db(self):
-        pass
+        quest_query = f"""
+        SELECT DISTINCT quest_patterns.quest_name, quest_patterns.quest_text
+        FROM quest_patterns
+        WHERE quest_patterns.group_name == 'delivery_quest'
+        ORDER BY RANDOM()
+        LIMIT 1"""
+
+        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        assert quest_tuple, 'база должна вернуть непустое значение'
+
+        self.quest_subtype = quest_tuple[0][0]
+        self.quest_description = quest_tuple[0][1]
 
     def form_quest_string(self):
-        pass
+        quest_timer = random.randint(2, 5)
+        goods_amount = random.randint(2, 8)
+
+        formatted_description = self.quest_description.format(self.quest_dict['world_name'],
+                                                              self.quest_dict['import_name'],
+                                                              goods_amount,
+                                                              quest_timer)
+
+        self.final_string = f"{self.quest_name}{formatted_description}"
 
 
 class EscortQuest(Quest):
@@ -377,6 +417,8 @@ class EscortQuest(Quest):
     def quest_tuple_to_dict(is_tuple: tuple):
         dict_keys = ('world_name', 'danger_name', 'class_name', 'world_population')
         quest_dict = dict(zip(dict_keys, is_tuple))
+
+        assert len(quest_dict) == 4, 'ключ-значений должно быть 4'
 
         return quest_dict
 
