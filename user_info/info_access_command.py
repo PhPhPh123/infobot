@@ -6,19 +6,16 @@
 from settings_imports_globalVariables import *
 
 
-def form_tuple_in_db(alch_connect, alch_worlds) -> str:
+def form_tuple_in_db() -> str:
     """
-    Функция осуществляет запрос в БД через ORM sqlalchemy и sqlite получая кортежи с данными, которые затем передает
-    в нижестоящие функции, преобразующие их в списки и добавляющие иные данные, а потом функция возвращает результат в
-    виде готового ответа ботом
-    :param cursor: объект курсора sqlite
-    :param alch_worlds: объект sql-alchemy
-    :param alch_connect: объект sql-alchemy
+    Функция осуществляет запрос в БД через ORM sqlalchemy объект которой является ГЛОБАЛЬНОЙ МЕЖМОДУЛЬНОЙ ПЕРЕМЕННОЙ,
+    которые затем передает в нижестоящие функции, преобразующие их в списки и добавляющие иные данные, а потом
+    функция возвращает результат в виде готового ответа ботом
     :return: итоговая строка ответа бота
     """
     # Создание запроса к БД
-    access_tuple_temp = sqlalchemy.sql.select(alch_worlds.c.world_name,
-                                              alch_worlds.c.access_level).where(alch_worlds.c.access_level > 0)
+    access_tuple_temp = sqlalchemy.sql.select(alch_world.c.world_name,
+                                              alch_world.c.access_level).where(alch_world.c.access_level > 0)
     # Экзекьют в БД для получения кортежей
     access_tuple = tuple(alch_connect.execute(access_tuple_temp))
 

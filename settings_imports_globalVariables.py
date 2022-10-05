@@ -21,7 +21,7 @@ from loguru import logger
 from datetime import date
 
 
-def get_script_dir() -> str:
+def get_bot_dir() -> str:
     """
     Функция собирающая абсолютный путь к текущей директории
     :return: возвращает этот путь
@@ -37,10 +37,25 @@ def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     :return: объекты курсора и коннекта
     """
     db_name = 'infobot_db.db'
-    abspath = get_script_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
+    abspath = get_bot_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
     cursor = connect.cursor()  # Создание курсора
     return cursor, connect
+
+
+def connect_to_db_sqlalchemy():
+    """
+    Данный модуль подключается к orm sqlalchemy
+    :return: объекты коннектора и таблички worlds
+    """
+    db_engine = sqlalchemy.create_engine('sqlite:///infobot_db.db')
+    db_connector = db_engine.connect()
+
+    metadata = sqlalchemy.MetaData(db_engine)
+    worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
+    systems = sqlalchemy.Table('systems', metadata, autoload=True)
+
+    return db_connector, worlds, systems
 
 
 '''
@@ -79,4 +94,6 @@ logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}
 """
 Глобальные межмодульные переменные
 """
+alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()  # Объекты sql-alchemy
+
 bd_sqlite3_cursor, bd_sqlite3_connect = connect_to_db_sqlite3()  # Объекты курсора и коннекта для доступа в базу данных

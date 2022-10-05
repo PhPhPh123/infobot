@@ -24,21 +24,6 @@ intents.members = True
 infobot = commands.Bot(command_prefix=settings['prefix'], intents=intents)  # Экземпляр класса бота
 
 
-def connect_to_db_sqlalchemy():
-    """
-    Данный модуль подключается к orm sqlalchemy
-    :return: объекты коннектора и таблички worlds
-    """
-    db_engine = sqlalchemy.create_engine('sqlite:///infobot_db.db')
-    db_connector = db_engine.connect()
-
-    metadata = sqlalchemy.MetaData(db_engine)
-    worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
-    systems = sqlalchemy.Table('systems', metadata, autoload=True)
-
-    return db_connector, worlds, systems
-
-
 @infobot.command()
 async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     """
@@ -96,7 +81,6 @@ async def infoexport(ctx: discord.ext.commands.context.Context, world_name: str)
     :param world_name: название запрашиваемого мира
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global db_cursor
     deal_name = 'export'
     bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
     await ctx.send(bot_answer)
@@ -123,8 +107,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    global alch_connect, alch_world
-    bot_answer = user_info.info_access_command.form_tuple_in_db(alch_connect, alch_world)
+    bot_answer = user_info.info_access_command.form_tuple_in_db()
     await ctx.send(bot_answer)
 
 
@@ -246,9 +229,4 @@ async def on_voice_state_update(member, before, after):
 
 if __name__ == '__main__':
     logger.info('[bot_run]')
-
-    session = connect_to_db_sqlalchemy()
-
-    alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()
-
     infobot.run(settings['token'])

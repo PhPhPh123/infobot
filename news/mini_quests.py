@@ -1,7 +1,6 @@
 """
     Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов
 """
-import random
 
 from settings_imports_globalVariables import *
 import craft.main_artifact_builder
@@ -26,14 +25,14 @@ def choise_quest():
     Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
     artifact_quest, kill_quest, delivery_quest, escort_quest
     """
-    # quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
-    #
-    # quests_list = []
-    # for istuple in quests:
-    #     quests_list.append(istuple[0])
-    # print(quests_list)
-    # chones_quest = random.choice(quests_list)
-    chones_quest = random.choice(['kill_quest', 'artifact_quest', 'delivery_quest'])
+    quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
+
+    quests_list = []
+    for istuple in quests:
+        quests_list.append(istuple[0])
+
+    chones_quest = random.choice(quests_list)
+
     return chones_quest
 
 
@@ -114,19 +113,19 @@ class QuestFormer:
     @staticmethod
     def escort_quest():
         escort_quest_query = f'''
-        SELECT  world_name, danger_name, class_name, world_population
+        SELECT  world_name, danger_name
         FROM worlds
-        WHERE world_population > 10000
+        WHERE world_population > 10000 AND danger_name != 'Красная угроза'
         ORDER BY RANDOM()
         LIMIT 2'''
 
-        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))[0]
+        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))
         assert delivery_escort_tuple, 'база должна вернуть непустое значение'
 
         return delivery_escort_tuple
 
 
-class Quest:
+class Quest(ABC):
     """
     Данный класс является базовым и содержит в себе аттрибуты и методы, характерные для всех квестов
     """
@@ -149,20 +148,56 @@ class Quest:
 
     def form_quest_name(self):
         current_date = date.today()
-        self.quest_name = f"{self.quest_dict['world_name']}. {self.quest_subtype.capitalize()}. Получение: {current_date} \n"
+        self.quest_name = f"{self.quest_dict['world_name']}. {self.quest_subtype.capitalize()}. Получение: {current_date}\r\r"
 
     @staticmethod
+    @abstractmethod
     def quest_tuple_to_dict(is_tuple: tuple):
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def form_quest(self):
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_quest_pattern_from_db(self):
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def form_quest_string(self):
-        raise NotImplementedError
+        pass
+
+
+class Reward:
+    def __init__(self):
+        self.quest_dict = None
+
+    def count_reward(self, quest_timer):
+        base_reward = 100000
+
+        timer_modifier = None
+        danger_modifier = None
+
+        if self.quest_dict['danger_name'] == 'Зеленая угроза':
+            danger_modifier = 1.15
+        elif self.quest_dict['danger_name'] == 'Синяя угроза':
+            danger_modifier = 1.40
+        elif self.quest_dict['danger_name'] == 'Фиолетовая угроза':
+            danger_modifier = 1.70
+        elif self.quest_dict['danger_name'] == 'Красная угроза':
+            danger_modifier = 2
+
+        if quest_timer == 5:
+            timer_modifier = 1.0
+        elif quest_timer == 4:
+            timer_modifier = 1.2
+        elif quest_timer == 3:
+            timer_modifier = 1.4
+        elif quest_timer == 2:
+            timer_modifier = 1.6
+        print(danger_modifier, timer_modifier)
+        final_reward = int(base_reward * danger_modifier * timer_modifier)
+        return final_reward
 
 
 class ArtifactQuest(Quest):
@@ -211,7 +246,6 @@ class ArtifactQuest(Quest):
         self.load_artifact_to_log()
         self.load_quest_to_log()
 
-
         return self.final_string
 
     def get_quest_pattern_from_db(self):
@@ -255,7 +289,7 @@ class ArtifactQuest(Quest):
         logger.info('[artifact_for_quest]' + self.quest_name + self.full_artifact_string)
 
 
-class KillQuest(Quest):
+class KillQuest(Quest, Reward):
     """
     Данный класс отвечает за формирование заказов на убийство и зачистку врагов
     """
@@ -315,33 +349,6 @@ class KillQuest(Quest):
 
         self.final_string = f"{self.quest_name}{formatted_description}"
 
-    def count_reward(self, quest_timer):
-        base_reward = 100000
-
-        timer_modifier = None
-        danger_modifier = None
-
-        if self.quest_dict['danger_name'] == 'Зеленая угроза':
-            danger_modifier = 1.15
-        elif self.quest_dict['danger_name'] == 'Синяя угроза':
-            danger_modifier = 1.40
-        elif self.quest_dict['danger_name'] == 'Фиолетовая угроза':
-            danger_modifier = 1.70
-        elif self.quest_dict['danger_name'] == 'Красная угроза':
-            danger_modifier = 2
-
-        if quest_timer == 5:
-            timer_modifier = 1.0
-        elif quest_timer == 4:
-            timer_modifier = 1.2
-        elif quest_timer == 3:
-            timer_modifier = 1.4
-        elif quest_timer == 2:
-            timer_modifier = 1.6
-
-        final_reward = int(base_reward * danger_modifier * timer_modifier)
-        return final_reward
-
 
 class DeliveryQuest(Quest):
     """
@@ -397,7 +404,7 @@ class DeliveryQuest(Quest):
         self.final_string = f"{self.quest_name}{formatted_description}"
 
 
-class EscortQuest(Quest):
+class EscortQuest(Quest, Reward):
     """
     Данный класс отвечает за формирование заказов на перевозку пассажира с одного мира на другой
     """
@@ -405,25 +412,56 @@ class EscortQuest(Quest):
     def __init__(self, quest_tuple):
         super().__init__(quest_tuple)
         self.quest_name = 'escort_quest'
-        self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
+        self.quest_dict, self.place_of_delivery_dict = self.quest_tuple_to_dict(quest_tuple)
+        print(self.quest_dict)
 
     def form_quest(self):
-        """
-        Данный метод будет формировать строку с квестом
-        """
-        pass
+        self.get_quest_pattern_from_db()
+        self.form_quest_name()
+        self.form_quest_string()
+        self.load_quest_to_log()
+
+        return self.final_string
 
     @staticmethod
-    def quest_tuple_to_dict(is_tuple: tuple):
-        dict_keys = ('world_name', 'danger_name', 'class_name', 'world_population')
-        quest_dict = dict(zip(dict_keys, is_tuple))
+    def quest_tuple_to_dict(is_tuple: tuple) -> tuple:
+        assert len(is_tuple) == 2, 'кортежей должно быть 2'
 
-        assert len(quest_dict) == 4, 'ключ-значений должно быть 4'
+        print(is_tuple)
+        dict_keys = ('world_name', 'danger_name')
+        quest_dict = dict(zip(dict_keys, is_tuple[0]))
+        place_of_delivery_dict = dict(zip(dict_keys, is_tuple[1]))
 
-        return quest_dict
+        assert len(quest_dict) == 2 and len(place_of_delivery_dict) == 2, 'ключ-значений должно быть 2'
+
+        return quest_dict, place_of_delivery_dict
 
     def get_quest_pattern_from_db(self):
-        pass
+        quest_query = f"""
+        SELECT DISTINCT quest_patterns.quest_name, quest_patterns.quest_text
+        FROM quest_patterns
+        WHERE quest_patterns.group_name == 'escort_quest'
+        ORDER BY RANDOM()
+        LIMIT 1"""
+
+        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        assert quest_tuple, 'база должна вернуть непустое значение'
+
+        self.quest_subtype = quest_tuple[0][0]
+        self.quest_description = quest_tuple[0][1]
+
+    def form_quest_name(self):
+        current_date = date.today()
+        self.quest_name = f"""{self.quest_dict['world_name']} -> {self.place_of_delivery_dict['world_name']}
+{self.quest_subtype.capitalize()}. Получение: {current_date} \r\r"""
 
     def form_quest_string(self):
-        pass
+        quest_timer = random.randint(2, 5)
+        quest_reward = self.count_reward(quest_timer)
+
+        formatted_description = self.quest_description.format(self.quest_dict['world_name'],
+                                                              self.place_of_delivery_dict['world_name'],
+                                                              quest_reward,
+                                                              quest_timer)
+
+        self.final_string = f"{self.quest_name}{formatted_description}"
