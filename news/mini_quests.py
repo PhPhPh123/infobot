@@ -10,7 +10,6 @@ def control_quests():
     """
     Данная функция является базовой точкой входа и управляющей элементом модуля
     """
-    logger.info('[print]')
 
     chones_quest = choise_quest()
 
@@ -25,14 +24,14 @@ def choise_quest():
     Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
     artifact_quest, kill_quest, delivery_quest, escort_quest
     """
-    quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
-
-    quests_list = []
-    for istuple in quests:
-        quests_list.append(istuple[0])
-
-    chones_quest = random.choice(quests_list)
-
+    # quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
+    #
+    # quests_list = []
+    # for istuple in quests:
+    #     quests_list.append(istuple[0])
+    #
+    # chones_quest = random.choice(quests_list)
+    chones_quest = 'artifact_quest'
     return chones_quest
 
 
@@ -70,6 +69,7 @@ class QuestFormer:
         artifact_quest_query = '''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name
         FROM worlds
+        WHERE worlds.world_name != 'Красная-Плонета'
         ORDER BY RANDOM()
         LIMIT 1'''
         artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
@@ -86,7 +86,7 @@ class QuestFormer:
         INNER JOIN enemies ON worlds_enemies_relations.enemy_name == enemies.enemy_name
         WHERE worlds.danger_name != 'Нулевая угроза'
         AND enemies.group_name NOT NULL
-        AND enemies.enemy_name NOT LIKE 'Кароч%'
+        AND worlds.world_name != 'Красная-Плонета'
         ORDER BY RANDOM()
         LIMIT 1'''
         kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))[0]
@@ -101,7 +101,8 @@ class QuestFormer:
         FROM worlds
         INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
         INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
-        WHERE trade_import.import_name != 'Импорт-отсутствует'
+        WHERE trade_import.import_name != 'Импорт-отсутствует' 
+        AND worlds.world_name != 'Красная-Плонета'
         ORDER BY RANDOM()
         LIMIT 1'''
 
@@ -116,6 +117,7 @@ class QuestFormer:
         SELECT  world_name, danger_name
         FROM worlds
         WHERE world_population > 10000 AND danger_name != 'Красная угроза'
+        AND worlds.world_name != 'Красная-Плонета'
         ORDER BY RANDOM()
         LIMIT 2'''
 
@@ -176,7 +178,7 @@ class Reward:
         base_reward = 100000
 
         timer_modifier = None
-        danger_modifier = None
+        danger_modifier = 1
 
         if self.quest_dict['danger_name'] == 'Зеленая угроза':
             danger_modifier = 1.15
@@ -195,7 +197,7 @@ class Reward:
             timer_modifier = 1.4
         elif quest_timer == 2:
             timer_modifier = 1.6
-        print(danger_modifier, timer_modifier)
+
         final_reward = int(base_reward * danger_modifier * timer_modifier)
         return final_reward
 
@@ -234,6 +236,7 @@ class ArtifactQuest(Quest):
                         'особенность': 'random'}
 
         self.full_artifact_string = craft.main_artifact_builder.choise_class_objects(request_dict)
+        print(self.full_artifact_string)
 
     def form_quest(self):
         """
@@ -258,11 +261,12 @@ class ArtifactQuest(Quest):
         INNER JOIN imperial_class USING(class_name)
         WHERE imperial_class.class_name == '{self.quest_dict['class_name']}' 
           AND danger_zone.danger_name == '{self.quest_dict['danger_name']}'
+          AND quest_patterns.group_name == 'artifact_quest'
         ORDER BY RANDOM()
         LIMIT 1"""
 
         quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
-        assert quest_tuple, 'база должна вернуть непустое значение'
+        assert quest_tuple, f'база должна вернуть непустое значение. Неверный запрос: {quest_query}'
 
         self.quest_subtype = quest_tuple[0][0]
         self.quest_description = quest_tuple[0][1]
@@ -309,7 +313,6 @@ class KillQuest(Quest, Reward):
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
-        print(is_tuple)
         dict_keys = ('world_name', 'danger_name', 'class_name', 'enemy_name')
         quest_dict = dict(zip(dict_keys, is_tuple))
 
