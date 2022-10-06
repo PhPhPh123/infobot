@@ -60,12 +60,12 @@ def form_string_answer(enemy_tuple: tuple) -> str:
 
     if enemy_tuple[0][1]:  # Если враги на мире присутствуют, то выбирается формирование данного сообщения
         str_answer = f'''
-Ходят слухи, что на мире {enemy_tuple[0][0]} есть представляющие угрозу {enemy_tuple[0][1]}. 
+[НОВОСТЬ О ВРАГАХ] Ходят слухи, что на мире {enemy_tuple[0][0]} есть представляющие угрозу {enemy_tuple[0][1]}. 
 {random.choice(warning_messages)}
     '''
     else:  # Если враги отсутствуют(группа врагов = Никто), то выбирается данное сообщение
         str_answer = f'''
-Ходят слухи, что на мире {enemy_tuple[0][0]} нет опасных врагов. {random.choice(peace_messages)}
+[НОВОСТЬ О БЕЗОПАСНОМ МЕСТЕ] Ходят слухи, что на мире {enemy_tuple[0][0]} нет опасных врагов. {random.choice(peace_messages)}
 '''
 
     return str_answer

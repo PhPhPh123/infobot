@@ -24,14 +24,13 @@ def choise_quest():
     Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
     artifact_quest, kill_quest, delivery_quest, escort_quest
     """
-    # quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
-    #
-    # quests_list = []
-    # for istuple in quests:
-    #     quests_list.append(istuple[0])
-    #
-    # chones_quest = random.choice(quests_list)
-    chones_quest = 'artifact_quest'
+    quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
+
+    quests_list = []
+    for istuple in quests:
+        quests_list.append(istuple[0])
+
+    chones_quest = random.choice(quests_list)
     return chones_quest
 
 
@@ -69,7 +68,8 @@ class QuestFormer:
         artifact_quest_query = '''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name
         FROM worlds
-        WHERE worlds.world_name != 'Красная-Плонета'
+        INNER JOIN imperial_class USING(class_name)
+        WHERE imperial_class.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
         artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
@@ -86,7 +86,7 @@ class QuestFormer:
         INNER JOIN enemies ON worlds_enemies_relations.enemy_name == enemies.enemy_name
         WHERE worlds.danger_name != 'Нулевая угроза'
         AND enemies.group_name NOT NULL
-        AND worlds.world_name != 'Красная-Плонета'
+        AND imperial_class.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
         kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))[0]
@@ -102,7 +102,7 @@ class QuestFormer:
         INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
         INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
         WHERE trade_import.import_name != 'Импорт-отсутствует' 
-        AND worlds.world_name != 'Красная-Плонета'
+        AND imperial_class.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
 
@@ -116,8 +116,10 @@ class QuestFormer:
         escort_quest_query = f'''
         SELECT  world_name, danger_name
         FROM worlds
-        WHERE world_population > 10000 AND danger_name != 'Красная угроза'
-        AND worlds.world_name != 'Красная-Плонета'
+        WHERE world_population > 10000 
+        AND danger_name != 'Красная угроза'
+        AND imperial_class.class_name != 'Мир-Горка-Стопудова'  
+        AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 2'''
 
@@ -278,7 +280,7 @@ class ArtifactQuest(Quest):
                                                               self.full_artifact_string.split("\n")[0],
                                                               quest_timer)
 
-        self.final_string = f"{self.quest_name}{formatted_description}"
+        self.final_string = f"[КВЕСТ] {self.quest_name}{formatted_description}"
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -350,7 +352,7 @@ class KillQuest(Quest, Reward):
                                                               quest_reward,
                                                               quest_timer)
 
-        self.final_string = f"{self.quest_name}{formatted_description}"
+        self.final_string = f"[КВЕСТ] {self.quest_name}{formatted_description}"
 
 
 class DeliveryQuest(Quest):
@@ -404,7 +406,7 @@ class DeliveryQuest(Quest):
                                                               goods_amount,
                                                               quest_timer)
 
-        self.final_string = f"{self.quest_name}{formatted_description}"
+        self.final_string = f"[КВЕСТ]{self.quest_name}{formatted_description}"
 
 
 class EscortQuest(Quest, Reward):
@@ -455,7 +457,7 @@ class EscortQuest(Quest, Reward):
 
     def form_quest_name(self):
         current_date = date.today()
-        self.quest_name = f"""{self.quest_dict['world_name']} -> {self.place_of_delivery_dict['world_name']}
+        self.quest_name = f"""[КВЕСТ] {self.quest_dict['world_name']} -> {self.place_of_delivery_dict['world_name']}
 {self.quest_subtype.capitalize()}. Получение: {current_date} \r\r"""
 
     def form_quest_string(self):

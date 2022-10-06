@@ -148,7 +148,7 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
-@tasks.loop(seconds=3)
+@tasks.loop(minutes=30)
 async def news_send(channel: discord.channel.TextChannel):
     """
     Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
