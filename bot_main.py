@@ -4,8 +4,8 @@
 прав доступа. Первая функция подключается к базе данных, а остальные представляют собой команды боту.
 Все необходимые модули импортируются включая модуль с настройками
 """
-
 from settings_imports_globalVariables import *
+from minor_commands import roll_module
 
 import static_answer_messages
 import user_info.infoworld_command
@@ -16,7 +16,6 @@ import user_info.infoexportgoods_command
 import user_info.goodspie_command
 import news.bot_news_main
 import craft.main_artifact_builder
-from minor_commands import roll_module
 
 
 intents = discord.Intents.all()
