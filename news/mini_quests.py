@@ -68,8 +68,7 @@ class QuestFormer:
         artifact_quest_query = '''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name
         FROM worlds
-        INNER JOIN imperial_class USING(class_name)
-        WHERE imperial_class.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
+        WHERE worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
         artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
@@ -86,7 +85,7 @@ class QuestFormer:
         INNER JOIN enemies ON worlds_enemies_relations.enemy_name == enemies.enemy_name
         WHERE worlds.danger_name != 'Нулевая угроза'
         AND enemies.group_name NOT NULL
-        AND imperial_class.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
+        AND worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
         kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))[0]
@@ -102,7 +101,7 @@ class QuestFormer:
         INNER JOIN worlds_trade_import_relations ON worlds.world_name == worlds_trade_import_relations.world_name
         INNER JOIN trade_import ON worlds_trade_import_relations.import_name == trade_import.import_name
         WHERE trade_import.import_name != 'Импорт-отсутствует' 
-        AND imperial_class.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
+        AND worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
 
@@ -118,12 +117,12 @@ class QuestFormer:
         FROM worlds
         WHERE world_population > 10000 
         AND danger_name != 'Красная угроза'
-        AND imperial_class.class_name != 'Мир-Горка-Стопудова'  
+        AND worlds.class_name != 'Мир-Горка-Стопудова'  
         AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 2'''
 
-        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))
+        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))[0]
         assert delivery_escort_tuple, 'база должна вернуть непустое значение'
 
         return delivery_escort_tuple
