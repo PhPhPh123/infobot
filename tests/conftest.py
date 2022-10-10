@@ -1,3 +1,5 @@
+import random
+
 import pytest
 import os
 import sqlite3
@@ -31,3 +33,15 @@ def all_worlds_names_fixture(connect_to_db_sqlite3):
     all_worlds_names = [elem[0] for elem in connect_to_db_sqlite3.execute("SELECT world_name FROM worlds")]
     return all_worlds_names
 
+
+@pytest.fixture
+def all_subtypes_fixture(connect_to_db_sqlite3):
+    all_quest_subtypes = [elem[0] for elem in connect_to_db_sqlite3.execute("SELECT quest_name FROM quest_patterns")]
+    return all_quest_subtypes
+
+
+@pytest.fixture
+def reward_fixture():
+    reward_list = []
+    for _ in range(20):
+        reward_list.append(random.randint(100000, 320000))
