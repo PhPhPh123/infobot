@@ -1,7 +1,7 @@
 import random
-
 import pytest
-from news.mini_quests import QuestFormer, choise_quest, control_quests, Quest, Reward
+
+from news.mini_quests import QuestFormer, choise_quest, control_quests, Quest, Reward, ArtifactQuest
 
 
 @pytest.fixture
@@ -91,3 +91,19 @@ def test_reward_mixin():
 
         assert min_reward <= rew_obj.count_reward(random.choice(quest_timers)) <= max_reward
 
+
+@pytest.fixture(scope='class')
+def artifact_quest_fixture():
+    art_quest_list = []
+
+    for _ in range(20):
+        art_quest_list.append(ArtifactQuest((1, 2, 3)))
+
+
+@pytest.mark.usefixtures('artifact_quest_fixture')
+class TestArtifact:
+    def test_a(self):
+        assert 1 == 1
+
+    def test_b(self):
+        assert 0 == 0
