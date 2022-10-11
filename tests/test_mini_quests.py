@@ -25,10 +25,21 @@ def quest_former_fixture(connect_to_db_sqlite3):
     return list_with_dicts
 
 
-def test_control_quests():
+def test_control_quests(monkeypatch):
+    def mock_load_artifact_to_log(*args, **kwargs):
+        return None
+    monkeypatch.setattr('news.mini_quests.ArtifactQuest.load_artifact_to_log', mock_load_artifact_to_log)
+
+    def mock_load_quest_to_log(*args, **kwargs):
+        return None
+    monkeypatch.setattr('news.mini_quests.Quest.load_quest_to_log', mock_load_quest_to_log)
+
     for _ in range(20):
         result = control_quests()
         assert type(result) == str
+
+
+
 
 
 def test_choise_quest_func():
@@ -99,11 +110,17 @@ def artifact_quest_fixture():
     for _ in range(20):
         art_quest_list.append(ArtifactQuest((1, 2, 3)))
 
+    return art_quest_list
 
-@pytest.mark.usefixtures('artifact_quest_fixture')
+
 class TestArtifact:
-    def test_a(self):
-        assert 1 == 1
+    def test_form_artifact(self, artifact_quest_fixture):
+        for obj in artifact_quest_fixture:
+            assert obj.quest_dict['danger_name'] is not None
+            assert obj.full_artifact_string is None
+            obj.form_artifact()
+            assert type(obj.full_artifact_string) == str
 
-    def test_b(self):
+    def test_b(self, artifact_quest_fixture):
+        print(artifact_quest_fixture)
         assert 0 == 0

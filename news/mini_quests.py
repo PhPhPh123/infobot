@@ -237,7 +237,6 @@ class ArtifactQuest(Quest):
                         'особенность': 'random'}
 
         self.full_artifact_string = craft.main_artifact_builder.choise_class_objects(request_dict)
-        print(self.full_artifact_string)
 
     def form_quest(self):
         """
