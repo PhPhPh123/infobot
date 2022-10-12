@@ -30,7 +30,8 @@ def connect_to_db_sqlite3() -> sqlite3.Cursor:
 
 @pytest.fixture(scope='session')
 def all_worlds_names_fixture(connect_to_db_sqlite3):
-    all_worlds_names = [elem[0] for elem in connect_to_db_sqlite3.execute("SELECT world_name FROM worlds")]
+    all_worlds_names = [elem[0] for elem in connect_to_db_sqlite3.execute(
+        "SELECT world_name FROM worlds WHERE class_name NOT IN ('Мир-Горка-Стопудова', 'Мир-смерти')")]
     return all_worlds_names
 
 
@@ -41,14 +42,15 @@ def all_subtypes_fixture(connect_to_db_sqlite3):
 
 
 @pytest.fixture(scope='session')
-def all_danger_names(connect_to_db_sqlite3):
+def all_danger_names_fixture(connect_to_db_sqlite3):
     all_danger_zone_names = [elem[0] for elem in connect_to_db_sqlite3.execute("SELECT danger_name FROM danger_zone")]
     return all_danger_zone_names
 
 
 @pytest.fixture(scope='session')
-def all_imperial_classes(connect_to_db_sqlite3):
-    all_imperial_classes_names = [elem[0] for elem in connect_to_db_sqlite3.execute("SELECT class_name FROM imperial_class")]
+def all_imperial_classes_fixture(connect_to_db_sqlite3):
+    all_imperial_classes_names = [elem[0] for elem in connect_to_db_sqlite3.execute(
+        "SELECT class_name FROM imperial_class WHERE class_name NOT IN ('Мир-Горка-Стопудова', 'Мир-смерти')")]
     return all_imperial_classes_names
 
 

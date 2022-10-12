@@ -24,7 +24,7 @@ def choise_random_news() -> str:
 
     bot_answer = ''
 
-    if random_roll >= 13:  # Обычный исход ролла
+    if random_roll >= 15:  # Обычный исход ролла
         news = random.choice(list_of_type_news)
         if news == 'Новости о наличии врагов в системе':
             bot_answer = bot_news_enemies.form_enemy_news()
@@ -34,7 +34,7 @@ def choise_random_news() -> str:
             bot_answer = bot_news_static_info.form_lore_info()
         elif news == 'Новости об изменениях в дефицитах и перепроизводствах':
             bot_answer = production_buffs_and_debuffs.form_production_changes_news()
-    elif 6 < random_roll < 13:  # Удачливый исход ролла для квеста
+    elif 6 <= random_roll <= 14:  # Удачливый исход ролла для квеста
         bot_answer = mini_quests.control_quests()
     else:  # Максимально удачливый исход ролла
         bot_answer = bot_news_access.control_other_func()

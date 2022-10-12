@@ -39,9 +39,6 @@ def test_control_quests(monkeypatch):
         assert type(result) == str
 
 
-
-
-
 def test_choise_quest_func():
     list_of_quests = ['artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest']
     for _ in range(20):
@@ -104,11 +101,13 @@ def test_reward_mixin():
 
 
 @pytest.fixture(scope='class')
-def artifact_quest_fixture():
+def artifact_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture, all_imperial_classes_fixture):
     art_quest_list = []
 
     for _ in range(20):
-        art_quest_list.append(ArtifactQuest((1, 2, 3)))
+        art_quest_list.append(ArtifactQuest((random.choice(all_worlds_names_fixture),
+                                             random.choice(all_danger_names_fixture),
+                                             random.choice(all_imperial_classes_fixture))))
 
     return art_quest_list
 
@@ -121,6 +120,11 @@ class TestArtifact:
             obj.form_artifact()
             assert type(obj.full_artifact_string) == str
 
-    def test_b(self, artifact_quest_fixture):
-        print(artifact_quest_fixture)
-        assert 0 == 0
+    def test_get_quest_pattern_from_db(self, connect_to_db_sqlite3, artifact_quest_fixture, all_subtypes_fixture):
+        for obj in artifact_quest_fixture:
+            obj.get_quest_pattern_from_db()
+            assert obj.quest_subtype in all_subtypes_fixture
+            assert type(obj.quest_description) == str
+            assert '{}' in obj.quest_description
+
+
