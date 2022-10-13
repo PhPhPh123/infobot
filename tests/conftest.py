@@ -55,6 +55,13 @@ def all_imperial_classes_fixture(connect_to_db_sqlite3):
 
 
 @pytest.fixture(scope='session')
+def all_enemies_names_fixture(connect_to_db_sqlite3):
+    all_enemy_names = [elem[0] for elem in connect_to_db_sqlite3.execute(
+        "SELECT enemy_name FROM enemies WHERE enemy_name NOT IN ('Никто', 'Кароч пиши никто, они придут, а мы им вломим, чисто мо Морковски')")]
+    return all_enemy_names
+
+
+@pytest.fixture(scope='session')
 def reward_fixture():
     reward_list = []
     for _ in range(20):

@@ -25,13 +25,41 @@ def quest_former_fixture(connect_to_db_sqlite3):
     return list_with_dicts
 
 
+@pytest.fixture(scope='class')
+def artifact_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
+                           all_imperial_classes_fixture):
+    art_quest_list = []
+
+    for _ in range(20):
+        art_quest_list.append(ArtifactQuest((random.choice(all_worlds_names_fixture),
+                                             random.choice(all_danger_names_fixture),
+                                             random.choice(all_imperial_classes_fixture))))
+    return art_quest_list
+
+
+@pytest.fixture(scope='class')
+def kill_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
+                       all_imperial_classes_fixture, all_enemies_names_fixture):
+    kill_quest_list = []
+
+    for _ in range(20):
+        kill_quest_list.append(ArtifactQuest((random.choice(all_worlds_names_fixture),
+                                              random.choice(all_danger_names_fixture),
+                                              random.choice(all_imperial_classes_fixture),
+                                              random.choice(all_enemies_names_fixture))))
+
+    return kill_quest_list
+
+
 def test_control_quests(monkeypatch):
     def mock_load_artifact_to_log(*args, **kwargs):
         return None
+
     monkeypatch.setattr('news.mini_quests.ArtifactQuest.load_artifact_to_log', mock_load_artifact_to_log)
 
     def mock_load_quest_to_log(*args, **kwargs):
         return None
+
     monkeypatch.setattr('news.mini_quests.Quest.load_quest_to_log', mock_load_quest_to_log)
 
     for _ in range(20):
@@ -46,43 +74,40 @@ def test_choise_quest_func():
         assert result in list_of_quests
 
 
-def test_check_quest_former_empty_base_awswer():
-    for _ in range(500):
-        assert QuestFormer('artifact_quest').quest_tuple != ()
-        assert QuestFormer('kill_quest').quest_tuple != ()
-        assert QuestFormer('delivery_quest').quest_tuple != ()
-        assert QuestFormer('escort_quest').quest_tuple != ()
+class TestQuestFormer:
+    def test_check_quest_former_empty_base_awswer(self):
+        for _ in range(500):
+            assert QuestFormer('artifact_quest').quest_tuple != ()
+            assert QuestFormer('kill_quest').quest_tuple != ()
+            assert QuestFormer('delivery_quest').quest_tuple != ()
+            assert QuestFormer('escort_quest').quest_tuple != ()
 
+    def test_former_tuple_len(self, quest_former_fixture, all_worlds_names_fixture):
+        for isdict in quest_former_fixture:
+            assert len(isdict['artifact_quest'].quest_tuple) == 3
+            assert len(isdict['kill_quest'].quest_tuple) == 4
+            assert len(isdict['delivery_quest'].quest_tuple) == 4
+            assert len(isdict['escort_quest'].quest_tuple) == 2
 
-def test_former_tuple_len(quest_former_fixture, all_worlds_names_fixture):
-    for isdict in quest_former_fixture:
-        assert len(isdict['artifact_quest'].quest_tuple) == 3
-        assert len(isdict['kill_quest'].quest_tuple) == 4
-        assert len(isdict['delivery_quest'].quest_tuple) == 4
-        assert len(isdict['escort_quest'].quest_tuple) == 2
+    def test_quest_former_world_names(self, quest_former_fixture, all_worlds_names_fixture):
+        for isdict in quest_former_fixture:
+            for obj in isdict.values():
+                world_name = obj.quest_tuple[0]
+                assert world_name in all_worlds_names_fixture
 
+    def test_quest_former_world_tuple_elem_types(self, quest_former_fixture):
+        for isdict in quest_former_fixture:
+            for obj in isdict.values():
+                for elem in obj.quest_tuple:
+                    assert type(elem) == str
 
-def test_quest_former_world_names(quest_former_fixture, all_worlds_names_fixture):
-    for isdict in quest_former_fixture:
-        for obj in isdict.values():
-            world_name = obj.quest_tuple[0]
-            assert world_name in all_worlds_names_fixture
-
-
-def test_quest_former_world_tuple_elem_types(quest_former_fixture):
-    for isdict in quest_former_fixture:
-        for obj in isdict.values():
-            for elem in obj.quest_tuple:
-                assert type(elem) == str
-
-
-def test_base_quest_form_quest_name():
-    try:
-        Quest(())
-        abstract_cant_instantiate = False
-    except TypeError:
-        abstract_cant_instantiate = True
-    assert abstract_cant_instantiate
+    def test_base_quest_form_quest_name(self):
+        try:
+            Quest(())
+            abstract_cant_instantiate = False
+        except TypeError:
+            abstract_cant_instantiate = True
+        assert abstract_cant_instantiate
 
 
 def test_reward_mixin():
@@ -100,18 +125,6 @@ def test_reward_mixin():
         assert min_reward <= rew_obj.count_reward(random.choice(quest_timers)) <= max_reward
 
 
-@pytest.fixture(scope='class')
-def artifact_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture, all_imperial_classes_fixture):
-    art_quest_list = []
-
-    for _ in range(20):
-        art_quest_list.append(ArtifactQuest((random.choice(all_worlds_names_fixture),
-                                             random.choice(all_danger_names_fixture),
-                                             random.choice(all_imperial_classes_fixture))))
-
-    return art_quest_list
-
-
 class TestArtifact:
     def test_form_artifact(self, artifact_quest_fixture):
         for obj in artifact_quest_fixture:
@@ -127,4 +140,30 @@ class TestArtifact:
             assert type(obj.quest_description) == str
             assert '{}' in obj.quest_description
 
+    def test_form_quest_string(self, artifact_quest_fixture, all_worlds_names_fixture):
+        for obj in artifact_quest_fixture:
+            obj.form_quest_string()
+            assert obj.final_string.startswith('[КВЕСТ]')
+            assert obj.quest_dict['world_name'] in all_worlds_names_fixture
 
+            splitted_art_string_list = obj.full_artifact_string.split("\n")
+
+            assert len(splitted_art_string_list) > 1
+
+
+class TestKillQuest:
+    def test_get_quest_pattern_from_db(self, connect_to_db_sqlite3, kill_quest_fixture,
+                                       all_subtypes_fixture, all_enemies_names_fixture):
+        for obj in kill_quest_fixture:
+            obj.get_quest_pattern_from_db()
+            assert obj.quest_subtype in all_subtypes_fixture
+            assert type(obj.quest_description) == str
+            assert '{}' in obj.quest_description
+
+    def test_form_quest_string(self, kill_quest_fixture, all_worlds_names_fixture,
+                               all_enemies_names_fixture):
+        for obj in kill_quest_fixture:
+            obj.form_quest_string()
+            assert obj.final_string.startswith('[КВЕСТ]')
+            assert obj.quest_dict['world_name'] in all_worlds_names_fixture
+            assert obj.self.quest_dict['enemy_name'] in all_enemies_names_fixture
