@@ -1,7 +1,8 @@
 import random
 import pytest
 
-from news.mini_quests import QuestFormer, choise_quest, control_quests, Quest, Reward, ArtifactQuest
+from news.mini_quests import QuestFormer, choise_quest, control_quests, Quest, Reward, ArtifactQuest, KillQuest, \
+    DeliveryQuest
 
 
 @pytest.fixture
@@ -43,12 +44,26 @@ def kill_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
     kill_quest_list = []
 
     for _ in range(20):
-        kill_quest_list.append(ArtifactQuest((random.choice(all_worlds_names_fixture),
-                                              random.choice(all_danger_names_fixture),
-                                              random.choice(all_imperial_classes_fixture),
-                                              random.choice(all_enemies_names_fixture))))
+        kill_quest_list.append(KillQuest((random.choice(all_worlds_names_fixture),
+                                          random.choice(all_danger_names_fixture),
+                                          random.choice(all_imperial_classes_fixture),
+                                          random.choice(all_enemies_names_fixture))))
 
     return kill_quest_list
+
+
+@pytest.fixture(scope='class')
+def delivery_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
+                           all_imperial_classes_fixture, all_goods_fixture):
+    delivery_quest_list = []
+
+    for _ in range(20):
+        delivery_quest_list.append(DeliveryQuest((random.choice(all_worlds_names_fixture),
+                                                  random.choice(all_danger_names_fixture),
+                                                  random.choice(all_imperial_classes_fixture),
+                                                  random.choice(all_goods_fixture))))
+
+    return delivery_quest_list
 
 
 def test_control_quests(monkeypatch):
@@ -167,3 +182,13 @@ class TestKillQuest:
             assert obj.final_string.startswith('[КВЕСТ]')
             assert obj.quest_dict['world_name'] in all_worlds_names_fixture
             assert obj.self.quest_dict['enemy_name'] in all_enemies_names_fixture
+
+
+class TestDeliveryQuest:
+    def test_get_quest_pattern_from_db(self, connect_to_db_sqlite3, delivery_quest_fixture,
+                                       all_subtypes_fixture, all_goods_fixture):
+        for obj in delivery_quest_fixture:
+            obj.get_quest_pattern_from_db()
+            assert obj.quest_subtype in all_subtypes_fixture
+            assert type(obj.quest_description) == str
+            assert '{}' in obj.quest_description

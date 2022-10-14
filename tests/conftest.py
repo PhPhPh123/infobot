@@ -62,6 +62,13 @@ def all_enemies_names_fixture(connect_to_db_sqlite3):
 
 
 @pytest.fixture(scope='session')
+def all_goods_fixture(connect_to_db_sqlite3):
+    all_goods = [elem[0] for elem in connect_to_db_sqlite3.execute(
+        "SELECT import_name FROM trade_import WHERE base_price NOT NULL")]
+    return all_goods
+
+
+@pytest.fixture(scope='session')
 def reward_fixture():
     reward_list = []
     for _ in range(20):
