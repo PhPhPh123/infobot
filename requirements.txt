@@ -22,3 +22,5 @@ setuptools == 63.2.0
 yarl == 1.8.1
 loguru
 pytest
+pandas
+openpyxl

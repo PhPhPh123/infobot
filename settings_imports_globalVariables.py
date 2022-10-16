@@ -5,9 +5,11 @@ import sqlite3
 import sqlalchemy
 import discord
 import tkinter
+import pandas as pd
 import random
 import os
 import discord.ext.commands.context
+import openpyxl
 
 from typing import Optional
 from pprint import pprint
