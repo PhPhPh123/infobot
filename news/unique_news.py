@@ -23,13 +23,26 @@ class NewsInterface:
         self.type_of_news = None
 
     def call_text_field_interface(self):
+        """
+        Данный метод вызывает интерфейс текстового ввода tkinter, в который будет вписываться текст новости сохраняя
+        результат в self.news_next
+        @return:
+        """
         pass
 
     def call_type_of_news_interface(self):
+        """
+        Данный метод вызывает интерфейс выбора кнопок, результат которых будет записываться в виде
+        cтроки в self.type_of_news
+        @return:
+        """
         pass
 
     def write_to_csv(self):
-        pass
+        """
+        Данная функция записывает новости во временные cvs-файлы в директорию временных файлов
+        @return:
+        """
 
 
 def control_form_news():

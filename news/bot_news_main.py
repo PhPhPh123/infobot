@@ -5,6 +5,7 @@
 
 from settings_imports_globalVariables import *
 from news import bot_news_access, bot_news_static_info, bot_news_enemies, production_buffs_and_debuffs, mini_quests
+from statistics import count_news_statistics
 
 
 def choise_random_news() -> str:
@@ -39,4 +40,12 @@ def choise_random_news() -> str:
     else:  # Максимально удачливый исход ролла
         bot_answer = bot_news_access.control_other_func()
 
+    register_statistics(bot_answer)
+
     return bot_answer
+
+
+def register_statistics(bot_answer):
+    quest_name = re.split("[\[\]]", bot_answer)[1]
+
+    news_statistics(quest_name, bot_answer)

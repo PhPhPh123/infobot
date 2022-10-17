@@ -10,6 +10,7 @@ import random
 import os
 import discord.ext.commands.context
 import openpyxl
+import re
 
 from typing import Optional
 from pprint import pprint
@@ -21,6 +22,8 @@ from dotenv import load_dotenv, find_dotenv
 import matplotlib.pyplot as plt
 from loguru import logger
 from datetime import date
+
+from statistics import count_news_statistics
 
 
 def get_bot_dir() -> str:
@@ -99,3 +102,5 @@ logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}
 alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()  # Объекты sql-alchemy
 
 bd_sqlite3_cursor, bd_sqlite3_connect = connect_to_db_sqlite3()  # Объекты курсора и коннекта для доступа в базу данных
+
+news_statistics = count_news_statistics()

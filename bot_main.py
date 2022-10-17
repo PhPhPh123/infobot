@@ -7,6 +7,7 @@
 from settings_imports_globalVariables import *
 from minor_commands import roll_module
 
+
 import static_answer_messages
 import user_info.infoworld_command
 import user_info.infosystem_command
@@ -16,7 +17,6 @@ import user_info.infoexportgoods_command
 import user_info.goodspie_command
 import news.bot_news_main
 import craft.main_artifact_builder
-
 
 intents = discord.Intents.all()
 intents.members = True
@@ -187,6 +187,18 @@ async def startnews(ctx: discord.ext.commands.context.Context):
 
 
 @infobot.command()
+async def stopnews(ctx):
+    """
+    Данная функция прерывает основной цикл новостей news_send и распечатывает в чат статистику по новостному циклу
+    @param ctx: discord.ext.commands.context.Context
+    @return: отправка ботом в чат информации об остановке цикла новостей
+    """
+    news_send.cancel()
+    bot_answer = news_statistics()
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
 @commands.has_permissions(administrator=True)
 async def artifact(ctx: discord.ext.commands.context.Context,
                    grade: str,
@@ -194,7 +206,6 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    type_art: str = 'random',
                    unique_bonus: str = 'random'
                    ):
-
     param_dict = {'грейд': grade.lower(),
                   'группа': group_art.lower(),
                   'тип': type_art.lower(),
@@ -206,7 +217,6 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 
 @infobot.command()
 async def goodspie(ctx: discord.ext.commands.context.Context):
-
     user_info.goodspie_command.to_control_other_functions()
     await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
 
