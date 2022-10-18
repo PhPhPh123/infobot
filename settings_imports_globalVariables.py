@@ -11,7 +11,7 @@ import os
 import discord.ext.commands.context
 import openpyxl
 import re
-
+import matplotlib.pyplot as plt
 from typing import Optional
 from pprint import pprint
 from abc import abstractmethod, ABC
@@ -19,7 +19,6 @@ from jinja2 import Template
 from discord.ext import commands, tasks
 from sqlalchemy.orm import mapper, sessionmaker
 from dotenv import load_dotenv, find_dotenv
-import matplotlib.pyplot as plt
 from loguru import logger
 from datetime import date
 

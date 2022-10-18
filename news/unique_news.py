@@ -1,8 +1,15 @@
+from settings_imports_globalVariables import *
+
+
 def control_interface():
     """
     Данная функция будет осуществлять основной контроль за другими функциями
     @return: None
     """
+
+    win = tkinter.Tk()
+    table_obj = NewsInterface(win)
+    win.mainloop()
 
     """Создание экземпляра класса интерфейса
        Вызов метода call_text_field_interface
@@ -11,14 +18,17 @@ def control_interface():
        """
 
 
-class NewsInterface:
+class NewsInterface(tkinter.Frame):
     """
     Данный класс отвечает за создание интерфейса ktinker и обладает методами вызова текстового поля, для записи туда
     новости, методами вызова выбора типа новости, срочной или обычной и методом записи новости в соответствующий csv
     файл
     """
 
-    def __init__(self):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.win = parent
+        self.geometry = self.win.geometry('700x250')
         self.news_next = None
         self.type_of_news = None
 

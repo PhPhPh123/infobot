@@ -5,9 +5,8 @@
 Все необходимые модули импортируются включая модуль с настройками
 """
 from settings_imports_globalVariables import *
+
 from minor_commands import roll_module
-
-
 import static_answer_messages
 import user_info.infoworld_command
 import user_info.infosystem_command
@@ -17,6 +16,7 @@ import user_info.infoexportgoods_command
 import user_info.goodspie_command
 import news.bot_news_main
 import craft.main_artifact_builder
+import news.unique_news
 
 intents = discord.Intents.all()
 intents.members = True
@@ -195,6 +195,17 @@ async def stopnews(ctx):
     """
     news_send.cancel()
     bot_answer = news_statistics()
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def uniquenews(ctx: discord.ext.commands.context.Context):
+    """
+    :param ctx: объект класса контекст библиотеки discord
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
+    news.unique_news.control_interface()
+    bot_answer = 'Новость принята'
     await ctx.send(bot_answer)
 
 

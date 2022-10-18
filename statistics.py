@@ -1,5 +1,6 @@
 from jinja2 import Template
 
+
 def count_news_statistics():
     stat_dict = {"НОВОСТЬ О ВРАГАХ": [],
                  "НОВОСТЬ О БЕЗОПАСНОМ МЕСТЕ": [],
@@ -24,7 +25,7 @@ def count_news_statistics():
 
 def form_news_statitics(isdict):
     stat_template = Template("""
-    Статистика: 
+    Статистика текущей сессии бота: 
     {% for item in isdict.items() -%}
         {{ item[0].capitalize() }}: {% if not item[1] %} 0 {% else %} {{ item[1]|length }} {% endif %}
     {% endfor %}""")
