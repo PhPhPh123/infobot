@@ -107,7 +107,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context):
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     bot_answer = user_info.info_access_command.form_tuple_in_db()
-    await ctx.send(bot_answer)
+    await ctx.send(file=discord.File('access.xlsx'))
 
 
 @infobot.command()

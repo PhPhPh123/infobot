@@ -3,6 +3,8 @@
     строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
     Вывод выглядит в формате перечисления названий миров
 """
+import openpyxl
+
 from settings_imports_globalVariables import *
 
 
@@ -89,12 +91,18 @@ def form_string_answer(access_list: list) -> str:
     message = 'Уровень доступа на мирах'
 
     # world[0] выводит название мира, а world[1] уровень доступа, от 1 до 3
-    answer_access_temp = Template('''
-    {{ message }}:
-    {% for world in sys_tuple %}
-        {{ '{} - доступ {}. Родительская система: {}'.format(world[0], world[1], world[2]) }}
-    {% endfor %}
-    ''')
+    wb = openpyxl.Workbook()
+    sheet = wb['Sheet']
+    for world in access_list:
+        sheet.append(world)
+    wb.save('access.xlsx')
 
-    answer_render_access = answer_access_temp.render(sys_tuple=access_list, message=message)
-    return answer_render_access
+    # answer_access_temp = Template('''
+    # {{ message }}:
+    # {% for world in sys_tuple -%}
+    #     {{ '{} - доступ {}. Родительская система: {}'.format(world[0], world[1], world[2]) }}
+    # {% endfor %}
+    # ''')
+    #
+    # answer_render_access = answer_access_temp.render(sys_tuple=access_list, message=message)
+    # return answer_render_access
