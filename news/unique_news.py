@@ -1,58 +1,6 @@
+import tkinter
+
 from settings_imports_globalVariables import *
-
-
-def control_interface():
-    """
-    Данная функция будет осуществлять основной контроль за другими функциями
-    @return: None
-    """
-
-    win = tkinter.Tk()
-    table_obj = NewsInterface(win)
-    win.mainloop()
-
-    """Создание экземпляра класса интерфейса
-       Вызов метода call_text_field_interface
-       Вызов метода call_type_of_news_interface
-       Вызов метода write_to_csv
-       """
-
-
-class NewsInterface(tkinter.Frame):
-    """
-    Данный класс отвечает за создание интерфейса ktinker и обладает методами вызова текстового поля, для записи туда
-    новости, методами вызова выбора типа новости, срочной или обычной и методом записи новости в соответствующий csv
-    файл
-    """
-
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.win = parent
-        self.geometry = self.win.geometry('700x250')
-        self.news_next = None
-        self.type_of_news = None
-
-    def call_text_field_interface(self):
-        """
-        Данный метод вызывает интерфейс текстового ввода tkinter, в который будет вписываться текст новости сохраняя
-        результат в self.news_next
-        @return:
-        """
-        pass
-
-    def call_type_of_news_interface(self):
-        """
-        Данный метод вызывает интерфейс выбора кнопок, результат которых будет записываться в виде
-        cтроки в self.type_of_news
-        @return:
-        """
-        pass
-
-    def write_to_csv(self):
-        """
-        Данная функция записывает новости во временные cvs-файлы в директорию временных файлов
-        @return:
-        """
 
 
 def control_form_news():
