@@ -3,12 +3,11 @@
     строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
     Вывод выглядит в формате перечисления названий миров
 """
-import openpyxl
 
 from settings_imports_globalVariables import *
 
 
-def form_tuple_in_db() -> str:
+def form_tuple_in_db(excel_answer=False) -> list:
     """
     Функция осуществляет запрос в БД через ORM sqlalchemy объект которой является ГЛОБАЛЬНОЙ МЕЖМОДУЛЬНОЙ ПЕРЕМЕННОЙ,
     которые затем передает в нижестоящие функции, преобразующие их в списки и добавляющие иные данные, а потом
@@ -26,7 +25,7 @@ def form_tuple_in_db() -> str:
     access_list = form_list_and_add_system(access_tuple)
 
     # Запрос к нижестоящей функции и получение строки ответа
-    access_ans = form_string_answer(access_list)
+    access_ans = form_string_answer(access_list, excel_answer)
 
     return access_ans
 
@@ -78,31 +77,55 @@ def select_system(world_name: str) -> str:
     return selected_system
 
 
-def form_string_answer(access_list: list) -> str:
+def form_string_answer(access_list: list, excel_answer: bool = False) -> Union[None, list]:
     """
     Данная функция принимает список из списков и на их основе, с помощью шаблонизатора, формирует строковый ответ    
-    :param access_list: список со списками, вложенный список которого, представляет собой 
+    @param access_list: список со списками, вложенный список которого, представляет собой
     [0] - название системы
     [1] - уровень доступа
     [2] - родительская система
+    @param excel_answer: булево значение, отвечающее за определение типа ответа ботом, строкой в чат или загрузкой
+    excel-файла
     :return: строковый ответ бота
     """
+    if excel_answer:
+        wb = openpyxl.Workbook()
+        sheet = wb['Sheet']
+        for world in access_list:
+            sheet.append(world)
+        wb.save('logs_and_temp_files/access.xlsx')
+        return None
+    else:
+        # Сообщение, которое выводится 1 раз в начале строки ответа бота
+        message = 'Уровень доступа на мирах'
+        # world[0] выводит название мира, а world[1] уровень доступа, от 1 до 3
+        answer_access_temp = Template('''
+{{ message }}:
+{% for world in sys_tuple -%}
+{{ '{} - доступ {}. Родительская система: {}'.format(world[0], world[1], world[2]) }}
+{% endfor %}''')
 
-    wb = openpyxl.Workbook()
-    sheet = wb['Sheet']
-    for world in access_list:
-        sheet.append(world)
-    wb.save('logs_and_temp_files/access.xlsx')
+        answer_render_access = answer_access_temp.render(sys_tuple=access_list, message=message)
+        final_answer = form_splitted_answers(answer_render_access)
 
-    # Сообщение, которое выводится 1 раз в начале строки ответа бота
-    message = 'Уровень доступа на мирах'
-    # world[0] выводит название мира, а world[1] уровень доступа, от 1 до 3
-    # answer_access_temp = Template('''
-    # {{ message }}:
-    # {% for world in sys_tuple -%}
-    #     {{ '{} - доступ {}. Родительская система: {}'.format(world[0], world[1], world[2]) }}
-    # {% endfor %}
-    # ''')
-    #
-    # answer_render_access = answer_access_temp.render(sys_tuple=access_list, message=message)
-    # return answer_render_access
+        return final_answer
+
+
+def form_splitted_answers(old_message: str):
+    if len(old_message) < 2000:
+        return [old_message]
+    else:
+        list_with_new_messages = []
+        num_of_new_messages = len(old_message) // 1000 + 1
+
+        splitted_old_message = old_message.split('\n')
+        splitted_by_equel_part = numpy.array_split(splitted_old_message, num_of_new_messages)
+
+        for array in splitted_by_equel_part:
+            string = ''
+            for elem in array:
+                string += elem + '\n'
+            list_with_new_messages.append(string)
+
+        return list_with_new_messages
+

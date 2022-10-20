@@ -100,14 +100,25 @@ async def infoimport(ctx: discord.ext.commands.context.Context, world_name: str)
 
 
 @infobot.command()
-async def infoaccess(ctx: discord.ext.commands.context.Context):
+async def infoaccess(ctx: discord.ext.commands.context.Context, type_of_output='string'):
     """
     Функция, отправляющая ботов в чат общий список миров, в которых уровень доступа отличен от 0(т.е. фактически есть)
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
+    @param ctx: объект класса контекст библиотеки discord
+    @param type_of_output: параметр отвечает за тип вывода информации: строка или отправка excel-файла
     """
-    bot_answer = user_info.info_access_command.form_tuple_in_db()
-    await ctx.send(file=discord.File('logs_and_temp_files/access.xlsx'))
+    if type_of_output == 'string':
+        bot_answer_list = user_info.info_access_command.form_tuple_in_db()
+
+        for message in bot_answer_list:
+            await ctx.send(message)
+
+    elif type_of_output == 'excel':
+        user_info.info_access_command.form_tuple_in_db(excel_answer=True)
+        await ctx.send(file=discord.File('logs_and_temp_files/access.xlsx'))
+    else:
+        await ctx.send('Некорректный тип вывода для запроса, укажите либо str либо ничего либо excel')
 
 
 @infobot.command()

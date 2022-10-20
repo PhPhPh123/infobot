@@ -6,13 +6,14 @@ import sqlalchemy
 import discord
 import tkinter
 import pandas as pd
+import numpy
 import random
 import os
 import discord.ext.commands.context
 import openpyxl
 import re
 import matplotlib.pyplot as plt
-from typing import Optional
+from typing import Optional, Union
 from pprint import pprint
 from abc import abstractmethod, ABC
 from jinja2 import Template
