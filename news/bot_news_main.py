@@ -48,4 +48,4 @@ def choise_random_news() -> str:
 def register_statistics(bot_answer):
     quest_name = re.split("[\[\]]", bot_answer)[1]
 
-    news_statistics(quest_name, bot_answer)
+    global_news_statistics(quest_name, bot_answer)

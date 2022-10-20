@@ -24,7 +24,7 @@ def choise_quest():
     Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
     artifact_quest, kill_quest, delivery_quest, escort_quest
     """
-    quests = tuple(bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
+    quests = tuple(global_bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
 
     quests_list = []
     for istuple in quests:
@@ -71,7 +71,7 @@ class QuestFormer:
         WHERE worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
-        artifact_quest_tuple = tuple(bd_sqlite3_cursor.execute(artifact_quest_query))[0]
+        artifact_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(artifact_quest_query))[0]
         assert artifact_quest_tuple, 'база должна вернуть непустое значение'
 
         return artifact_quest_tuple
@@ -88,7 +88,7 @@ class QuestFormer:
         AND worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
-        kill_quest_tuple = tuple(bd_sqlite3_cursor.execute(kill_quest_query))[0]
+        kill_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(kill_quest_query))[0]
         assert kill_quest_tuple, 'база должна вернуть непустое значение'
 
         return kill_quest_tuple
@@ -105,7 +105,7 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 1'''
 
-        delivery_quest_tuple = tuple(bd_sqlite3_cursor.execute(delivery_quest_query))[0]
+        delivery_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(delivery_quest_query))[0]
         assert delivery_quest_tuple, 'база должна вернуть непустое значение'
 
         return delivery_quest_tuple
@@ -122,7 +122,7 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 2'''
 
-        delivery_escort_tuple = tuple(bd_sqlite3_cursor.execute(escort_quest_query))[0]
+        delivery_escort_tuple = tuple(global_bd_sqlite3_cursor.execute(escort_quest_query))[0]
         assert delivery_escort_tuple, 'база должна вернуть непустое значение'
 
         return delivery_escort_tuple
@@ -265,7 +265,7 @@ class ArtifactQuest(Quest):
         ORDER BY RANDOM()
         LIMIT 1"""
 
-        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
         assert quest_tuple, f'база должна вернуть непустое значение. Неверный запрос: {quest_query}'
 
         self.quest_subtype = quest_tuple[0][0]
@@ -335,7 +335,7 @@ class KillQuest(Quest, Reward):
         ORDER BY RANDOM()
         LIMIT 1"""
 
-        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
         assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]
@@ -389,7 +389,7 @@ class DeliveryQuest(Quest):
         ORDER BY RANDOM()
         LIMIT 1"""
 
-        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
         assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]
@@ -447,7 +447,7 @@ class EscortQuest(Quest, Reward):
         ORDER BY RANDOM()
         LIMIT 1"""
 
-        quest_tuple = tuple(bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
         assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]

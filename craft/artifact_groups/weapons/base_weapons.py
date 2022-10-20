@@ -26,7 +26,7 @@ class Weapon(Artifact):
         :return: int число с количеством брони(ВУ)
         """
         random_modifier = random.uniform(0.9, 1.1)  # Дополнительный рандом, на который будет умножен итоговый урон
-        base_damage = tuple(bd_sqlite3_cursor.execute(f'''
+        base_damage = tuple(global_bd_sqlite3_cursor.execute(f'''
 SELECT art_damage FROM {weapon_group}
 WHERE art_type_name == '{weapon_type}'
         '''))[0][0]  # Достаю из бд, из кортежа с кортежами [0][0], значение урона
@@ -69,7 +69,7 @@ WHERE art_type_name == '{weapon_type}'
         # Проверка на удачу, значения ближе к 1 считаются хорошими
         luck = random.randint(1, 100)
 
-        base_prescision = tuple(bd_sqlite3_cursor.execute(f'''
+        base_prescision = tuple(global_bd_sqlite3_cursor.execute(f'''
         SELECT art_prescision FROM {weapon_group}
         WHERE art_type_name == '{weapon_type}'
                 '''))[0][0]  # Достаю из БД базовую точность из кортежа с кортежами [0][0]

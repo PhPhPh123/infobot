@@ -16,12 +16,12 @@ def control_other_func() -> str:
     :return: строка ответа ботом
     """
     # 1 этап
-    chosen_world = select_world(bd_sqlite3_cursor)
+    chosen_world = select_world(global_bd_sqlite3_cursor)
 
     # 2 этап
     update_access = form_update_string(chosen_world)
-    bd_sqlite3_cursor.execute(update_access)
-    bd_sqlite3_connect.commit()
+    global_bd_sqlite3_cursor.execute(update_access)
+    global_bd_sqlite3_connect.commit()
 
     # 3 этап
     access_responce = form_string_answer(chosen_world)

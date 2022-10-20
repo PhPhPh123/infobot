@@ -24,7 +24,7 @@ def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
     elif name_deal == 'export':
         select_systems = form_export_query(goods_name)
 
-    tuple_with_worlds = tuple(bd_sqlite3_cursor.execute(select_systems))
+    tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_systems))
 
     form_string_answer(tuple_with_worlds, name_deal)
     #
@@ -37,7 +37,6 @@ def form_export_query(goods_name: str) -> str:
     :param goods_name: название товара
     :return: строка для экзекьюта в БД
     """
-    print('2')
     # Текст sql-запроса берется из модуля sql_queries
     select_temp_systems = Template(user_info.sql_queries.info_goods_query_dict['export'])
     select_render_systems = select_temp_systems.render(goods_name=goods_name)
@@ -50,7 +49,6 @@ def form_import_query(goods_name: str) -> str:
     :param goods_name: название товара
     :return: строка для экзекьюта в БД
     """
-    print('3')
     # Текст sql-запроса берется из модуля sql_queries
     select_temp_systems = Template(user_info.sql_queries.info_goods_query_dict['import'])
     select_render_systems = select_temp_systems.render(goods_name=goods_name)
@@ -64,7 +62,7 @@ def form_string_answer(tuple_with_worlds: tuple, deal_name: str):
     :param deal_name: название сделки, export или import
     :return: итоговая строка ответа бота
     """
-    print('4')
+
     # # В зависимости от типа сделки, первичное сообщение будет отличаться
     # message = 'В данных системах покупают этот товар' if deal_name == 'import' else 'В данных система продают этот товар'
     #

@@ -42,8 +42,8 @@ def sql_query(goods_str, prices_str):
     Данная функция использует ГЛОБАЛЬНУЮ МЕЖМОДУЛЬНУЮ переменную bd_sqlite3_cursor для доступа в базу данных и
     осуществляет в нее экзекьют получая необходимые кортежи
     """
-    goods_tuple = tuple(bd_sqlite3_cursor.execute(goods_str))
-    prices_tuple = tuple(bd_sqlite3_cursor.execute(prices_str))
+    goods_tuple = tuple(global_bd_sqlite3_cursor.execute(goods_str))
+    prices_tuple = tuple(global_bd_sqlite3_cursor.execute(prices_str))
     return goods_tuple, prices_tuple
 
 

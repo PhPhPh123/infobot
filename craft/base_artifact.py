@@ -42,7 +42,7 @@ class Artifact:
                                        'плазмаган', 'плазма-пистолет',
                                        'силовая-броня'"""
 
-        chosen_artifact = tuple(bd_sqlite3_cursor.execute(f'''
+        chosen_artifact = tuple(global_bd_sqlite3_cursor.execute(f'''
     SELECT art_type_name FROM {table_name}
     WHERE art_type_name NOT IN ({excluded_artifact_types})
     ORDER BY RANDOM()
@@ -55,7 +55,7 @@ class Artifact:
          Данная функция случайно выбирает один из префиксов
         :return: кортеж с именем префикса и навыком, на который он влияет
         """
-        prefix_tuple = tuple(bd_sqlite3_cursor.execute('''
+        prefix_tuple = tuple(global_bd_sqlite3_cursor.execute('''
 SELECT * FROM unique_prefix
 ORDER BY RANDOM()
 LIMIT 1'''))
@@ -73,7 +73,7 @@ LIMIT 1'''))
         :return: строка с кортежом суффикса, где первый элемент это его название, использующееся для формирования имени
         а второй элемент это описание его уникального эффекта
         """
-        suffix_tuple = tuple(bd_sqlite3_cursor.execute(f'''
+        suffix_tuple = tuple(global_bd_sqlite3_cursor.execute(f'''
 SELECT unique_suffix.effect_name, unique_suffix.effect_text 
 FROM unique_suffix
 INNER JOIN unique_suffix_{art_group}_relations ON unique_suffix.effect_name == unique_suffix_{art_group}_relations.effect_name
@@ -120,7 +120,7 @@ LIMIT 1'''))
         грейда
         :return: ничего, изменяет self.weight
         """
-        art_weight = tuple(bd_sqlite3_cursor.execute(f'''
+        art_weight = tuple(global_bd_sqlite3_cursor.execute(f'''
 SELECT art_weight FROM {self.group_name}
 WHERE art_type_name == '{self.art_type}'
 '''))[0][0]
@@ -135,7 +135,7 @@ WHERE art_type_name == '{self.art_type}'
         без учета модификатора грейда
         :return: ничего, изменяет self.str_requeriments
         """
-        art_reqs = tuple(bd_sqlite3_cursor.execute(f'''
+        art_reqs = tuple(global_bd_sqlite3_cursor.execute(f'''
 SELECT art_str_req FROM {self.group_name}
 WHERE art_type_name == '{self.art_type}'
 '''))[0][0]

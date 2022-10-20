@@ -20,7 +20,7 @@ def form_subsector_news() -> str:
     LIMIT 1
     '''
     # Из кортежа с кортежами изымается строка с новостью
-    subsector_string = tuple(bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
+    subsector_string = tuple(global_bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
     return '[НОВОСТЬ СУБСЕКТОРА] ' + subsector_string
 
 
@@ -36,5 +36,5 @@ def form_lore_info() -> str:
     LIMIT 1
     '''
     # Из кортежа с кортежами изымается строка с новостью
-    lore_string = tuple(bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
+    lore_string = tuple(global_bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
     return '[ЛОРНАЯ НОВОСТЬ] ' + lore_string

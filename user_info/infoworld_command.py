@@ -28,13 +28,13 @@ def to_control_other_functions_and_returns_bot_answer(world_name: str) -> str:
     select_import = form_query(world_name, 'import')
 
     # 2 этап
-    tuple_with_worlds = tuple(bd_sqlite3_cursor.execute(select_main))
+    tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_main))
     if not tuple_with_worlds:  # Если название мира некорректно, то вернется пустой кортеж и нужно вернуть ответ
         return 'Некорректное название мира'
-    tuple_with_terrains = tuple(bd_sqlite3_cursor.execute(select_terrains))
-    tuple_with_enemies = tuple(bd_sqlite3_cursor.execute(select_enemies))
-    tuple_with_export = tuple(bd_sqlite3_cursor.execute(select_export))
-    tuple_with_import = tuple(bd_sqlite3_cursor.execute(select_import))
+    tuple_with_terrains = tuple(global_bd_sqlite3_cursor.execute(select_terrains))
+    tuple_with_enemies = tuple(global_bd_sqlite3_cursor.execute(select_enemies))
+    tuple_with_export = tuple(global_bd_sqlite3_cursor.execute(select_export))
+    tuple_with_import = tuple(global_bd_sqlite3_cursor.execute(select_import))
 
     # 3 этап
     final_dict = form_dict(tuple_with_worlds, tuple_with_terrains, tuple_with_enemies,

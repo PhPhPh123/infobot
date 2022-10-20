@@ -36,7 +36,7 @@ class Jewelry(Artifact):
         Статический метод, получающий из БД случайный тип ювелирного бонуса на основе выбранного типа бижутерии
         :return: кортеж с ювелирным бонусом, где [0] элемент это название бонуса, а [0] это текст его описания
         """
-        jewerly_bonus = tuple(bd_sqlite3_cursor.execute(f'''
+        jewerly_bonus = tuple(global_bd_sqlite3_cursor.execute(f'''
 SELECT * FROM unique_jewelry_bonuses
 INNER JOIN artifact_jewelry_unique_jewelry_bonuses_relations ON unique_jewelry_bonuses.jewelry_bonus_name == 
 artifact_jewelry_unique_jewelry_bonuses_relations.jewelry_bonus_name

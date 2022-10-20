@@ -205,7 +205,7 @@ async def stopnews(ctx):
     @return: отправка ботом в чат информации об остановке цикла новостей
     """
     news_send.cancel()
-    bot_answer = news_statistics()
+    bot_answer = global_news_statistics()
     await ctx.send(bot_answer)
 
 

@@ -99,8 +99,12 @@ logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}
 """
 Глобальные межмодульные переменные
 """
-alch_connect, alch_world, alch_systems = connect_to_db_sqlalchemy()  # Объекты sql-alchemy
+# Объекты sql-alchemy
+global_alch_connect, global_alch_world, global_alch_systems = connect_to_db_sqlalchemy()
 
-bd_sqlite3_cursor, bd_sqlite3_connect = connect_to_db_sqlite3()  # Объекты курсора и коннекта для доступа в базу данных
+# Объекты курсора и коннекта для доступа в базу данных
+global_bd_sqlite3_cursor, global_bd_sqlite3_connect = connect_to_db_sqlite3()
 
-news_statistics = count_news_statistics()
+# Объект замыкания для хранения статистики по новостям и выводу ее при завершении сессии новостей
+# хранит значения в течении всей сессии бота вплоть до его отключения
+global_news_statistics = count_news_statistics()

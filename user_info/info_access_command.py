@@ -15,10 +15,10 @@ def form_tuple_in_db(excel_answer=False) -> list:
     :return: итоговая строка ответа бота
     """
     # Создание запроса к БД
-    access_tuple_temp = sqlalchemy.sql.select(alch_world.c.world_name,
-                                              alch_world.c.access_level).where(alch_world.c.access_level > 0)
+    access_tuple_temp = sqlalchemy.sql.select(global_alch_world.c.world_name,
+                                              global_alch_world.c.access_level).where(global_alch_world.c.access_level > 0)
     # Экзекьют в БД для получения кортежей
-    access_tuple = tuple(alch_connect.execute(access_tuple_temp))
+    access_tuple = tuple(global_alch_connect.execute(access_tuple_temp))
 
     # Отправка кортежа из кортежей для формирования из него списка из списков и добавления во вложенные списки данных
     # о родительских системах миров
@@ -67,7 +67,7 @@ def select_system(world_name: str) -> str:
     :return: название системы
     """
 
-    selected_system = tuple(bd_sqlite3_cursor.execute(f"""
+    selected_system = tuple(global_bd_sqlite3_cursor.execute(f"""
     SELECT systems.system_name FROM systems
     INNER JOIN systems_worlds_relations ON systems.system_name == systems_worlds_relations.system_name
     INNER JOIN worlds ON systems_worlds_relations.world_name == worlds.world_name
