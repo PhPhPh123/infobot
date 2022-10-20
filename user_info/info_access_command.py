@@ -87,16 +87,16 @@ def form_string_answer(access_list: list) -> str:
     [2] - родительская система
     :return: строковый ответ бота
     """
-    # Сообщение, которое выводится 1 раз в начале строки ответа бота
-    message = 'Уровень доступа на мирах'
 
-    # world[0] выводит название мира, а world[1] уровень доступа, от 1 до 3
     wb = openpyxl.Workbook()
     sheet = wb['Sheet']
     for world in access_list:
         sheet.append(world)
-    wb.save('access.xlsx')
+    wb.save('logs_and_temp_files/access.xlsx')
 
+    # Сообщение, которое выводится 1 раз в начале строки ответа бота
+    message = 'Уровень доступа на мирах'
+    # world[0] выводит название мира, а world[1] уровень доступа, от 1 до 3
     # answer_access_temp = Template('''
     # {{ message }}:
     # {% for world in sys_tuple -%}
