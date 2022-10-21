@@ -1,5 +1,6 @@
 import tkinter
 from tkinter.ttk import Combobox
+import pandas as pd
 
 
 def control_interface():
@@ -12,6 +13,7 @@ def control_interface():
     table_obj = NewsInterface(win)
     table_obj.call_text_field_interface()
     win.mainloop()
+    table_obj.write_to_csv()
 
     """Создание экземпляра класса интерфейса
        Вызов метода call_text_field_interface
@@ -36,8 +38,10 @@ class NewsInterface(tkinter.Frame):
         self.text_field = None
         self.start_button = None
         self.text = None
+
         self.type_name = None
         self.type_combo = None
+        self.type_result = None
 
     def call_text_field_interface(self):
         """
@@ -52,32 +56,30 @@ class NewsInterface(tkinter.Frame):
         self.start_button.place(relwidth=0.2, relheight=0.2, relx=0.4, rely=0.7)
 
         self.type_name = tkinter.Label(self.win, text='Срочность новости')
-        self.type_name.place(relx=0.2, rely=0.6)
-        self.type_combo = Combobox(self.win, values=('срочная новость', 'несрочная новость'))
-        self.type_combo.current(0)
-        self.type_combo.bind('<<ComboboxSelected>>',
-                             lambda event: add_button_result_to_dict(event,
-                                                                     'тип события',
-                                                                     'type_combo'))
-        self.type_combo.place(relwidth=0.2, relheight=0.1, relx=0.799, rely=0.7)
+        self.type_name.place(relx=0.7, rely=0.65)
 
-    def call_type_of_news_interface(self):
-        """
-        Данный метод вызывает интерфейс выбора кнопок, результат которых будет записываться в виде
-        cтроки в self.type_of_news
-        @return:
-        """
-        pass
+        self.type_combo = Combobox(self.win, values=('срочная новость', 'несрочная новость'))
+        self.type_combo.bind('<<ComboboxSelected>>',
+                             lambda event: self.choise_type_news(event))
+        self.type_combo.place(relwidth=0.2, relheight=0.1, relx=0.7, rely=0.75)
+
+    def choise_type_news(self, event):
+        self.type_result = self.type_combo.get()
+
+    def get_text(self):
+        self.text = self.text_field.get("1.0", "end")
+        self.interface_close()
 
     def write_to_csv(self):
         """
         Данная функция записывает новости во временные cvs-файлы в директорию временных файлов
         @return:
         """
+        data_frame = pd.DataFrame([[id(self), self.text, self.type_result]], columns=['id', 'text', 'type_news'])
+        data_frame.to_csv('../logs_and_temp_files/csv_files/unique_news.csv', mode='a', header=False, index=False)
 
-    def get_text(self):
-        self.text = self.text_field.get("1.0", "end")
-        print(self.text)
+    def interface_close(self):
+        self.quit()
 
 
 if __name__ == "__main__":
