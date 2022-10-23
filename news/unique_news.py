@@ -1,4 +1,3 @@
-import tkinter
 
 from settings_imports_globalVariables import *
 
@@ -11,6 +10,8 @@ def control_form_news():
     записанными в csv-файлы при вызове чат-команды !startnews
     @return:
     """
+    unique_news = FormUniqueNews()
+    return
 
 
 class FormUniqueNews:

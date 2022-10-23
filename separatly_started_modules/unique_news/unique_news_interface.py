@@ -1,6 +1,7 @@
 import tkinter
 from tkinter.ttk import Combobox
-import pandas as pd
+from csv import writer
+from settings_imports_globalVariables import global_bd_sqlite3_cursor, global_bd_sqlite3_connect
 
 
 def control_interface():
@@ -75,8 +76,16 @@ class NewsInterface(tkinter.Frame):
         Данная функция записывает новости во временные cvs-файлы в директорию временных файлов
         @return:
         """
-        data_frame = pd.DataFrame([[id(self), self.text, self.type_result]], columns=['id', 'text', 'type_news'])
-        data_frame.to_csv('../logs_and_temp_files/csv_files/unique_news.csv', mode='a', header=False, index=False)
+
+        data = [id(self), self.text]
+        if self.type_result == 'срочная новость':
+            with open('../../logs_and_temp_files/csv_files/urgently_unique_news.csv', 'a', newline='', encoding='utf-8') as f_object:
+                writer_object = writer(f_object)
+                writer_object.writerow(data)
+        elif self.type_result == 'несрочная новость':
+            with open('../../logs_and_temp_files/csv_files/common_unique_news.csv', 'a', newline='', encoding='utf-8') as f_object:
+                writer_object = writer(f_object)
+                writer_object.writerow(data)
 
     def interface_close(self):
         self.quit()

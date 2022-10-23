@@ -17,6 +17,7 @@ import user_info.goodspie_command
 import news.bot_news_main
 import craft.main_artifact_builder
 import news.unique_news
+import separatly_started_modules.unique_news.unique_news_interface
 
 intents = discord.Intents.all()
 intents.members = True
@@ -215,7 +216,7 @@ async def uniquenews(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    news.unique_news.control_interface()
+    separatly_started_modules.unique_news.unique_news_interface.control_interface()
     bot_answer = 'Новость принята'
     await ctx.send(bot_answer)
 
