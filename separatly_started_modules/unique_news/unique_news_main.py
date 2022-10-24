@@ -1,7 +1,25 @@
 import tkinter
 from tkinter.ttk import Combobox
-from csv import writer
-from settings_imports_globalVariables import global_bd_sqlite3_cursor, global_bd_sqlite3_connect
+from sqlalchemy import Column, Integer, VARCHAR, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+DataBase = declarative_base()
+
+
+class UrgentlyUniqueNews(DataBase):
+    __tablename__ = 'urgently_unique_news'
+    db_id = Column(Integer, primary_key=True, autoincrement=True)
+    news_id = Column(Integer, nullable=False)
+    news_text = Column(Text, nullable=False)
+
+
+class CommonUniqueNews(DataBase):
+    __tablename__ = 'common_unique_news'
+    db_id = Column(Integer, primary_key=True, autoincrement=True)
+    news_id = Column(Integer, nullable=False)
+    news_text = Column(Text, nullable=False)
 
 
 def control_interface():
@@ -76,20 +94,24 @@ class NewsInterface(tkinter.Frame):
         Данная функция записывает новости во временные cvs-файлы в директорию временных файлов
         @return:
         """
+        news = None
 
-        data = [id(self), self.text]
         if self.type_result == 'срочная новость':
-            with open('../../logs_and_temp_files/csv_files/urgently_unique_news.csv', 'a', newline='', encoding='utf-8') as f_object:
-                writer_object = writer(f_object)
-                writer_object.writerow(data)
+            news = UrgentlyUniqueNews(news_id=id(self), news_text=self.text)
         elif self.type_result == 'несрочная новость':
-            with open('../../logs_and_temp_files/csv_files/common_unique_news.csv', 'a', newline='', encoding='utf-8') as f_object:
-                writer_object = writer(f_object)
-                writer_object.writerow(data)
+            news = CommonUniqueNews(news_id=id(self), news_text=self.text)
+        session.add(news)
+        session.commit()
 
     def interface_close(self):
         self.quit()
 
 
 if __name__ == "__main__":
+    engine = create_engine('sqlite:///unique_news.db')
+    DataBase.metadata.create_all(engine)
+    DataBase.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
     control_interface()
