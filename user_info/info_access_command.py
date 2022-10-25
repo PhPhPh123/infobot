@@ -129,3 +129,6 @@ def form_splitted_answers(old_message: str):
 
         return list_with_new_messages
 
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

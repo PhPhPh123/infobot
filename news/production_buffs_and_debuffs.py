@@ -246,3 +246,7 @@ class WorldClass:
             return [self.world_name, strong_fall, self.import_needs]
         else:
             return None
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

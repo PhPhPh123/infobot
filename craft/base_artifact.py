@@ -144,3 +144,7 @@ WHERE art_type_name == '{self.art_type}'
         if luck_mod >= 90:
             art_reqs += 1
         self.str_requeriments = art_reqs
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

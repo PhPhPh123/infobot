@@ -3,6 +3,8 @@
 модуль свой словарь, ключи словаря совпадают с названиями таблиц, для которых создан запрос
 """
 
+from settings_imports_globalVariables import *
+
 info_main_query_dict = {'worlds': """
     SELECT * FROM worlds WHERE worlds.world_name == '{}'""",
 
@@ -76,3 +78,5 @@ info_goods_query_dict = {
     ORDER BY price"""
 }
 
+if __name__ == '__main__':
+    raise NotCallableModuleException

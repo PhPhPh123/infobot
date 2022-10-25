@@ -128,3 +128,7 @@ def str_form(info_dict: dict) -> str:
 Дополнительное описание и особенности: {info_dict['Дополнительное описание'] if info_dict['Уровень доступа'] > 2 else 'Неизвестно'}
     '''
     return string_answer
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

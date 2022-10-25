@@ -1,6 +1,6 @@
 import tkinter
 from tkinter.ttk import Combobox
-from sqlalchemy import Column, Integer, VARCHAR, Text
+from sqlalchemy import Column, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -33,12 +33,6 @@ def control_interface():
     table_obj.call_text_field_interface()
     win.mainloop()
     table_obj.write_to_csv()
-
-    """Создание экземпляра класса интерфейса
-       Вызов метода call_text_field_interface
-       Вызов метода call_type_of_news_interface
-       Вызов метода write_to_csv
-       """
 
 
 class NewsInterface(tkinter.Frame):

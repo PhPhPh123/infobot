@@ -79,3 +79,7 @@ def form_string_answer(world: str) -> str:
 [ПОВЫШЕНИЕ УРОВНЯ ДОСТУПА] Хорошие новости! Информационно-логическая система проанализировала астропатические данные 
 в субсекторе и смогла собрать дополнительные данные по миру {world}. Уровень доступа повышен на 1''']
     return random.choice(responce_access_list)
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

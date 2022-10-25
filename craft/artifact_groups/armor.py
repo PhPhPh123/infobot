@@ -73,3 +73,7 @@ WHERE art_type_name == '{self.art_type}'
         final_speed_mod = base_evasion + random_mod
 
         return final_speed_mod
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

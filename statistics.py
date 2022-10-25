@@ -1,4 +1,4 @@
-from jinja2 import Template
+from settings_imports_globalVariables import *
 
 
 def count_news_statistics():
@@ -9,7 +9,9 @@ def count_news_statistics():
                  "ПОВЫШЕНИЕ УРОВНЯ ДОСТУПА": [],
                  "Уникальные новости": [],
                  "НОВОСТЬ СУБСЕКТОРА": [],
-                 "ЛОРНАЯ НОВОСТЬ": []
+                 "ЛОРНАЯ НОВОСТЬ": [],
+                 'СРОЧНАЯ УНИКАЛЬНАЯ НОВОСТЬ': [],
+                 'ВАЖНАЯ УНИКАЛЬНАЯ НОВОСТЬ': []
                  }
 
     def append_stat(type_news=None, value=None):
@@ -31,3 +33,7 @@ def form_news_statitics(isdict):
     {% endfor %}""")
     stat_render = stat_template.render(isdict=isdict)
     return stat_render
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

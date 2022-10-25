@@ -47,3 +47,7 @@ ORDER BY RANDOM()
 LIMIT 1'''))[0]  # поскольку из БД собираются кортежи с кортежами то из внешнего кортежа берется
         # вложенный кортеж с 2 значениями
         return jewerly_bonus
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

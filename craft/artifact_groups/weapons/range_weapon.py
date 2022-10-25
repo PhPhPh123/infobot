@@ -81,3 +81,7 @@ class RangeWeapon(Weapon):
             final_attack_speed = random.randint((base_attack_speed - 3), (base_attack_speed + 5))
 
         return final_attack_speed
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

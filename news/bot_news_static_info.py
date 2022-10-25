@@ -38,3 +38,7 @@ def form_lore_info() -> str:
     # Из кортежа с кортежами изымается строка с новостью
     lore_string = tuple(global_bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
     return '[ЛОРНАЯ НОВОСТЬ] ' + lore_string
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

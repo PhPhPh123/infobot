@@ -1,3 +1,5 @@
+from settings_imports_globalVariables import *
+
 help_commands = '''
 Общие команды:
 !infoworld *название системы* - вызывает инфу по конкретному миру согласно имеющемуся уровню доступа
@@ -39,3 +41,6 @@ goods = '''
 Строй-материалы
 Металлы
 Редкие-минералы'''
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

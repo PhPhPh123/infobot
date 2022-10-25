@@ -35,7 +35,7 @@ def get_bot_dir() -> str:
     return os.path.dirname(abs_path)
 
 
-def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
+def connect_to_main_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
     настроек
@@ -43,6 +43,18 @@ def connect_to_db_sqlite3() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     db_name = 'infobot_db.db'
     abspath = get_bot_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
+    connect = sqlite3.connect(abspath)  # Подключение к базе данных
+    cursor = connect.cursor()  # Создание курсора
+    return cursor, connect
+
+
+def connect_to_unique_news_db():
+    """
+    Функция, которая подключается к второстепенной базе данных unique_news.db, хранящей уникальные новости
+    :return: объекты курсора и коннекта
+    """
+    db_name = 'separatly_started_modules\\unique_news\\unique_news.db'
+    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
     cursor = connect.cursor()  # Создание курсора
     return cursor, connect
@@ -102,9 +114,32 @@ logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}
 # Объекты sql-alchemy
 global_alch_connect, global_alch_world, global_alch_systems = connect_to_db_sqlalchemy()
 
-# Объекты курсора и коннекта для доступа в базу данных
-global_bd_sqlite3_cursor, global_bd_sqlite3_connect = connect_to_db_sqlite3()
+# Объекты курсора и коннекта для доступа в основную базу данных
+global_bd_sqlite3_cursor, global_bd_sqlite3_connect = connect_to_main_db()
+
+# Объекты курсора и коннекта для доступа во второстепенную базу уникальных новостей
+# База динамически формируется при первом запуске модуля unique_news_main поэтому может не существовать. В данном
+# случае создание объектов курсора и соединения пропускаются, структуры, работающие с данными глобальными переменными
+# работают через try\except
+if os.path.exists(get_bot_dir() + os.path.sep + 'separatly_started_modules\\unique_news\\unique_news.db'):
+    global_unique_news_cursor, global_unique_news_connect = connect_to_unique_news_db()
+else:
+    pass
 
 # Объект замыкания для хранения статистики по новостям и выводу ее при завершении сессии новостей
 # хранит значения в течении всей сессии бота вплоть до его отключения
 global_news_statistics = count_news_statistics()
+
+
+"""
+Пользовательские исключения
+"""
+
+
+class NotCallableModuleException(Exception):
+    """
+    Исключение при вызове модулей которые не должны вызываться отдельно
+    """
+    def __str__(self):
+        return 'Данный модуль не допускает отдельный вызов'
+

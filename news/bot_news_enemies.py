@@ -69,3 +69,7 @@ def form_string_answer(enemy_tuple: tuple) -> str:
 '''
 
     return str_answer
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

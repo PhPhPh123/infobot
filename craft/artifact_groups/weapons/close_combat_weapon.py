@@ -51,3 +51,7 @@ class CloseCombatWeapon(Weapon):
             parry_modifier = -1
 
         return parry_modifier + art_parry
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

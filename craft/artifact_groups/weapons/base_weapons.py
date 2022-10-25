@@ -78,3 +78,7 @@ WHERE art_type_name == '{weapon_type}'
         final_prescision = base_prescision + 1 if luck <= 10 else base_prescision
 
         return final_prescision
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

@@ -90,3 +90,7 @@ def form_string_answer(tuple_with_worlds: tuple, deal_name: str):
     plt.savefig('logs_and_temp_files/info_export_import_goods.png')
 
     return None
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

@@ -22,3 +22,7 @@ def roll_func(dice_string: str) -> str:
         result += roll
 
     return str(result)
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

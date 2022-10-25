@@ -468,3 +468,7 @@ class EscortQuest(Quest, Reward):
                                                               quest_timer)
 
         self.final_string = f"{self.quest_name}{formatted_description}"
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

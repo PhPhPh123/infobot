@@ -60,3 +60,7 @@ def form_string_answer(sys_tuple: tuple) -> str:
     if not sys_tuple:  # Если названия системы не существует то отправляем в чат сообщение об ошибки написания
         answer_render_systems = 'Некорректное название системы'
     return answer_render_systems
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException
