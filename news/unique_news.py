@@ -1,5 +1,6 @@
 
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def control_form_news(type_of_news: str) -> str:
@@ -72,4 +73,4 @@ class FormUniqueNews:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

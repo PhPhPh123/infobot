@@ -3,6 +3,7 @@
 """
 from settings_imports_globalVariables import *
 from craft.base_artifact import Artifact
+import exceptions
 
 
 class Armor(Artifact):
@@ -76,4 +77,4 @@ WHERE art_type_name == '{self.art_type}'
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

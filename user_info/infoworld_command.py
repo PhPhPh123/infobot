@@ -7,6 +7,7 @@
 
 from settings_imports_globalVariables import *
 from user_info import sql_queries
+import exceptions
 
 
 def to_control_other_functions_and_returns_bot_answer(world_name: str) -> str:
@@ -131,4 +132,4 @@ def str_form(info_dict: dict) -> str:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

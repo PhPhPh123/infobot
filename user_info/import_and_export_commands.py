@@ -7,7 +7,7 @@
 """
 from settings_imports_globalVariables import *
 from user_info import sql_queries
-
+import exceptions
 
 def choice_deal_and_returns_bot_answer(world_name: str, deal_name: str) -> str:
     """
@@ -87,4 +87,4 @@ def form_string(world_tuple: tuple, deal_name: str):
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

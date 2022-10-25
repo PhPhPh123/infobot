@@ -4,6 +4,7 @@
 
 from settings_imports_globalVariables import *
 import craft.main_artifact_builder
+import exceptions
 
 
 def control_quests():
@@ -471,4 +472,4 @@ class EscortQuest(Quest, Reward):
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

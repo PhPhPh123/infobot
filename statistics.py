@@ -1,4 +1,5 @@
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def count_news_statistics():
@@ -36,4 +37,4 @@ def form_news_statitics(isdict):
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

@@ -4,7 +4,7 @@
 
 from settings_imports_globalVariables import *
 from craft.artifact_groups.weapons.base_weapons import Weapon
-
+import exceptions
 
 class CloseCombatWeapon(Weapon):
     """
@@ -54,4 +54,4 @@ class CloseCombatWeapon(Weapon):
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

@@ -24,6 +24,7 @@ from loguru import logger
 from datetime import date
 
 from statistics import count_news_statistics
+import exceptions
 
 
 def get_bot_dir() -> str:
@@ -130,16 +131,4 @@ else:
 # хранит значения в течении всей сессии бота вплоть до его отключения
 global_news_statistics = count_news_statistics()
 
-
-"""
-Пользовательские исключения
-"""
-
-
-class NotCallableModuleException(Exception):
-    """
-    Исключение при вызове модулей которые не должны вызываться отдельно
-    """
-    def __str__(self):
-        return 'Данный модуль не допускает отдельный вызов'
 

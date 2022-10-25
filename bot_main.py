@@ -17,7 +17,7 @@ import user_info.goodspie_command
 import news.bot_news_main
 import craft.main_artifact_builder
 import news.unique_news
-import separatly_started_modules.unique_news.unique_news_main
+import exceptions
 
 intents = discord.Intents.all()
 intents.members = True
@@ -262,3 +262,5 @@ async def on_voice_state_update(member, before, after):
 if __name__ == '__main__':
     logger.info('[bot_run]')
     infobot.run(settings['token'])
+else:
+    raise exceptions.NotImportedModuleException

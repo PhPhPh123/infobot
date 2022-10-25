@@ -6,6 +6,7 @@
 """
 
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def form_production_changes_news() -> str:
@@ -249,4 +250,4 @@ class WorldClass:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

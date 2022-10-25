@@ -1,4 +1,5 @@
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def to_control_other_functions() -> None:
@@ -80,4 +81,4 @@ def form_pie_plot(goods_list_export, counts_world_list_export,
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

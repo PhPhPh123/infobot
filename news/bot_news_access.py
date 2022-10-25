@@ -3,6 +3,7 @@
     в управляющий модуль bot_news_main
 """
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def control_other_func() -> str:
@@ -82,4 +83,4 @@ def form_string_answer(world: str) -> str:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

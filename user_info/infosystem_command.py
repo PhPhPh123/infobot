@@ -5,6 +5,7 @@
     кортежей и формированию на их основе готового строкового ответа. Текст SQL-запроса берется из модуля sql_queries
 """
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def to_control_other_functions_and_returns_bot_answer(system_name: str) -> str:
@@ -63,4 +64,4 @@ def form_string_answer(sys_tuple: tuple) -> str:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

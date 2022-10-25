@@ -1,4 +1,4 @@
-from settings_imports_globalVariables import *
+import exceptions
 
 help_commands = '''
 Общие команды:
@@ -43,4 +43,4 @@ goods = '''
 Редкие-минералы'''
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

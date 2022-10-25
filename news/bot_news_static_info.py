@@ -6,6 +6,7 @@
     функцию в модуле bot_news_main
 """
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def form_subsector_news() -> str:
@@ -41,4 +42,4 @@ def form_lore_info() -> str:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

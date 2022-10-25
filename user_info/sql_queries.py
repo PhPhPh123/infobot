@@ -2,8 +2,7 @@
 Этом модуле хранятся в виде словаря основные тела sql-запросов для БД которыми пользуются разные модули. На каждый
 модуль свой словарь, ключи словаря совпадают с названиями таблиц, для которых создан запрос
 """
-
-from settings_imports_globalVariables import *
+import exceptions
 
 info_main_query_dict = {'worlds': """
     SELECT * FROM worlds WHERE worlds.world_name == '{}'""",
@@ -79,4 +78,4 @@ info_goods_query_dict = {
 }
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

@@ -108,6 +108,7 @@ from craft.artifact_groups.armor import Armor
 from craft.artifact_groups.jewerly import Jewelry
 from craft.artifact_groups.weapons.close_combat_weapon import CloseCombatWeapon
 from craft.artifact_groups.weapons.range_weapon import RangeWeapon
+import exceptions
 
 
 def choise_class_objects(art_user_dict: dict) -> str:
@@ -266,4 +267,4 @@ def form_string_answer(artifact_dict: dict) -> str:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

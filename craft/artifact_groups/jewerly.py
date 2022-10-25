@@ -4,6 +4,7 @@
 
 from settings_imports_globalVariables import *
 from craft.base_artifact import Artifact
+import exceptions
 
 
 class Jewelry(Artifact):
@@ -50,4 +51,4 @@ LIMIT 1'''))[0]  # поскольку из БД собираются корте�
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

@@ -5,6 +5,7 @@
 """
 
 from settings_imports_globalVariables import *
+import exceptions
 
 
 def form_tuple_in_db(excel_answer=False) -> list:
@@ -131,4 +132,4 @@ def form_splitted_answers(old_message: str):
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

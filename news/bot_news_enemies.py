@@ -3,7 +3,7 @@
     и базе данных и возвращает результат в модуль bot_news_main
 """
 from settings_imports_globalVariables import *
-
+import exceptions
 
 def form_enemy_news() -> str:
     """
@@ -72,4 +72,4 @@ def form_string_answer(enemy_tuple: tuple) -> str:
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException

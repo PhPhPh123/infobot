@@ -5,6 +5,7 @@
 """
 from settings_imports_globalVariables import *
 import user_info.sql_queries
+import exceptions
 
 
 def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
@@ -93,4 +94,4 @@ def form_string_answer(tuple_with_worlds: tuple, deal_name: str):
 
 
 if __name__ == '__main__':
-    raise NotCallableModuleException
+    raise exceptions.NotCallableModuleException
