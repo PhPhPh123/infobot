@@ -1,6 +1,8 @@
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
-import exceptions
 
 
 def control_form_news(type_of_news: str) -> str:
@@ -70,7 +72,3 @@ class FormUniqueNews:
 
         global_unique_news_cursor.execute(f'DELETE FROM {table} WHERE news_id == {self.news_id}')
         global_unique_news_connect.commit()
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

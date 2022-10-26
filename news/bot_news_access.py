@@ -2,8 +2,11 @@
     Данный модуль формирует новости, связанные с повышением уровня доступа в случайном мире и возвращает строку
     в управляющий модуль bot_news_main
 """
-from settings_imports_globalVariables import *
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
+from settings_imports_globalVariables import *
 
 
 def control_other_func() -> str:
@@ -80,7 +83,3 @@ def form_string_answer(world: str) -> str:
 [ПОВЫШЕНИЕ УРОВНЯ ДОСТУПА] Хорошие новости! Информационно-логическая система проанализировала астропатические данные 
 в субсекторе и смогла собрать дополнительные данные по миру {world}. Уровень доступа повышен на 1''']
     return random.choice(responce_access_list)
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

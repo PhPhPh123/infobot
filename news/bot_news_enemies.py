@@ -2,8 +2,11 @@
     Данный модуль формирует новости связанные с наличием врагов в случайных системах, существующих в игровом мире
     и базе данных и возвращает результат в модуль bot_news_main
 """
-from settings_imports_globalVariables import *
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
+from settings_imports_globalVariables import *
 
 
 def form_enemy_news() -> str:
@@ -70,7 +73,3 @@ def form_string_answer(enemy_tuple: tuple) -> str:
 '''
 
     return str_answer
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

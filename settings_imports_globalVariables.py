@@ -1,6 +1,10 @@
 """
     В этом модуле собраны внешние импорты, настройки для бота и глобальные переменные. Остальные модули импортируют его
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
 import sqlite3
 import sqlalchemy
 import discord
@@ -24,7 +28,7 @@ from loguru import logger
 from datetime import date
 
 from statistics import count_news_statistics
-import exceptions
+
 
 
 def get_bot_dir() -> str:

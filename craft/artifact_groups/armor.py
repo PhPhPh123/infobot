@@ -1,9 +1,12 @@
 """
     Данный модуль содержит в себе класс нательной брони
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
 from settings_imports_globalVariables import *
 from craft.base_artifact import Artifact
-import exceptions
 
 
 class Armor(Artifact):
@@ -74,7 +77,3 @@ WHERE art_type_name == '{self.art_type}'
         final_speed_mod = base_evasion + random_mod
 
         return final_speed_mod
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

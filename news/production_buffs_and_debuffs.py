@@ -4,9 +4,11 @@
     form_production_changes_news которая делегирует выполнение на другие функции и класс, которые готовят строковый
     ответ и заливают изменения в базу данных
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
-import exceptions
 
 
 def form_production_changes_news() -> str:
@@ -247,7 +249,3 @@ class WorldClass:
             return [self.world_name, strong_fall, self.import_needs]
         else:
             return None
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

@@ -1,6 +1,8 @@
-from settings_imports_globalVariables import *
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
+from settings_imports_globalVariables import *
 
 def count_news_statistics():
     stat_dict = {"НОВОСТЬ О ВРАГАХ": [],
@@ -36,5 +38,3 @@ def form_news_statitics(isdict):
     return stat_render
 
 
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

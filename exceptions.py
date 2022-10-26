@@ -17,3 +17,7 @@ class NotImportedModuleException(Exception):
     """
     def __str__(self):
         return 'Данный модуль не допускает импорт'
+
+
+if __name__ == '__main__':
+    raise NotCallableModuleException

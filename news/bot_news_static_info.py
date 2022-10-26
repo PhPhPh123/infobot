@@ -5,8 +5,11 @@
     и сразу изымая из него строковое значение новости news_text после чего отдавая строку в управляющую
     функцию в модуле bot_news_main
 """
-from settings_imports_globalVariables import *
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
+from settings_imports_globalVariables import *
 
 
 def form_subsector_news() -> str:
@@ -40,6 +43,3 @@ def form_lore_info() -> str:
     lore_string = tuple(global_bd_sqlite3_cursor.execute(select_gm_news_string))[0][0]
     return '[ЛОРНАЯ НОВОСТЬ] ' + lore_string
 
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

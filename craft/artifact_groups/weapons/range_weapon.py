@@ -1,10 +1,12 @@
 """
     Данный модуль содержит в себе класс оружия дальнего боя
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
 from craft.artifact_groups.weapons.base_weapons import Weapon
-import exceptions
 
 
 class RangeWeapon(Weapon):
@@ -82,7 +84,3 @@ class RangeWeapon(Weapon):
             final_attack_speed = random.randint((base_attack_speed - 3), (base_attack_speed + 5))
 
         return final_attack_speed
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

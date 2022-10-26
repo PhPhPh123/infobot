@@ -1,10 +1,13 @@
 """
     Данный модуль содержит в себе класс оружия ближнего боя
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
 from craft.artifact_groups.weapons.base_weapons import Weapon
-import exceptions
+
 
 class CloseCombatWeapon(Weapon):
     """
@@ -51,7 +54,3 @@ class CloseCombatWeapon(Weapon):
             parry_modifier = -1
 
         return parry_modifier + art_parry
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

@@ -4,10 +4,12 @@
     доступа в базу данных, формированию строки запросов по нескольким пунктам через шаблонизатор, получения из БД
     кортежей и формированию на их основе готового строкового ответа. Текст SQL-запроса берется из модуля sql_queries
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
 from user_info import sql_queries
-import exceptions
 
 
 def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=False) -> str:
@@ -152,7 +154,3 @@ def str_form(info_dict: dict, gmflag=False) -> str:
             '''
 
     return string_answer
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

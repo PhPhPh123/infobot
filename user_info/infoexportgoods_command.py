@@ -3,9 +3,12 @@
     строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
     Вывод выглядит в формате перечисления названий миров, покупающих или продающих данный товар
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
 from settings_imports_globalVariables import *
 import user_info.sql_queries
-import exceptions
 
 
 def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
@@ -92,6 +95,3 @@ def form_string_answer(tuple_with_worlds: tuple, deal_name: str):
 
     return None
 
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

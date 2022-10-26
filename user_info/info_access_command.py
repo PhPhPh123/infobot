@@ -3,9 +3,11 @@
     строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
     Вывод выглядит в формате перечисления названий миров
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
-import exceptions
 
 
 def form_tuple_in_db(excel_answer=False) -> list:
@@ -129,7 +131,3 @@ def form_splitted_answers(old_message: str):
             list_with_new_messages.append(string)
 
         return list_with_new_messages
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

@@ -5,9 +5,13 @@
     через шаблонизатор, получения из БД кортежей и формированию на их основе готового строкового ответа. Текст
     SQL-запроса берется из модуля sql_queries
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
 from settings_imports_globalVariables import *
 from user_info import sql_queries
-import exceptions
+
 
 def choice_deal_and_returns_bot_answer(world_name: str, deal_name: str) -> str:
     """
@@ -84,7 +88,3 @@ def form_string(world_tuple: tuple, deal_name: str):
 
     answer_render_systems = answer_systems_temp.render(sys_tuple=world_tuple, message=message)
     return answer_render_systems
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

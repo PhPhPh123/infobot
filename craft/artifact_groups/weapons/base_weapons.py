@@ -1,9 +1,12 @@
 """
     Данный класс содержит базовый класс оружия, методы и аттрибуты, характерные для всех видов оружия
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
 from settings_imports_globalVariables import *
 from craft.base_artifact import Artifact
-import exceptions
 
 
 class Weapon(Artifact):
@@ -79,7 +82,3 @@ WHERE art_type_name == '{weapon_type}'
         final_prescision = base_prescision + 1 if luck <= 10 else base_prescision
 
         return final_prescision
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

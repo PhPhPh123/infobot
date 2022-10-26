@@ -1,10 +1,12 @@
 """
     Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
 import craft.main_artifact_builder
-import exceptions
 
 
 def control_quests():
@@ -470,6 +472,3 @@ class EscortQuest(Quest, Reward):
 
         self.final_string = f"{self.quest_name}{formatted_description}"
 
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

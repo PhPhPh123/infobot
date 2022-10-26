@@ -1,10 +1,12 @@
 """
     Данный модуль содержит в себе класс бижутерии(серьги, кольца, амулеты)
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
 from craft.base_artifact import Artifact
-import exceptions
 
 
 class Jewelry(Artifact):
@@ -48,7 +50,3 @@ ORDER BY RANDOM()
 LIMIT 1'''))[0]  # поскольку из БД собираются кортежи с кортежами то из внешнего кортежа берется
         # вложенный кортеж с 2 значениями
         return jewerly_bonus
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

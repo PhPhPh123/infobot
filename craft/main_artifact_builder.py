@@ -102,13 +102,15 @@
     и названием доступного ей бонуса из таблицы unique_jewelry_bonuses
 -----------------------------------------------------------------------------------------------------------------------
 """
+import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
 from craft.artifact_groups.armor import Armor
 from craft.artifact_groups.jewerly import Jewelry
 from craft.artifact_groups.weapons.close_combat_weapon import CloseCombatWeapon
 from craft.artifact_groups.weapons.range_weapon import RangeWeapon
-import exceptions
 
 
 def choise_class_objects(art_user_dict: dict) -> str:
@@ -264,7 +266,3 @@ def form_string_answer(artifact_dict: dict) -> str:
     final_string += f"Особенность: {artifact_dict['unique_suffix'][0][1]}"
 
     return final_string
-
-
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

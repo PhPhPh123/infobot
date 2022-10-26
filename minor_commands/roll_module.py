@@ -1,8 +1,11 @@
 """
     Данный модуль осуществляет ролл кубиков
 """
-from settings_imports_globalVariables import *
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
+from settings_imports_globalVariables import *
 
 
 def roll_func(dice_string: str) -> str:
@@ -25,5 +28,3 @@ def roll_func(dice_string: str) -> str:
     return str(result)
 
 
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException

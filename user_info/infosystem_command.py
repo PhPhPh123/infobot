@@ -4,8 +4,11 @@
     доступа в базу данных, формированию строки запросов по нескольким пунктам через шаблонизатор, получения из БД
     кортежей и формированию на их основе готового строкового ответа. Текст SQL-запроса берется из модуля sql_queries
 """
-from settings_imports_globalVariables import *
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
+
+from settings_imports_globalVariables import *
 
 
 def to_control_other_functions_and_returns_bot_answer(system_name: str) -> str:

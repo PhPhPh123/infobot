@@ -1,4 +1,6 @@
 import exceptions
+if __name__ == '__main__':
+    raise exceptions.NotCallableModuleException
 
 help_commands = '''
 Общие команды:
@@ -42,5 +44,3 @@ goods = '''
 Металлы
 Редкие-минералы'''
 
-if __name__ == '__main__':
-    raise exceptions.NotCallableModuleException
