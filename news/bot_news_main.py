@@ -7,6 +7,7 @@ from settings_imports_globalVariables import *
 from news import bot_news_access, bot_news_static_info, bot_news_enemies, production_buffs_and_debuffs, mini_quests, unique_news
 import exceptions
 
+
 def choise_random_news() -> str:
     """
     Данная функция выбирает случайную новость путем случайного выбора функции, которая ее обработает и вернет

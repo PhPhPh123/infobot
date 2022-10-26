@@ -5,7 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import exceptions
 
 DataBase = declarative_base()
 
@@ -112,4 +111,5 @@ if __name__ == "__main__":
 
     control_interface()
 else:
-    raise exceptions.NotImportedModuleException
+    raise Exception('Неимпортируемый модуль')
+

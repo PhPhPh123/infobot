@@ -5,6 +5,7 @@
 from settings_imports_globalVariables import *
 import exceptions
 
+
 def form_enemy_news() -> str:
     """
     Данная функция отправляет строку sql-запроса делает экзекьют и формирует кортеж, который отправляет в

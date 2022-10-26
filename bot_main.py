@@ -37,6 +37,22 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
 
 
 @infobot.command()
+@commands.has_permissions(administrator=True)
+async def infoworldgm(ctx: discord.ext.commands.context.Context, world_name: str):
+    """
+    Функция, выдающая ответ по характеристикам запрашиваемого мира на основании запроса в базу данных, отличие от
+    обычной функции в том, что она игнорирует уровень доступа и выдает полную информацию по миру. Команда доступна
+    только для ГМа
+    :param ctx: объект класса контекст библиотеки discord
+    :param world_name: название запрашиваемого мира
+    :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
+    """
+    gmflag = True
+    bot_answer = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name, gmflag)
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
 async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str):
     """
     Функция, выдающая список миров внутри системы на основании запроса в базу данных
@@ -207,17 +223,6 @@ async def stopnews(ctx):
     """
     news_send.cancel()
     bot_answer = global_news_statistics()
-    await ctx.send(bot_answer)
-
-
-@infobot.command()
-async def uniquenews(ctx: discord.ext.commands.context.Context):
-    """
-    :param ctx: объект класса контекст библиотеки discord
-    :return: отправка строки боту для вывода в текущем чате дискорда
-    """
-    separatly_started_modules.unique_news.unique_news_main.control_interface()
-    bot_answer = 'Новость принята'
     await ctx.send(bot_answer)
 
 
