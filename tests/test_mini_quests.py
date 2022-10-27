@@ -3,6 +3,7 @@ import pytest
 
 from news.mini_quests import QuestFormer, choise_quest, control_quests, Quest, Reward, ArtifactQuest, KillQuest, \
     DeliveryQuest
+from constants import *
 
 
 @pytest.fixture
@@ -20,7 +21,7 @@ def quest_former_fixture(connect_to_db_sqlite3):
         return obj_dict
 
     list_with_dicts = []
-    for _ in range(100):
+    for _ in range(LARGE_TEST_PASSES):
         list_with_dicts.append(dict_former())
 
     return list_with_dicts
@@ -31,7 +32,7 @@ def artifact_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
                            all_imperial_classes_fixture):
     art_quest_list = []
 
-    for _ in range(20):
+    for _ in range(FEW_TEST_PASSES):
         art_quest_list.append(ArtifactQuest((random.choice(all_worlds_names_fixture),
                                              random.choice(all_danger_names_fixture),
                                              random.choice(all_imperial_classes_fixture))))
@@ -43,7 +44,7 @@ def kill_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
                        all_imperial_classes_fixture, all_enemies_names_fixture):
     kill_quest_list = []
 
-    for _ in range(20):
+    for _ in range(FEW_TEST_PASSES):
         kill_quest_list.append(KillQuest((random.choice(all_worlds_names_fixture),
                                           random.choice(all_danger_names_fixture),
                                           random.choice(all_imperial_classes_fixture),
@@ -57,7 +58,7 @@ def delivery_quest_fixture(all_worlds_names_fixture, all_danger_names_fixture,
                            all_imperial_classes_fixture, all_goods_fixture):
     delivery_quest_list = []
 
-    for _ in range(20):
+    for _ in range(FEW_TEST_PASSES):
         delivery_quest_list.append(DeliveryQuest((random.choice(all_worlds_names_fixture),
                                                   random.choice(all_danger_names_fixture),
                                                   random.choice(all_imperial_classes_fixture),
@@ -77,21 +78,21 @@ def test_control_quests(monkeypatch):
 
     monkeypatch.setattr('news.mini_quests.Quest.load_quest_to_log', mock_load_quest_to_log)
 
-    for _ in range(20):
+    for _ in range(FEW_TEST_PASSES):
         result = control_quests()
         assert type(result) == str
 
 
 def test_choise_quest_func():
     list_of_quests = ['artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest']
-    for _ in range(20):
+    for _ in range(FEW_TEST_PASSES):
         result = choise_quest()
         assert result in list_of_quests
 
 
 class TestQuestFormer:
     def test_check_quest_former_empty_base_awswer(self):
-        for _ in range(500):
+        for _ in range(MAXIMUM_TEST_PASSES):
             assert QuestFormer('artifact_quest').quest_tuple != ()
             assert QuestFormer('kill_quest').quest_tuple != ()
             assert QuestFormer('delivery_quest').quest_tuple != ()
@@ -126,7 +127,7 @@ class TestQuestFormer:
 
 
 def test_reward_mixin():
-    for _ in range(20):
+    for _ in range(FEW_TEST_PASSES):
         min_reward = 100000
         max_reward = 320000
         rew_obj = Reward()

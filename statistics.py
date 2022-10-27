@@ -4,6 +4,7 @@ if __name__ == '__main__':
 
 from settings_imports_globalVariables import *
 
+
 def count_news_statistics():
     stat_dict = {"НОВОСТЬ О ВРАГАХ": [],
                  "НОВОСТЬ О БЕЗОПАСНОМ МЕСТЕ": [],

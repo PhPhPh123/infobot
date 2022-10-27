@@ -8,7 +8,6 @@ if __name__ == '__main__':
 import sqlite3
 import sqlalchemy
 import discord
-import tkinter
 import pandas as pd
 import numpy
 import random
@@ -28,7 +27,6 @@ from loguru import logger
 from datetime import date
 
 from statistics import count_news_statistics
-
 
 
 def get_bot_dir() -> str:

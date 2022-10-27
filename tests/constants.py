@@ -1,0 +1,8 @@
+"""Константы количества повторов цикла тестирования"""
+
+MINIMUM_TEST_PASSES = 10
+FEW_TEST_PASSES = 20
+NORMAL_TEST_PASSES = 50
+LARGE_TEST_PASSES = 100
+MAXIMUM_TEST_PASSES = 300
+
