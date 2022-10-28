@@ -14,9 +14,10 @@ def control_quests():
     Данная функция является базовой точкой входа и управляющей элементом модуля
     """
 
-    chones_quest = choise_quest()
+    chosen_quest = choise_quest()
 
-    quest_former = QuestFormer(chones_quest)
+    quest_former = QuestFormer(chosen_quest)
+
     quest_string = quest_former.start_form()
 
     return quest_string
