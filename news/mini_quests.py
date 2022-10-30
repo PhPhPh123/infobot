@@ -1,47 +1,60 @@
 """
-    Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов
+    Данный модуль отвечает за рандомизацию и выдачу в чат небольших случайных квестов. Модуль реализует шаблон
+    шаблон проектирования Фасад в своей первой функции control_quests. Квесты выдаются в рамках работы новостной сессии
+    бота, но API через control_quests позволяет получать новость независимо. Принцип работы модуля следующий:
+    выбирается случайный тип новости и передается в квестовую фабрику которая собирает предварительную информацию
+    и создает заготовку квеста, которую, затем, соответствующие классы достраивают до готового состояния и в конце,
+    фабрика формирует из экземляра квеста строку
 """
+
 import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from settings_imports_globalVariables import *
-import craft.main_artifact_builder
+import craft.main_artifact_factory
 
 
-def control_quests():
+def control_quests() -> str:
     """
-    Данная функция является базовой точкой входа и управляющей элементом модуля
+    Данная функция является управляющим элементом модуля и реализует шаблон проектирования Фасад
     """
+    # Вызывается функция, случайно выбирающая тип квеста
+    chosen_quest = choise_quest_group()
 
-    chosen_quest = choise_quest()
+    # создает экземпляр класса квестовой фабрики
+    quest_former = QuestFactory(chosen_quest)
 
-    quest_former = QuestFormer(chosen_quest)
-
+    # Запуск основгого фабричного метода, который затем запускает строителей отдельных классов
     quest_string = quest_former.start_form()
 
     return quest_string
 
 
-def choise_quest():
+def choise_quest_group() -> str:
     """
-    Данная функция выбирает случайный тип квеста, на данный момент это один из списка из 4х:
-    artifact_quest, kill_quest, delivery_quest, escort_quest
+    Данная функция выбирает случайную группу квеста, например artifact_quest, kill_quest, delivery_quest.
+    Она работает с глобальной межмодульной переменной курсора
     """
     quests = tuple(global_bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
 
+    # Квестовые группы добавляются в список
     quests_list = []
     for istuple in quests:
         quests_list.append(istuple[0])
 
+    # Из списка выбирается случайная группа
     chones_quest = random.choice(quests_list)
     return chones_quest
 
 
-class QuestFormer:
+class QuestFactory:
     """
-    Данная класс выбирает один из методов, отвечающий за доступ в базу данных, достает оттуда значение и формирует
-    на его основе экземпляр целевого финального квестового класса
+    Данный класс реализует паттерн проектирования Фабрика.
+    Он подготавливает предварительную информацию выбором одного из методов, отвечающий за доступ в базу данных,
+    достает оттуда значения в виде квестового кортежа и затем, в главном фабричном методе start_form, формирует
+    заготовки квестов путем их создания, а затем вызывает метод build_quest для экземляра-заготовки, который достраивает
+    их до итоговово состояния. В конце из готового экземляра забирается финальная строка ответа
     """
 
     def __init__(self, quest_name: str):
@@ -49,12 +62,14 @@ class QuestFormer:
         # Вызываю соответствующий статичный метод на основе принятого имя квеста(имя квеста и имя метода совпадают)
         self.quest_tuple = self.__getattribute__(quest_name)()
 
-    def start_form(self):
+    def start_form(self) -> str:
         """
-        Данная функция создает экземпляры класса на их основе и вызывает метод формирования итоговой строки квеста
+        Данная метод является основным в данном классе-фабрике. Он поэтапно создает экземляр, вызывает метод строитель
+        экземпляра и забирает из него строку которую затем возвращает в фасадную функцию control_quests
         """
         quest = None
 
+        # Формирование заготовки
         if self.quest_name == 'artifact_quest':
             quest = ArtifactQuest(self.quest_tuple)
         elif self.quest_name == 'kill_quest':
@@ -64,11 +79,22 @@ class QuestFormer:
         elif self.quest_name == 'escort_quest':
             quest = EscortQuest(self.quest_tuple)
 
-        quest_string = quest.form_quest()
+        # Вызов строителя
+        quest.build_quest()
+
+        # Изъятие итоговой строки
+        quest_string = quest.final_string
         return quest_string
 
     @staticmethod
-    def artifact_quest():
+    def artifact_quest() -> tuple:
+        """
+        Данный метод достает из базы данных, используя глобальную междумодульную переменную курсора, один единственный
+        мир на основе применения сортирующей функции RANDOM() и LIMIT 1. Исключения в блоке WHERE нужны,
+        чтобы в отборы не попали квесты, где я не планировал проводить квесты в связи с особым статусом данных классов
+        миров. Именно отобранном мире будет находиться артефакт, который необходимо отыскать
+        @return: строка-заготовка квеста
+        """
         artifact_quest_query = '''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name
         FROM worlds
@@ -76,12 +102,23 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 1'''
         artifact_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(artifact_quest_query))[0]
+
         assert artifact_quest_tuple, 'база должна вернуть непустое значение'
 
         return artifact_quest_tuple
 
     @staticmethod
-    def kill_quest():
+    def kill_quest() -> tuple:
+        """
+        Данный метод достает из базы данных, используя глобальную междумодульную переменную курсора, один единственный
+        мир на основе применения сортирующей функции RANDOM() и LIMIT 1. Исключения в блоке WHERE нужны,
+        чтобы в отборы не попали квесты, где я не планировал проводить квесты в связи с особым статусом данных классов
+        миров, не попали миры с нулевой угрозой т.к. там нет врагов и не попали особые типы врагов, которые не являются
+        врагами в строгом смысле этого слова(угроза стихийных бедствий), за отсеивание таких угрозы отвечает
+        строчка enemies.group_name NOT NULL т.к. группа у этих врагов именно NULL. Именно на отобранном мире будут враги
+        которых по квесту нужно уничтожить
+        @return: строка-заготовка квеста
+        """
         kill_quest_query = '''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name, enemies.group_name
         FROM worlds
@@ -93,12 +130,20 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 1'''
         kill_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(kill_quest_query))[0]
+
         assert kill_quest_tuple, 'база должна вернуть непустое значение'
 
         return kill_quest_tuple
 
     @staticmethod
-    def delivery_quest():
+    def delivery_quest() -> tuple:
+        """
+        Данный метод достает из базы данных, используя глобальную междумодульную переменную курсора, один единственный
+        мир на основе применения сортирующей функции RANDOM() и LIMIT 1. Исключения в блоке WHERE нужны,
+        чтобы в отборы не попали квесты, где я не планировал проводить квесты в связи с особым статусом данных классов
+        миров, а также миры, на которых отсутствует импорт. Именно на отобранный мир будет осуществляться доставка
+        @return: строка-заготовка квеста
+        """
         delivery_quest_query = f'''
         SELECT worlds.world_name, worlds.danger_name, worlds.class_name, trade_import.import_name
         FROM worlds
@@ -115,7 +160,16 @@ class QuestFormer:
         return delivery_quest_tuple
 
     @staticmethod
-    def escort_quest():
+    def escort_quest() -> tuple[tuple, tuple]:
+        """
+        Данный метод достает из базы данных, используя глобальную междумодульную переменную курсора, два мира, первый из
+        которых будет отправной точкой, а второй - точкой прибытия на основе применения
+        сортирующей функции RANDOM() и LIMIT 2.
+        Исключения в блоке WHERE нужны, чтобы в отборы не попали квесты, где я не планировал проводить квесты в связи с
+        особым статусом данных классов миров, а также миры, на которых отсутствует импорт, также миры со слишком малым
+        населением или боевые зоны тоже должны быть исключены
+        @return: строка-заготовка квеста
+        """
         escort_quest_query = f'''
         SELECT  world_name, danger_name
         FROM worlds
@@ -126,7 +180,7 @@ class QuestFormer:
         ORDER BY RANDOM()
         LIMIT 2'''
 
-        delivery_escort_tuple = tuple(global_bd_sqlite3_cursor.execute(escort_quest_query))[0]
+        delivery_escort_tuple = tuple(global_bd_sqlite3_cursor.execute(escort_quest_query))
         assert delivery_escort_tuple, 'база должна вернуть непустое значение'
 
         return delivery_escort_tuple
@@ -163,7 +217,7 @@ class Quest(ABC):
         pass
 
     @abstractmethod
-    def form_quest(self):
+    def build_quest(self):
         pass
 
     @abstractmethod
@@ -240,9 +294,9 @@ class ArtifactQuest(Quest):
                         'тип': 'random',
                         'особенность': 'random'}
 
-        self.full_artifact_string = craft.main_artifact_builder.choise_class_objects(request_dict)
+        self.full_artifact_string = craft.main_artifact_factory.choise_class_objects(request_dict)
 
-    def form_quest(self):
+    def build_quest(self):
         """
         Данный метод будет формировать строку с квестом
         """
@@ -252,8 +306,6 @@ class ArtifactQuest(Quest):
         self.form_quest_string()
         self.load_artifact_to_log()
         self.load_quest_to_log()
-
-        return self.final_string
 
     def get_quest_pattern_from_db(self):
         quest_query = f"""
@@ -307,13 +359,11 @@ class KillQuest(Quest, Reward):
         self.quest_name = 'kill_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
-    def form_quest(self):
+    def build_quest(self):
         self.get_quest_pattern_from_db()
         self.form_quest_name()
         self.form_quest_string()
         self.load_quest_to_log()
-
-        return self.final_string
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -368,13 +418,11 @@ class DeliveryQuest(Quest):
         self.quest_name = 'delivery_quest'
         self.quest_dict = self.quest_tuple_to_dict(quest_tuple)
 
-    def form_quest(self):
+    def build_quest(self):
         self.get_quest_pattern_from_db()
         self.form_quest_name()
         self.form_quest_string()
         self.load_quest_to_log()
-
-        return self.final_string
 
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple):
@@ -420,21 +468,17 @@ class EscortQuest(Quest, Reward):
         super().__init__(quest_tuple)
         self.quest_name = 'escort_quest'
         self.quest_dict, self.place_of_delivery_dict = self.quest_tuple_to_dict(quest_tuple)
-        print(self.quest_dict)
 
-    def form_quest(self):
+    def build_quest(self):
         self.get_quest_pattern_from_db()
         self.form_quest_name()
         self.form_quest_string()
         self.load_quest_to_log()
 
-        return self.final_string
-
     @staticmethod
     def quest_tuple_to_dict(is_tuple: tuple) -> tuple:
         assert len(is_tuple) == 2, 'кортежей должно быть 2'
 
-        print(is_tuple)
         dict_keys = ('world_name', 'danger_name')
         quest_dict = dict(zip(dict_keys, is_tuple[0]))
         place_of_delivery_dict = dict(zip(dict_keys, is_tuple[1]))

@@ -19,7 +19,7 @@ import user_info.import_and_export_commands
 import user_info.infoexportgoods_command
 import user_info.goodspie_command
 import news.bot_news_main
-import craft.main_artifact_builder
+import craft.main_artifact_factory
 import news.unique_news
 
 intents = discord.Intents.all()
@@ -242,7 +242,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'тип': type_art.lower(),
                   'особенность': unique_bonus.lower()}
 
-    bot_answer = craft.main_artifact_builder.choise_class_objects(param_dict)
+    bot_answer = craft.main_artifact_factory.choise_class_objects(param_dict)
     await ctx.send(bot_answer)
 
 

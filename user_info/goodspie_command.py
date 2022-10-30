@@ -1,3 +1,8 @@
+"""
+    Данный модуль отвечает за обработку команды !goodspie и выводит общий список товаров в субсекторе и их базовые цены
+    в виде пироговой диаграмы matplotlib
+"""
+
 import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException

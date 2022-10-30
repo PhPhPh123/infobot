@@ -1,7 +1,7 @@
 import random
 import pytest
 
-from news.mini_quests import QuestFormer, choise_quest, control_quests, Quest, Reward, ArtifactQuest, KillQuest, \
+from news.mini_quests import QuestFactory, choise_quest_group, control_quests, Quest, Reward, ArtifactQuest, KillQuest, \
     DeliveryQuest
 from constants import *
 
@@ -9,10 +9,10 @@ from constants import *
 @pytest.fixture
 def quest_former_fixture(connect_to_db_sqlite3):
     def dict_former():
-        art_obj = QuestFormer('artifact_quest')
-        kill_obj = QuestFormer('kill_quest')
-        delivery_obj = QuestFormer('delivery_quest')
-        escort_obj = QuestFormer('escort_quest')
+        art_obj = QuestFactory('artifact_quest')
+        kill_obj = QuestFactory('kill_quest')
+        delivery_obj = QuestFactory('delivery_quest')
+        escort_obj = QuestFactory('escort_quest')
 
         obj_tuple = (art_obj, kill_obj, delivery_obj, escort_obj)
         dict_keys = ('artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest')
@@ -86,17 +86,17 @@ def test_control_quests(monkeypatch):
 def test_choise_quest_func():
     list_of_quests = ['artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest']
     for _ in range(FEW_TEST_PASSES):
-        result = choise_quest()
+        result = choise_quest_group()
         assert result in list_of_quests
 
 
 class TestQuestFormer:
     def test_check_quest_former_empty_base_awswer(self):
         for _ in range(MAXIMUM_TEST_PASSES):
-            assert QuestFormer('artifact_quest').quest_tuple != ()
-            assert QuestFormer('kill_quest').quest_tuple != ()
-            assert QuestFormer('delivery_quest').quest_tuple != ()
-            assert QuestFormer('escort_quest').quest_tuple != ()
+            assert QuestFactory('artifact_quest').quest_tuple != ()
+            assert QuestFactory('kill_quest').quest_tuple != ()
+            assert QuestFactory('delivery_quest').quest_tuple != ()
+            assert QuestFactory('escort_quest').quest_tuple != ()
 
     def test_former_tuple_len(self, quest_former_fixture, all_worlds_names_fixture):
         for isdict in quest_former_fixture:
@@ -108,13 +108,16 @@ class TestQuestFormer:
     def test_quest_former_world_names(self, quest_former_fixture, all_worlds_names_fixture):
         for isdict in quest_former_fixture:
             for obj in isdict.values():
-                world_name = obj.quest_tuple[0]
+                if obj.quest_name == 'escort_quest':
+                    world_name = obj.quest_tuple[0][0]
+                else:
+                    world_name = obj.quest_tuple[0]
                 assert world_name in all_worlds_names_fixture
 
     def test_quest_former_world_tuple_elem_types(self, quest_former_fixture):
         for isdict in quest_former_fixture:
             for obj in isdict.values():
-                for elem in obj.quest_tuple:
+                for elem in obj.quest_tuple[0]:
                     assert type(elem) == str
 
     def test_base_quest_form_quest_name(self):
