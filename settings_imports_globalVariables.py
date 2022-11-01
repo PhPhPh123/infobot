@@ -78,36 +78,25 @@ def connect_to_db_sqlalchemy():
     return db_connector, worlds, systems
 
 
-'''
-Настройки бота и загрузка токена для него
-'''
-load_dotenv(find_dotenv())
-token = os.environ['TOKEN']
-settings = {
-    'token': token,
-    'bot': 'Infobot_wh40k',
-    'id': 992438215254487143,
-    'prefix': '!'
-}
-
 """
 Подключение логирования
 """
+# логгер для новостей
 logger.add('logs_and_temp_files/news.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[news]' in x['message'])
-
+# логгер для принтов
 logger.add('logs_and_temp_files/print.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[print]' in x['message'])
-
+# логгер для статистики запусков сессии бота
 logger.add('logs_and_temp_files/sessions.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[bot_run]' in x['message'])
-
+# логгер для вызываемых артефактов
 logger.add('logs_and_temp_files/artifacts.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[artifact]' in x['message'])
-
+# логгер для артефактов, генерируемых квестами
 logger.add('logs_and_temp_files/quest_artifacts.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[artifact_for_quest]' in x['message'])
-
+# логгер для описания квестов
 logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[quest]' in x['message'])
 

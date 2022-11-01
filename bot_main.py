@@ -4,9 +4,6 @@
 прав доступа. Первая функция подключается к базе данных, а остальные представляют собой команды боту.
 Все необходимые модули импортируются включая модуль с настройками
 """
-import exceptions
-if __name__ != '__main__':
-    raise exceptions.NotImportedModuleException
 
 from settings_imports_globalVariables import *
 
@@ -22,9 +19,29 @@ import news.bot_news_main
 import craft.main_artifact_factory
 import news.unique_news
 
-intents = discord.Intents.all()
-intents.members = True
-infobot = commands.Bot(command_prefix=settings['prefix'], intents=intents)  # Экземпляр класса бота
+
+if __name__ == '__main__':
+    '''
+    Настройки бота и загрузка токена для него при старте модуля
+    '''
+    load_dotenv(find_dotenv())
+    token = os.environ['TOKEN']
+    settings = {
+        'token': token,
+        'bot': 'Infobot_wh40k',
+        'id': 992438215254487143,
+        'prefix': '!'
+    }
+
+    intents = discord.Intents.all()
+    intents.members = True
+
+    infobot = commands.Bot(command_prefix=settings['prefix'], intents=intents)  # Экземпляр класса бота
+
+    logger.info('[bot_run]')  # запись в лог старт сессии
+    infobot.run(settings['token'])  # запуск основного асинхронного цикла бота
+else:
+    raise exceptions.NotImportedModuleException
 
 
 @infobot.command()
@@ -265,9 +282,3 @@ async def on_voice_state_update(member, before, after):
     # перешел в другой канал
     elif before.channel is not None and after.channel is not None:
         print('3', member.id)
-
-
-if __name__ == '__main__':
-    logger.info('[bot_run]')
-    infobot.run(settings['token'])
-
