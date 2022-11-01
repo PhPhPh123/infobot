@@ -41,26 +41,31 @@ WHERE art_type_name == '{weapon_type}'
 
         return final_damage
 
-    def get_penetration(self, weapon_type: str) -> str:
+    def get_penetration(self, group_name, weapon_type: str) -> str:
         """
         Данный метод формирует параметр игнора ВУ(пробития)
-        :param weapon_type: тип оружия, например лазган, болтер, силовой меч итд
+        @param weapon_type: тип оружия, например лазган, болтер, силовой меч итд
+        @param group_name: группа оружия описывающая название таблицы artifact_range_weapon или artifact_close_combat
         :return: строка, описывающая есть ли пробитие и если есть то какое
         """
         # Проверка на удачу, значения ближе к 1 считаются хорошими
         luck = random.randint(1, 100)
 
-        # Данные типы вооружения по умолчанию считаются имеющими игнор ВУ
-        if weapon_type in ('мельтаган', 'мельта-пистолет',
-                           'одноручный-силовой-меч', 'двуручный-силовой-меч'):
+        penetration = tuple(global_bd_sqlite3_cursor.execute(f"""
+SELECT art_penetration
+FROM {group_name}
+WHERE art_type_name == '{weapon_type}'"""))[0][0]
+
+        if penetration == 1:  # Игнорирующие ВУ вооружения
             self.penetration = 'Игнор ВУ'
-        # Данные типы вооружения считаются по умолчанию с игнором половины ВУ, но если очень повезет(luck <=3)
-        # то и другие типы вооружения могут данный модификатор получить
-        elif weapon_type in ('плазмаган', 'плазма-пистолет') or luck <= 3:
-            if weapon_type not in ('лазган', 'лаз-пистолет'):
-                self.penetration = 'Игнор половины ВУ'
-        else:  # В иных случаях модификатор отсутствует
+        elif penetration == 0.5:  # Пробивающие броню вооружения
+            self.penetration = 'Игнор половины ВУ'
+        else:  # Пробитие отсутствует
             self.penetration = 'Пробитие отсутствует'
+
+        if penetration == 0 and luck <= 3:  # Если очень повезет, оружие без пробитие может получить игнор половины ВУ
+            self.penetration = 'Игнор половины ВУ'
+
         return self.penetration
 
     @staticmethod

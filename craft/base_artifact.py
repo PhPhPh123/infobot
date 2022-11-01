@@ -134,6 +134,10 @@ WHERE art_type_name == '{self.art_type}'
         # (1 - (self.grade_modifier - 1))
         self.weight = int(art_weight * (1 - (self.grade_modifier - 1)) * random_mod)
 
+        # В игре минимальный вес равен 1, чтобы не усложнять подсчеты. Поэтому даже у колец вес минимум 1 фунт
+        if self.weight < 1:
+            self.weight = 1
+
     def get_requiriments(self) -> None:
         """
         Данный метод формирует требования к силе при использовании артефакта с учетом  случайного модификатора, но

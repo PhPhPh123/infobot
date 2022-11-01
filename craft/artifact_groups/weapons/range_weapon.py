@@ -25,7 +25,7 @@ class RangeWeapon(Weapon):
         self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
-        self.penetration = self.get_penetration(self.art_type)
+        self.penetration = self.get_penetration(self.group_name, self.art_type)
         self.prescision_modifier = self.get_prescision(self.group_name, self.art_type)
         self.get_weight()
         self.get_requiriments()
