@@ -22,5 +22,5 @@
     цикла выдачи новостей командой !stopnews
 
     Новости также записываются в лог файлы с папке logs_and_temp_files. Логирующие структуры расположены в модуле
-    settings_imports_globalVariables.py
+    imports_globalVariables.py
 """

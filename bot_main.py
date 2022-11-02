@@ -5,7 +5,7 @@
 Все необходимые модули импортируются включая модуль с настройками
 """
 
-from settings_imports_globalVariables import *
+from imports_globalVariables import *
 
 from minor_commands import roll_module
 import static_answer_messages
@@ -26,10 +26,12 @@ if __name__ == '__main__':
     '''
     load_dotenv(find_dotenv())
     token = os.environ['TOKEN']
+    bot_name = os.environ['NAME']
+    bot_id = os.environ['ID']
     settings = {
         'token': token,
-        'bot': 'Infobot_wh40k',
-        'id': 992438215254487143,
+        'bot': bot_name,
+        'id': bot_id,
         'prefix': '!'
     }
 

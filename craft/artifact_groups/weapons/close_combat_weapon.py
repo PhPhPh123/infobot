@@ -6,7 +6,7 @@ import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
-from settings_imports_globalVariables import *
+from imports_globalVariables import *
 from craft.artifact_groups.weapons.base_weapons import Weapon
 
 

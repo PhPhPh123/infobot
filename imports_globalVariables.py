@@ -51,7 +51,7 @@ def connect_to_main_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     return cursor, connect
 
 
-def connect_to_unique_news_db():
+def connect_to_unique_news_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     Функция, которая подключается к второстепенной базе данных unique_news.db, хранящей уникальные новости
     :return: объекты курсора и коннекта
@@ -63,7 +63,7 @@ def connect_to_unique_news_db():
     return cursor, connect
 
 
-def connect_to_db_sqlalchemy():
+def connect_to_db_sqlalchemy() -> tuple:
     """
     Данный модуль подключается к orm sqlalchemy
     :return: объекты коннектора и таблички worlds
@@ -79,7 +79,7 @@ def connect_to_db_sqlalchemy():
 
 
 """
-Подключение логирования
+Глобальное подключение логирования
 """
 # логгер для новостей
 logger.add('logs_and_temp_files/news.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,

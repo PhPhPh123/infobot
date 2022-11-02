@@ -6,7 +6,7 @@ import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
-from settings_imports_globalVariables import *
+from imports_globalVariables import *
 from news import bot_news_access, bot_news_static_info, bot_news_enemies, production_buffs_and_debuffs, mini_quests, unique_news
 
 

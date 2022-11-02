@@ -9,7 +9,7 @@ import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
-from settings_imports_globalVariables import *
+from imports_globalVariables import *
 from craft.artifact_groups.armor import Armor
 from craft.artifact_groups.jewerly import Jewelry
 from craft.artifact_groups.weapons.close_combat_weapon import CloseCombatWeapon
