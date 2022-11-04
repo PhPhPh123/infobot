@@ -27,8 +27,8 @@ def choise_random_news() -> str:
 
     if check_common_news_not_empty():
         list_of_type_news.append('Уникальные несрочные новости')
-
-    bot_answer = ''
+    else:
+        pass
 
     if check_urgently_news_not_empty():  # проверка, что в базе срочных новостей есть срочные новости
         bot_answer = unique_news.control_form_news('срочная новость')
@@ -45,6 +45,9 @@ def choise_random_news() -> str:
                 bot_answer = production_buffs_and_debuffs.form_production_changes_news()
             elif news == 'Уникальные несрочные новости':
                 bot_answer = unique_news.control_form_news('несрочная новость')
+            else:
+                raise Exception("""Новая новость не зарегистрирована в списке новостей 
+                                или произошла неожиданная ошибка со списком""")
 
         elif 6 <= random_roll <= 14:  # Удачливый исход ролла для квеста
             bot_answer = mini_quests.control_quests()

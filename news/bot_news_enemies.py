@@ -5,6 +5,8 @@
 import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
+else:
+    pass
 
 from imports_globalVariables import *
 
