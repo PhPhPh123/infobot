@@ -130,7 +130,7 @@ class NewsInterface(tkinter.Frame):
 
     def interface_close(self) -> None:
         """
-        Данная функция закрытвает интерфейс
+        Данная функция закрывает интерфейс
         @return: None
         """
         self.quit()

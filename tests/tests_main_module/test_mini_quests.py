@@ -7,19 +7,33 @@ from constants import *
 
 
 @pytest.fixture
-def quest_former_fixture(connect_to_db_sqlite3):
-    def dict_former():
+def quest_factory_fixture(connect_to_db_sqlite3) -> list[dict]:
+    """
+    Данная фикстура формирует список со словарями, в котором представлены объекты класса QuestFactory
+    @param connect_to_db_sqlite3: фикстура коннекта к базе данных
+    @return: список со словарями, количество словарей зависит от константы **_TEST_PASSES
+    """
+    def dict_former() -> dict:
+        """
+        Данная внутренняя функция формирует словарь из 4х ключ-значений, где каждый ключ это название квеста,
+        а значение это объект QuestFactory с конкретным квестом, соответствующим ключу
+        @return: словарь с 4 значениями
+        """
+        # формирование 4х объектов
         art_obj = QuestFactory('artifact_quest')
         kill_obj = QuestFactory('kill_quest')
         delivery_obj = QuestFactory('delivery_quest')
         escort_obj = QuestFactory('escort_quest')
 
+        # кортежи со значениями и ключами для них
         obj_tuple = (art_obj, kill_obj, delivery_obj, escort_obj)
         dict_keys = ('artifact_quest', 'kill_quest', 'delivery_quest', 'escort_quest')
 
+        # связывание ключ значения в объект zip и создание из него словаря
         obj_dict = dict(zip(dict_keys, obj_tuple))
         return obj_dict
 
+    # добавление словарей в список, количество добавление зависит от константы в аргументе range
     list_with_dicts = []
     for _ in range(LARGE_TEST_PASSES):
         list_with_dicts.append(dict_former())
@@ -98,15 +112,15 @@ class TestQuestFormer:
             assert QuestFactory('delivery_quest').quest_tuple != ()
             assert QuestFactory('escort_quest').quest_tuple != ()
 
-    def test_former_tuple_len(self, quest_former_fixture, all_worlds_names_fixture):
-        for isdict in quest_former_fixture:
+    def test_former_tuple_len(self, quest_factory_fixture, all_worlds_names_fixture):
+        for isdict in quest_factory_fixture:
             assert len(isdict['artifact_quest'].quest_tuple) == 3
             assert len(isdict['kill_quest'].quest_tuple) == 4
             assert len(isdict['delivery_quest'].quest_tuple) == 4
             assert len(isdict['escort_quest'].quest_tuple) == 2
 
-    def test_quest_former_world_names(self, quest_former_fixture, all_worlds_names_fixture):
-        for isdict in quest_former_fixture:
+    def test_quest_former_world_names(self, quest_factory_fixture, all_worlds_names_fixture):
+        for isdict in quest_factory_fixture:
             for obj in isdict.values():
                 if obj.quest_name == 'escort_quest':
                     world_name = obj.quest_tuple[0][0]
@@ -114,8 +128,8 @@ class TestQuestFormer:
                     world_name = obj.quest_tuple[0]
                 assert world_name in all_worlds_names_fixture
 
-    def test_quest_former_world_tuple_elem_types(self, quest_former_fixture):
-        for isdict in quest_former_fixture:
+    def test_quest_former_world_tuple_elem_types(self, quest_factory_fixture):
+        for isdict in quest_factory_fixture:
             for obj in isdict.values():
                 for elem in obj.quest_tuple[0]:
                     assert type(elem) == str
@@ -127,6 +141,17 @@ class TestQuestFormer:
         except TypeError:
             abstract_cant_instantiate = True
         assert abstract_cant_instantiate
+
+
+@pytest.fixture(scope='session')
+def reward_fixture():
+    """
+    Данная фикстура создает список допустимых наград для класса миксина Reward
+    @return: список из случайных int-ов в нужном диапазоне
+    """
+    reward_list = []
+    for _ in range(FEW_TEST_PASSES):
+        reward_list.append(random.randint(100000, 320000))
 
 
 def test_reward_mixin():
