@@ -270,6 +270,16 @@ async def goodspie(ctx: discord.ext.commands.context.Context):
     await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
 
 
+# @infobot.command(pass_context=True)
+# @commands.has_permissions(administrator=True)
+# async def hug(ctx):
+#     channel = infobot.get_channel(778993214161813564)
+#     members = channel.members
+#     user = random.choice(members)
+#     print(user.name)
+#     await ctx.send(f'{ctx.message.author.mention} hugged')
+
+
 @infobot.event
 async def on_voice_state_update(member, before, after):
     # присоединение к каналу

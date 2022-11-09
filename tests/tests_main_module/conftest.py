@@ -1,9 +1,6 @@
-import random
 import pytest
 import os
 import sqlite3
-from constants import *
-
 
 def get_bot_dir() -> str:
     """

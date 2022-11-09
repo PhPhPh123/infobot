@@ -1,3 +1,7 @@
+"""
+Нужно отрефакторить сильно и написать больше тестов
+"""
+
 from separatly_started_modules.random_encounters.main import create_list_for_randchoice, sql_select, terrain_func
 from separatly_started_modules.random_encounters.main import type_enc, danger_level, terrains, abspath
 import random
