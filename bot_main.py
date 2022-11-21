@@ -15,6 +15,7 @@ import user_info.info_access_command
 import user_info.import_and_export_commands
 import user_info.infoexportgoods_command
 import user_info.goodspie_command
+import user_info.info_all_goods
 import news.bot_news_main
 import craft.main_artifact_factory
 import news.unique_news
@@ -43,6 +44,13 @@ if __name__ == '__main__':
     logger.info('[bot_run]')  # запись в лог старт сессии
 else:
     raise exceptions.NotImportedModuleException
+
+
+"""
+#######################
+Ниже идет команды для бота в виде отдельных функций, название команды совпадает с названием функции
+#######################
+"""
 
 
 @infobot.command()
@@ -147,26 +155,29 @@ async def infoaccess(ctx: discord.ext.commands.context.Context, type_of_output='
     @param type_of_output: параметр отвечает за тип вывода информации: строка или отправка excel-файла
     """
     if type_of_output == 'string':
+        # если тип ответа строка(либо ничего т.к. аргумент по умолчанию), то вызывается фасад без аргументов
         bot_answer_list = user_info.info_access_command.form_tuple_in_db()
-
+        # строка ответа может быть больше 2000 знаков, поэтому ответ размещается в списке и выводится по частям
         for message in bot_answer_list:
             await ctx.send(message)
 
     elif type_of_output == 'excel':
+        # если запрос является экселем, то вызывается фасад с аргументом экселя
         user_info.info_access_command.form_tuple_in_db(excel_answer=True)
         await ctx.send(file=discord.File('logs_and_temp_files/access.xlsx'))
-    else:
+    else:  # некорректный запрос
         await ctx.send('Некорректный тип вывода для запроса, укажите либо str либо ничего либо excel')
 
 
 @infobot.command()
 async def infoallgoods(ctx: discord.ext.commands.context.Context):
     """
-    Функция выводит список имеющихся торговых товаров в игре, строку для вывода берет из модуля static_messages
+    Функция выводит полный список имеющихся торговых товаров в игре путем вызова фасадного метода
+    из модуля info_all_goods
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = static_answer_messages.goods
+    bot_answer = user_info.info_all_goods.to_control_other_functions()
     await ctx.send(bot_answer)
 
 
@@ -196,20 +207,6 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
-@tasks.loop(minutes=30)
-async def news_send(channel: discord.channel.TextChannel):
-    """
-    Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
-    выбранные из списка в нижестоящей функции bot_news_controller. За запуск данного цикла отвечает функция startnews
-    :param channel: стандартный аргумент библиотеки
-    :return: отправка строки боту для вывода в текущем чате дискорда
-    """
-    chosen_news = news.bot_news_main.choise_random_news()
-    # Новости записываются в лог
-    logger.info('[news]' + chosen_news)
-    await channel.send(chosen_news)
-
-
 @infobot.command()
 async def roll(ctx: discord.ext.commands.context.Context, user_roll: str):
     """
@@ -236,6 +233,7 @@ async def startnews(ctx: discord.ext.commands.context.Context):
 
 
 @infobot.command()
+@commands.has_permissions(administrator=True)
 async def stopnews(ctx):
     """
     Данная функция прерывает основной цикл новостей news_send и распечатывает в чат статистику по новостному циклу
@@ -270,29 +268,31 @@ async def goodspie(ctx: discord.ext.commands.context.Context):
     await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
 
 
-# @infobot.command(pass_context=True)
-# @commands.has_permissions(administrator=True)
-# async def hug(ctx):
-#     channel = infobot.get_channel(778993214161813564)
-#     members = channel.members
-#     user = random.choice(members)
-#     print(user.name)
-#     await ctx.send(f'{ctx.message.author.mention} hugged')
+"""
+#######################
+Ниже идут функции событий(events) и циклов(loop) бота
+#######################
+"""
+
+
+@tasks.loop(minutes=30)
+async def news_send(channel: discord.channel.TextChannel):
+    """
+    Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
+    выбранные из списка в нижестоящей функции bot_news_controller. За запуск данного цикла отвечает функция startnews
+    :param channel: стандартный аргумент библиотеки
+    :return: отправка строки боту для вывода в текущем чате дискорда
+    """
+    chosen_news = news.bot_news_main.choise_random_news()
+    # Новости записываются в лог
+    logger.info('[news]' + chosen_news)
+    await channel.send(chosen_news)
 
 
 @infobot.event
-async def on_voice_state_update(member, before, after):
-    # присоединение к каналу
-    if before.channel is None and after.channel is not None:
-        print('1', member.id)
-
-    # покинул канал
-    elif before.channel is not None and after.channel is None:
-        print('2', member.id)
-
-    # перешел в другой канал
-    elif before.channel is not None and after.channel is not None:
-        print('3', member.id)
+async def on_command_error(ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        await ctx.send("Неверная команда")
 
 
 infobot.run(settings['token'])  # запуск основного асинхронного цикла бота, любые команды ниже выполнены не будут

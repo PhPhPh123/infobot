@@ -124,7 +124,7 @@ class NewsInterface(tkinter.Frame):
         elif self.type_result == 'несрочная новость':
             news = CommonUniqueNews(news_id=id(self), news_text=self.text)
 
-        # Добавление и запись результато в БД
+        # Добавление и запись результатов в БД
         session.add(news)
         session.commit()
 
