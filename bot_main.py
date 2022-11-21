@@ -25,7 +25,7 @@ if __name__ == '__main__':
     '''
     Настройки бота и загрузка токена для него при старте модуля
     '''
-    load_dotenv(find_dotenv())
+    load_dotenv(find_dotenv())  # загрузка переменных окружения из файла .env с токеном, именем и id бота
     token = os.environ['TOKEN']
     bot_name = os.environ['NAME']
     bot_id = os.environ['ID']
@@ -33,9 +33,10 @@ if __name__ == '__main__':
         'token': token,
         'bot': bot_name,
         'id': bot_id,
-        'prefix': '!'
+        'prefix': '!'  # команды бота стартуют с данного префикса
     }
 
+    # установка полномочий бота
     intents = discord.Intents.all()
     intents.members = True
 
@@ -48,7 +49,7 @@ else:
 
 """
 #######################
-Ниже идет команды для бота в виде отдельных функций, название команды совпадает с названием функции
+Ниже идут команды для бота в виде отдельных функций. Название команды совпадает с названием функции
 #######################
 """
 
@@ -234,10 +235,10 @@ async def startnews(ctx: discord.ext.commands.context.Context):
 
 @infobot.command()
 @commands.has_permissions(administrator=True)
-async def stopnews(ctx):
+async def stopnews(ctx: discord.ext.commands.context.Context):
     """
     Данная функция прерывает основной цикл новостей news_send и распечатывает в чат статистику по новостному циклу
-    @param ctx: discord.ext.commands.context.Context
+    @param ctx: объект класса контекст библиотеки discord
     @return: отправка ботом в чат информации об остановке цикла новостей
     """
     news_send.cancel()
@@ -253,6 +254,18 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    type_art: str = 'random',
                    unique_bonus: str = 'random'
                    ):
+    """
+    Данная команда отвечает за формирование артефактов, она доступка только админу
+    Полный список доступен либо при просмотре базы данных либо в __init__.py артефактного пакета craft
+    @param ctx: объект класса контекст библиотеки discord
+    @param grade: грейд артефакта(возможны зеленый, синий, фиолетовый, красный)
+    @param group_art: группа артефактов
+    @param type_art: тип артефактов
+    @param unique_bonus: уникальный бонус
+    @return: отправка ботом в чат информации с параметрами и названием артефакта
+    """
+    # Словарь со значениями запрошенных параметров, обязательным является только грейд, остальное, по умолчанию, будет
+    # выбираться случайно
     param_dict = {'грейд': grade.lower(),
                   'группа': group_art.lower(),
                   'тип': type_art.lower(),
@@ -264,6 +277,12 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 
 @infobot.command()
 async def goodspie(ctx: discord.ext.commands.context.Context):
+    """
+    Данная команда выводит полный список товаров, экспорта и импорта, в субсекторе согласно их количества на планетах,
+    а также их базовые цены. Это более развернутая и подробный аналог команды !infoallgoods
+    @param ctx: объект класса контекст библиотеки discord
+    @return: отправка в чат картинки с двумя пироговыми диаграммами созданными библиотекой matplotlib
+    """
     user_info.goodspie_command.to_control_other_functions()
     await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
 
@@ -280,7 +299,7 @@ async def news_send(channel: discord.channel.TextChannel):
     """
     Функция отправляющая с определенной переодичностью(доп.параметр декоратора tasks.loop) сообщения рандомно
     выбранные из списка в нижестоящей функции bot_news_controller. За запуск данного цикла отвечает функция startnews
-    :param channel: стандартный аргумент библиотеки
+    :param channel: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     chosen_news = news.bot_news_main.choise_random_news()
@@ -290,7 +309,13 @@ async def news_send(channel: discord.channel.TextChannel):
 
 
 @infobot.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: discord.ext.commands.context.Context, error):
+    """
+    Данное событие выводит в чат сообщение, если команды не существует либо она введена неправильно
+    @param ctx: объект класса контекст библиотеки discord
+    @param error: объект исключения библиотеки discord
+    @return: отправка в чат сообщения о неверной команде
+    """
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await ctx.send("Неверная команда")
 
