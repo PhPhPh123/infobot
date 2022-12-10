@@ -2,6 +2,7 @@ import pytest
 import os
 import sqlite3
 
+
 def get_bot_dir() -> str:
     """
     Функция собирающая абсолютный путь к текущей директории
