@@ -1,7 +1,7 @@
 import random
 import pytest
 
-from news.mini_quests import QuestFactory, choise_quest_group, control_quests, Quest, Reward, ArtifactQuest, KillQuest, \
+from news.mini_quests import QuestFactory, choise_quest_group, control_quests, Quest, RewardMixin, ArtifactQuest, KillQuest, \
     DeliveryQuest
 from constants import *
 
@@ -158,7 +158,7 @@ def test_reward_mixin():
     for _ in range(FEW_TEST_PASSES):
         min_reward = 100000
         max_reward = 320000
-        rew_obj = Reward()
+        rew_obj = RewardMixin()
         quest_timers = [2, 3, 4, 5]
         quest_dangers = ['Зеленая угроза', 'Синяя угроза', 'Фиолетовая угроза', 'Красная угроза']
         quest_dict = {'danger_name': random.choice([quest_dangers])}

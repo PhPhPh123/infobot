@@ -260,7 +260,7 @@ class Quest(ABC):
         pass
 
 
-class Reward:
+class RewardMixin:
     """
     Данный класс является классом миксином и добавляется как объект множественного наследовнаия в дочерний класс,
     если в нем требуется реализовать стандартную награду за квест в кредитах
@@ -433,7 +433,7 @@ class ArtifactQuest(Quest):
         logger.info('[artifact_for_quest]' + self.quest_name + self.full_artifact_string)
 
 
-class KillQuest(Quest, Reward):
+class KillQuest(Quest, RewardMixin):
     """
     Данный класс отвечает за формирование заказов на убийство и зачистку врагов, он наследует класс миксин Reward для
     определения стандартной награды за выполнение квеста
@@ -612,7 +612,7 @@ class DeliveryQuest(Quest):
         self.final_string = f"[КВЕСТ]{self.quest_name}{formatted_description}"
 
 
-class EscortQuest(Quest, Reward):
+class EscortQuest(Quest, RewardMixin):
     """
     Данный класс отвечает за формирование заказов на перевозку пассажира с одного мира на другой
     """
