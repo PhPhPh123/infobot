@@ -88,7 +88,7 @@ def check_urgently_news_not_empty() -> bool:
             return True
         else:
             return False
-    except AttributeError:  # Если базы не существует, будет данное исключение
+    except (AttributeError, NameError):  # Если базы не существует, будет данное исключение
         return False
 
 
@@ -104,5 +104,5 @@ def check_common_news_not_empty():
             return True
         else:
             return False
-    except AttributeError:  # Если базы не существует, будет данное исключение
+    except (AttributeError, NameError):  # Если базы не существует, будет данное исключение
         return False
