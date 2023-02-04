@@ -167,7 +167,7 @@ async def infoaccess(ctx: discord.ext.commands.context.Context, type_of_output='
         user_info.info_access_command.form_tuple_in_db(excel_answer=True)
         await ctx.send(file=discord.File('logs_and_temp_files/access.xlsx'))
     else:  # некорректный запрос
-        await ctx.send('Некорректный тип вывода для запроса, укажите либо str либо ничего либо excel')
+        await ctx.send('Некорректный тип вывода для запроса, укажите либо string либо ничего либо excel')
 
 
 @infobot.command()

@@ -40,7 +40,6 @@ def form_list_and_add_system(access_tuple: tuple) -> list:
     :param access_tuple: кортеж с кортежами в котором первом элементом идет название мира, а вторым - уровень доступа
     :return: список со списками с добавлением в каждый вложенный список элементом [2] название системы
     """
-
     access_list_with_lists = []  # Пустой список, в который будут добавляться списки из кортежа с кортежами
 
     # Создаю из кортежа с кортежами список со списками
@@ -58,7 +57,6 @@ def form_list_and_add_system(access_tuple: tuple) -> list:
 
     # Создаю новый отсортированный список по ключу - названию системы в алфавитном порядке elem[2]
     sorted_access_list_with_lists = sorted(access_list_with_lists, key=lambda elem: elem[2])
-
     return sorted_access_list_with_lists
 
 
@@ -69,14 +67,12 @@ def select_system(world_name: str) -> str:
     :param world_name: название мира
     :return: название системы
     """
-
     selected_system = tuple(global_bd_sqlite3_cursor.execute(f"""
     SELECT systems.system_name FROM systems
     INNER JOIN systems_worlds_relations ON systems.system_name == systems_worlds_relations.system_name
     INNER JOIN worlds ON systems_worlds_relations.world_name == worlds.world_name
     WHERE worlds.world_name == '{world_name}'
     """))[0][0]  # [0][0] нужно, чтобы извлечь название системы из кортежа с кортежами
-
     return selected_system
 
 
