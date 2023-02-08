@@ -12,14 +12,14 @@ from imports_globalVariables import *
 from user_info import sql_queries
 
 
-def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=False) -> str:
+def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=False) -> tuple:
     """
     Функция осуществляет контроль основых операций для получения итоговой строки которую отдает в модуль bot_main
     для исполнения функцией и выдачей ответа ботом:
     1 этап: получает строки для sql-запроса в БД через form-функции шаблонизаторы
     2 этап: с помощью экзекьюта в БД через курсор получает результат их работы в виде кортежей
     3 этап: формирует из кортежей единый словарь с помощью функции dict_form
-    4 этап: получает итоговую строку с помощью функции str_form
+    4 этап: получает итоговую строку и название картинки для мира с помощью функции str_form
     @param world_name: название мира
     @param gmflag: флаг, отвечающий за определение вызывается ли команда обычная или админская
     :return: готовая строка для ответа со всей информацией
@@ -34,7 +34,7 @@ def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=Fa
     # 2 этап
     tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_main))
     if not tuple_with_worlds:  # Если название мира некорректно, то вернется пустой кортеж и нужно вернуть ответ
-        return 'Некорректное название мира'
+        return 'Некорректное название мира', None
     tuple_with_terrains = tuple(global_bd_sqlite3_cursor.execute(select_terrains))
     tuple_with_enemies = tuple(global_bd_sqlite3_cursor.execute(select_enemies))
     tuple_with_export = tuple(global_bd_sqlite3_cursor.execute(select_export))
@@ -45,9 +45,9 @@ def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=Fa
                            tuple_with_export, tuple_with_import)
 
     # 4 этап
-    final_str = str_form(final_dict, gmflag)
+    final_str, world_url = str_form(final_dict, gmflag)
 
-    return final_str
+    return final_str, world_url
 
 
 def form_query(world_name: str, sql_table: str) -> str:
@@ -81,7 +81,7 @@ def form_dict(tuple_with_worlds: tuple, tuple_with_terrains: tuple, tuple_with_e
     """
     main_dict_keys = ('Наименование мира', 'Дополнительное описание', 'Уровень опасности', 'Имперский класс',
                       'Население', 'Имперская власть', 'Уровень доступа', 'Родительская система', 'Нужда в импорте',
-                      'Экспортное перепроизводство')  # Список ключей для словаря
+                      'Экспортное перепроизводство', 'image url')  # Список ключей для словаря
 
     # Здесь просто связываются ключ-значение т.к. у каждого ключа может быть лишь одно значение, у кортежа берется
     # индекс 0 потому что tuple_worlds это кортеж с одним значением
@@ -152,5 +152,6 @@ def str_form(info_dict: dict, gmflag=False) -> str:
 Импортный дефицит: {info_dict['Нужда в импорте']}
 Дополнительное описание и особенности: {info_dict['Дополнительное описание']}
             '''
+    image_url = info_dict['image url']
 
-    return string_answer
+    return string_answer, image_url

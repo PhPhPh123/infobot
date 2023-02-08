@@ -62,8 +62,8 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     :param world_name: название запрашиваемого мира
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
-    bot_answer = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name)
-    await ctx.send(bot_answer)
+    bot_answer, world_url = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name)
+    await ctx.send(content=bot_answer, file=discord.File(f'static/image/world_image/{world_url}'))
 
 
 @infobot.command()
@@ -78,8 +78,8 @@ async def infoworldgm(ctx: discord.ext.commands.context.Context, world_name: str
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
     gmflag = True
-    bot_answer = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name, gmflag)
-    await ctx.send(bot_answer)
+    bot_answer, world_url = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name, gmflag)
+    await ctx.send(content=bot_answer, file=discord.File(f'static/image/world_image/{world_url}'))
 
 
 @infobot.command()

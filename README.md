@@ -1,6 +1,6 @@
 # infobot
 _____
-![alt None](/static/image/84cc866fe3bb03d3.png)
+![alt None](/static/image/README_main_image.png)
 ------
 Данный проект является скриптовым дополнением для настольной ролевой игры
 по мотивам вселенной Warhammer40000 в виде текстового бота для месседжера
