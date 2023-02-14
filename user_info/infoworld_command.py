@@ -103,7 +103,7 @@ def form_dict(tuple_with_worlds: tuple, tuple_with_terrains: tuple, tuple_with_e
     return final_dict
 
 
-def str_form(info_dict: dict, gmflag=False) -> str:
+def str_form(info_dict: dict, gmflag=False) -> tuple:
     """
     Данная функция формирует на основе словаря строку-ответ. В зависимости от значения 'Уровень доступа'
     некоторые значения меняются на неизвестно т.к. уровень определяет уровень видимости этих значений. При нулевом

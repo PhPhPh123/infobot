@@ -16,6 +16,7 @@ import user_info.import_and_export_commands
 import user_info.infoexportgoods_command
 import user_info.goodspie_command
 import user_info.info_all_goods
+import user_info.ingame_goods
 import news.bot_news_main
 import craft.main_artifact_factory
 import news.unique_news
@@ -285,6 +286,19 @@ async def goodspie(ctx: discord.ext.commands.context.Context):
     """
     user_info.goodspie_command.to_control_other_functions()
     await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
+
+
+@infobot.command()
+async def price(ctx: discord.ext.commands.context.Context, good_name='all'):
+    """
+    Данная команда выводит список внутриигровых товаров с их базовой стоимостью для упрощения подсказок ГМу, на какие
+    примерные цены стоит ориентироваться
+    @param ctx: объект класса контекст библиотеки discord
+    @param good_name: название товара, по умолчанию вывод полного списка
+    @return: отправка в чат картинки с двумя пироговыми диаграммами созданными библиотекой matplotlib
+    """
+    bot_answer = user_info.ingame_goods.to_control_other_functions_and_returns_bot_answer(good_name)
+    await ctx.send(bot_answer)
 
 
 """
