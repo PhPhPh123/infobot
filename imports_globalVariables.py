@@ -63,21 +63,6 @@ def connect_to_unique_news_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     return cursor, connect
 
 
-def connect_to_db_sqlalchemy() -> tuple:
-    """
-    Данный модуль подключается к orm sqlalchemy
-    :return: объекты коннектора и таблички worlds
-    """
-    db_engine = sqlalchemy.create_engine('sqlite:///infobot_db.db')
-    db_connector = db_engine.connect()
-
-    metadata = sqlalchemy.MetaData(db_engine)
-    worlds = sqlalchemy.Table('worlds', metadata, autoload=True)
-    systems = sqlalchemy.Table('systems', metadata, autoload=True)
-
-    return db_connector, worlds, systems
-
-
 """
 Глобальное подключение логирования
 """
@@ -103,9 +88,6 @@ logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}
 """
 Глобальные межмодульные переменные
 """
-# Объекты sql-alchemy
-global_alch_connect, global_alch_world, global_alch_systems = connect_to_db_sqlalchemy()
-
 # Объекты курсора и коннекта для доступа в основную базу данных
 global_bd_sqlite3_cursor, global_bd_sqlite3_connect = connect_to_main_db()
 

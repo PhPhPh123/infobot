@@ -1,6 +1,6 @@
 """
     Данный модуль обрабатывает команды !infoexportgoods и !infoimportgoods и отправляет в основной модуль bot_main
-    строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее строковый ответ.
+    строковую информацию для вывода боту. Модуль запрашивает у БД информацию и формирует из нее matplotlib изображение.
     Вывод выглядит в формате перечисления названий миров, покупающих или продающих данный товар
 """
 import exceptions
@@ -30,7 +30,7 @@ def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
 
     tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_systems))
 
-    form_string_answer(tuple_with_worlds, name_deal)
+    form_answer(tuple_with_worlds, name_deal)
     #
     # return final_string
 
@@ -59,7 +59,7 @@ def form_import_query(goods_name: str) -> str:
     return select_render_systems
 
 
-def form_string_answer(tuple_with_worlds: tuple, deal_name: str):
+def form_answer(tuple_with_worlds: tuple, deal_name: str):
     """
     Данная функция формирует итоговую строку с помощью шаблонизатора для ответа ботом
     :param tuple_with_worlds: кортеж из кортежей. Во внутренних кортежах только 1 значение - название мира

@@ -17,11 +17,9 @@ def form_tuple_in_db(excel_answer=False) -> list:
     функция возвращает результат в виде готового ответа ботом
     :return: итоговая строка ответа бота
     """
-    # Создание запроса к БД
-    access_tuple_temp = sqlalchemy.sql.select(global_alch_world.c.world_name,
-                                              global_alch_world.c.access_level).where(global_alch_world.c.access_level > 0)
+
     # Экзекьют в БД для получения кортежей
-    access_tuple = tuple(global_alch_connect.execute(access_tuple_temp))
+    access_tuple = tuple(global_bd_sqlite3_cursor.execute("SELECT world_name, access_level FROM worlds WHERE access_level > 0"))
 
     # Отправка кортежа из кортежей для формирования из него списка из списков и добавления во вложенные списки данных
     # о родительских системах миров
