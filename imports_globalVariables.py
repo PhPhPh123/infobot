@@ -26,7 +26,7 @@ from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from datetime import date
 
-from statistics import count_news_statistics
+from bot_statistics import count_news_statistics
 
 
 def get_bot_dir() -> str:
