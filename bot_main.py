@@ -26,7 +26,7 @@ if __name__ == '__main__':
     '''
     Настройки бота и загрузка токена для него при старте модуля
     '''
-    load_dotenv(find_dotenv())  # загрузка переменных окружения из файла .env с токеном, именем и id бота
+    load_dotenv(find_dotenv())  # загрузка переменных окружения из файла ..env с токеном, именем и id бота
     token = os.environ['TOKEN']
     bot_name = os.environ['NAME']
     bot_id = os.environ['ID']
