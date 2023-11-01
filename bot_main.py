@@ -21,7 +21,6 @@ import news.bot_news_main
 import craft.main_artifact_factory
 import news.unique_news
 
-
 if __name__ == '__main__':
     '''
     Настройки бота и загрузка токена для него при старте модуля
@@ -46,7 +45,6 @@ if __name__ == '__main__':
     logger.info('[bot_run]')  # запись в лог старт сессии
 else:
     raise exceptions.NotImportedModuleException  # модуль не подразумевает импорт, он вызывает только непосредственно
-
 
 """
 #######################################################################################################################
@@ -79,7 +77,8 @@ async def infoworldgm(ctx: discord.ext.commands.context.Context, world_name: str
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
     gmflag = True
-    bot_answer, world_url = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name, gmflag)
+    bot_answer, world_url = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name,
+                                                                                                          gmflag)
     await ctx.send(content=bot_answer, file=discord.File(f'static/image/world_image/{world_url}'))
 
 
@@ -273,6 +272,18 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'особенность': unique_bonus.lower()}
 
     bot_answer = craft.main_artifact_factory.choise_class_objects(param_dict)
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+@commands.has_permissions(administrator=True)
+async def special_loot(ctx: discord.ext.commands.context.Context,
+                       loot_amount: str
+                       ):
+    # Словарь со значениями запрошенных параметров, обязательным является только 'размер лута'
+    param_dict = {'размер лута': loot_amount.lower()}
+
+    bot_answer = ''
     await ctx.send(bot_answer)
 
 

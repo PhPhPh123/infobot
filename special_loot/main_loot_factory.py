@@ -9,3 +9,11 @@ if __name__ == '__main__':
 
 from loot_categories.consumables import *
 
+
+def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -> str:
+    loot_string = ''
+    return loot_string
+
+
+def write_to_statistics(loot_list: list):
+    pass
