@@ -11,22 +11,23 @@ if __name__ == '__main__':
 
 
 def to_control_consumable_forming(loot_params: dict) -> (str, list):
-    if loot_params['количество расходников'] not in [1, 2, 3]:
-        return 'неверный размер лута, выберите [small, medium, large]'
-
     def select_all_groups():
         groups_query = 'SELECT group_name FROM groups'
         groups = global_consumables_loot_sqlite3_cursor.execute(groups_query)
         groups = [elem[0] for elem in groups]
-
         return groups
 
     all_groups = select_all_groups()
 
-    if loot_params['группа расходника'] not in select_all_groups():
+    if loot_params['группа расходника'] not in all_groups and loot_params['группа расходника'] != 'random':
         return 'неверная группа расходников'
 
     roll_result = roll_dice()
+    if roll_result < 17:
+        pass
+    else:
+        return 'выпала критнеудача'
+
     if loot_params['группа расходника'] == 'random':
         consumable_group = select_consumable_group(all_groups)
     else:
@@ -42,7 +43,9 @@ def to_control_consumable_forming(loot_params: dict) -> (str, list):
 def roll_dice():
     result = 0
     for dice in range(3):
-        result += random.randint(1, 6)
+        roll = random.randint(1, 6)
+        result += roll
+
     return result
 
 
@@ -77,6 +80,7 @@ def form_consumable_string(item: dict):
     consumable_string = f'''
 Название: {item['consumable_name']}
 Эффект: {item['consumable_description']}
+Тип расходника: {item['type_name']}
 Связанная характеристика(если есть): {"отсутствует" if item['sub_list_element'] is None else item['sub_list_element']}
 '''
     return consumable_string

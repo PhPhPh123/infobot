@@ -12,7 +12,6 @@ from special_loot.loot_categories.consumables import *
 
 
 def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -> str:
-
     if loot_type not in ['consumables']:
         return 'неверный тип лута'
 
