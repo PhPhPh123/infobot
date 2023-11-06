@@ -81,6 +81,6 @@ def form_consumable_string(item: dict):
 Название: {item['consumable_name']}
 Эффект: {item['consumable_description']}
 Тип расходника: {item['type_name']}
-Связанная характеристика(если есть): {"отсутствует" if item['sub_list_element'] is None else item['sub_list_element']}
+Связанная характеристика: {"отсутствует" if item['sub_list_element'] is None else item['sub_list_element']}
 '''
     return consumable_string
