@@ -43,7 +43,9 @@ def to_control_consumable_forming(loot_params: dict) -> (str, list):
     else:
         consumable_group = loot_params['группа расходника']
 
-    consumable_data = select_consumable_item(consumable_group, roll_result)
+    type_str = '' if loot_params['тип расходника'] == 'random' else f"AND t.type_name = '{loot_params['тип расходника']}'"
+
+    consumable_data = select_consumable_item(consumable_group, type_str, roll_result)
 
     consumable_string = form_consumable_string(consumable_data)
 
@@ -65,7 +67,7 @@ def select_consumable_group(all_groups) -> str:
     return consumable_group
 
 
-def select_consumable_item(group: str, roll_result: int) -> dict:
+def select_consumable_item(group_name: str, type_str: str, roll_result: int) -> dict:
     item_select_string = f"""
     SELECT *
     FROM consumables c
@@ -74,9 +76,10 @@ def select_consumable_item(group: str, roll_result: int) -> dict:
     INNER JOIN consumables_types_relations ctr ON c.consumable_id=ctr.consumable_id
     INNER JOIN types t ON ctr.type_id=t.type_id
     INNER JOIN groups g ON t.group_id=g.group_id
-    WHERE g.group_name = '{group}' AND
+    WHERE g.group_name = '{group_name}' AND
           c.min_dice_roll <= {roll_result} AND
           c.max_dice_roll >= {roll_result}
+          {type_str}
     ORDER BY random()
     LIMIT 1
     """
