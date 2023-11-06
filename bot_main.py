@@ -279,10 +279,11 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 @infobot.command()
 @commands.has_permissions(administrator=True)
 async def consumable_loot(ctx: discord.ext.commands.context.Context,
-                          loot_group: str = 'random'
+                          loot_group: str = 'random',
+                          loot_type: str = 'random'
                           ):
     # Словарь со значениями запрошенных параметров
-    param_dict = {'группа расходника': loot_group.lower()}
+    param_dict = {'группа расходника': loot_group.lower(), 'тип расходника': loot_type.lower()}
 
     bot_answer = special_loot.main_loot_factory.to_control_loot_forming(param_dict, 'consumables')
 

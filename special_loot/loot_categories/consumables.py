@@ -17,16 +17,26 @@ def to_control_consumable_forming(loot_params: dict) -> (str, list):
         groups = [elem[0] for elem in groups]
         return groups
 
+    def select_all_types():
+        types_query = 'SELECT type_name FROM types'
+        types = global_consumables_loot_sqlite3_cursor.execute(types_query)
+        types = [elem[0] for elem in types]
+        return types
+
     all_groups = select_all_groups()
+    all_types = select_all_types()
 
     if loot_params['группа расходника'] not in all_groups and loot_params['группа расходника'] != 'random':
-        return 'неверная группа расходников'
+        return 'Неверная группа расходников', None
+
+    if loot_params['тип расходника'] not in all_types and loot_params['тип расходника'] != 'random':
+        return 'Неверный тип расходников', None
 
     roll_result = roll_dice()
     if roll_result < 17:
         pass
     else:
-        return 'выпала критнеудача'
+        return 'Выпала критнеудача. Упс.', 'Критическая неудача'
 
     if loot_params['группа расходника'] == 'random':
         consumable_group = select_consumable_group(all_groups)
