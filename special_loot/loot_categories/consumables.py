@@ -33,10 +33,11 @@ def to_control_consumable_forming(loot_params: dict) -> (str, list):
         return 'Неверный тип расходников', None
 
     roll_result = roll_dice()
+    roll_dict = {'roll_result': roll_result}
     if roll_result < 17:
         pass
     else:
-        return 'Выпала критнеудача. Упс.', 'Критическая неудача'
+        return 'Выпала критнеудача. Упс.', process_data_for_statistics({}, roll_dict)
 
     if loot_params['группа расходника'] == 'random':
         consumable_group = select_consumable_group(all_groups)
@@ -45,11 +46,13 @@ def to_control_consumable_forming(loot_params: dict) -> (str, list):
 
     type_str = '' if loot_params['тип расходника'] == 'random' else f"AND t.type_name = '{loot_params['тип расходника']}'"
 
-    consumable_data = select_consumable_item(consumable_group, type_str, roll_result)
+    raw_consumable_data = select_consumable_item(consumable_group, type_str, roll_result)
 
-    consumable_string = form_consumable_string(consumable_data)
+    consumable_string = form_consumable_string(raw_consumable_data)
 
-    return consumable_string, consumable_data
+    processed_consumable_data = process_data_for_statistics(raw_consumable_data, roll_dict)
+
+    return consumable_string, processed_consumable_data
 
 
 def roll_dice():
@@ -65,6 +68,16 @@ def select_consumable_group(all_groups) -> str:
     consumable_group = random.choice(all_groups)
 
     return consumable_group
+
+
+def process_data_for_statistics(data: dict, roll: dict):
+    current_time = time()
+    formatted_time = strftime("%Y-%m-%d", localtime(current_time))
+
+    data.update(roll)
+    data.update({'date': formatted_time})
+
+    return data
 
 
 def select_consumable_item(group_name: str, type_str: str, roll_result: int) -> dict:

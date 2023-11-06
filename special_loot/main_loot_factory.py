@@ -21,5 +21,5 @@ def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -
     return loot_string
 
 
-def write_to_statistics(loot_list: list) -> None:
+def write_to_statistics(loot_data: list) -> None:
     pass
