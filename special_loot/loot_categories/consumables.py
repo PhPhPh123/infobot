@@ -1,8 +1,6 @@
 """
 Данный модуль управляет выбором, выдачей предметов расходников таких как аптечки, уникальные патроны, гранаты, меды итд
 """
-import random
-
 from imports_globalVariables import *
 import exceptions
 

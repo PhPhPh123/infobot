@@ -66,19 +66,6 @@ def form_answer(tuple_with_worlds: tuple, deal_name: str):
     :param deal_name: название сделки, export или import
     :return: итоговая строка ответа бота
     """
-
-    # # В зависимости от типа сделки, первичное сообщение будет отличаться
-    # message = 'В данных системах покупают этот товар' if deal_name == 'import' else 'В данных система продают этот товар'
-    #
-    # # world[0] нужно, чтобы извлечь из кортежа единственный елемент и вставить его в строку с помощью шаблонизатора
-    # answer_systems_temp = Template('''
-    # {{ message }}:
-    # {% for world in sys_tuple %}
-    #     {{ '{} {}'.format(world[0], world[1]) }}
-    # {% endfor %}
-    # ''')
-    # answer_render_systems = answer_systems_temp.render(sys_tuple=tuple_with_worlds, message=message)
-
     index = [x[0] for x in tuple_with_worlds]
     values = [int(x[1]) for x in tuple_with_worlds]
 

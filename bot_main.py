@@ -280,10 +280,32 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 @commands.has_permissions(administrator=True)
 async def consumable_loot(ctx: discord.ext.commands.context.Context,
                           loot_group: str = 'random',
-                          loot_type: str = 'random'
+                          loot_type: str = 'random',
+                          **kwargs
                           ):
+    """
+    Данная команда отвечает за генерацию случайного расходуемого предмета с записью в статистику
+    """
     # Словарь со значениями запрошенных параметров
     param_dict = {'группа расходника': loot_group.lower(), 'тип расходника': loot_type.lower()}
+
+    bot_answer = special_loot.main_loot_factory.to_control_loot_forming(param_dict, 'consumables')
+
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+@commands.has_permissions(administrator=True)
+async def consumable_loot_no_stat(ctx: discord.ext.commands.context.Context,
+                                  loot_group: str = 'random',
+                                  loot_type: str = 'random',
+                                  stat: bool = False
+                                  ):
+    """
+    Данная команда отвечает за генерацию случайного расходуемого предмета без записи в статистику
+    """
+    # Словарь со значениями запрошенных параметров
+    param_dict = {'группа расходника': loot_group.lower(), 'тип расходника': loot_type.lower(), 'no_stat': stat}
 
     bot_answer = special_loot.main_loot_factory.to_control_loot_forming(param_dict, 'consumables')
 
