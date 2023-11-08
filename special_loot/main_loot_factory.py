@@ -5,6 +5,7 @@
 
 from imports_globalVariables import *
 import exceptions
+
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
@@ -16,14 +17,15 @@ def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -
     if loot_type not in ['consumables']:
         return 'неверный тип лута'
 
-    loot_string, loot_data = to_control_consumable_forming(loot_params)
+    item_object = Consumbales(loot_params)
+    item_object.to_control_consumable_forming()
 
     if loot_type == 'consumables':
         try:
             if loot_params['no_stat']:
                 pass
         except KeyError:
-            write_to_consumable_statistics(loot_data)
+            if not item_object.is_error:
+                write_to_consumable_statistics(item_object.consumable_data)
 
-    return loot_string
-
+    return item_object.answer_string

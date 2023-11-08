@@ -280,8 +280,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
 @commands.has_permissions(administrator=True)
 async def consumable_loot(ctx: discord.ext.commands.context.Context,
                           loot_group: str = 'random',
-                          loot_type: str = 'random',
-                          **kwargs
+                          loot_type: str = 'random'
                           ):
     """
     Данная команда отвечает за генерацию случайного расходуемого предмета с записью в статистику
