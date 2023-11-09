@@ -8,7 +8,7 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 
-class Consumbales:
+class Consumables:
     """
     Данный класс отвечает за формирование расходников, формирование данных для записи в статистику, но саму статистику
     в базу не записывает
@@ -151,3 +151,41 @@ class Consumbales:
 
         self.consumable_data.update(roll)  # добавляю в словарь данных по расходнику ключ-значение с броском кубика
         self.consumable_data.update({'date': formatted_time})  # добавляю в словарь данные по дате запроса
+
+
+def all_groups():
+    """
+    Данный метод выбирает список всех групп расходников
+    """
+    groups_query = 'SELECT group_name FROM groups'
+    groups = global_consumables_loot_sqlite3_cursor.execute(groups_query) # запрос в базу данных
+    groups = [elem[0] for elem in groups]  # изымаю из кортежей значения названий групп и формирую список
+
+    answer_template = Template('''
+    Миры внутри системы:
+    
+{% for group in groups -%}
+    {{ group }}
+{% endfor %}
+    ''')
+    answer_string = answer_template.render(groups=groups)
+    return answer_string
+
+
+def all_types():
+    """
+    Данный метод выбирает список всех типов расходников
+    """
+    types_query = 'SELECT type_name FROM types'
+    types = global_consumables_loot_sqlite3_cursor.execute(types_query)  # запрос в базу данных
+    types = [elem[0] for elem in types]  # изымаю из кортежей значения названий типов и формирую список
+
+    answer_template = Template('''
+    Миры внутри системы:
+    
+{% for type in types -%}
+    {{ type }}
+{% endfor %}
+    ''')
+    answer_string = answer_template.render(types=types)
+    return answer_string

@@ -316,6 +316,26 @@ async def consumable_loot_no_stat(ctx: discord.ext.commands.context.Context,
 
 
 @infobot.command()
+async def consumable_all_groups(ctx: discord.ext.commands.context.Context):
+    """
+    Данная команда выводит весь список имеющихся групп расходников в чат дискорда
+    """
+    bot_answer = special_loot.main_loot_factory.display_items_groups_and_type('consumables', 'groups')
+
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def consumable_all_types(ctx: discord.ext.commands.context.Context):
+    """
+    Данная команда выводит весь список всех имеющихся типов расходников в чат дискорда
+    """
+    bot_answer = special_loot.main_loot_factory.display_items_groups_and_type('consumables', 'types')
+
+    await ctx.send(bot_answer)
+
+
+@infobot.command()
 async def goodspie(ctx: discord.ext.commands.context.Context):
     """
     Данная команда выводит полный список товаров, экспорта и импорта, в субсекторе согласно их количества на планетах,

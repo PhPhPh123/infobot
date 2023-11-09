@@ -22,7 +22,7 @@ def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -
     item_object = None  # инициализация объекта
 
     if loot_type == 'consumables':
-        item_object = Consumbales(loot_params)  # создаю объект класса расходников
+        item_object = Consumables(loot_params)  # создаю объект класса расходников
         item_object.to_control_consumable_forming()  # вызываю основной управляющий метод
         try:  # пытаюсь узнать, если ли у параметров лута ключ, говорящий, что не нужен сбор статистики
             if loot_params['no_stat']:  # если его нет, то ничего не делаю. Статистику не записываю
@@ -32,3 +32,18 @@ def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -
                 write_to_consumable_statistics(item_object.consumable_data)  # то записываю статистику
 
     return item_object.answer_string  # возвращаю основную строку ответа которая уйдёт в чат
+
+
+def display_items_groups_and_type(kind_loot, request):
+    """
+    Данная функция отвечает на выбор того, на что нужно выводить общий список из базы данных по специальным предметам
+    """
+    answer = None
+
+    if kind_loot == 'consumables':
+        if request == 'groups':
+            answer = all_groups()
+        else:
+            answer = all_types()
+
+    return answer
