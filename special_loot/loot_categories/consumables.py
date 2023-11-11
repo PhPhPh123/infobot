@@ -162,7 +162,7 @@ def all_groups():
     groups = [elem[0] for elem in groups]  # изымаю из кортежей значения названий групп и формирую список
 
     answer_template = Template('''
-    Миры внутри системы:
+    Группы расходников:
     
 {% for group in groups -%}
     {{ group }}
@@ -181,7 +181,7 @@ def all_types():
     types = [elem[0] for elem in types]  # изымаю из кортежей значения названий типов и формирую список
 
     answer_template = Template('''
-    Миры внутри системы:
+    Типы расходников:
     
 {% for type in types -%}
     {{ type }}
