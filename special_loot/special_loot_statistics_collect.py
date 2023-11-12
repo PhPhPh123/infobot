@@ -1,5 +1,6 @@
 """
-
+Данный модуль отвечает за сбор статистики у спец. лута и записи его в соответствующие базы данных
+--переделать базу данных в декларативную через sqlalchemy потом
 """
 
 from imports_globalVariables import *
@@ -10,13 +11,19 @@ if __name__ == '__main__':
 
 
 def write_to_consumable_statistics(loot_data: dict) -> None:
-    stat_string = form_consumable_string(loot_data)
+    """
+    Основная функция, записывающая статистику по расходникам
+    """
+    stat_string = form_consumable_string(loot_data)  # формирую строку запроса в БД
 
-    global_consumables_statistics_sqlite3_cursor.execute(stat_string)
+    global_consumables_statistics_sqlite3_cursor.execute(stat_string)  # записываю в базу
     global_consumables_statistics_sqlite3_connect.commit()
 
 
-def form_consumable_string(loot_data: dict):
+def form_consumable_string(loot_data: dict) -> str:
+    """
+    Функция, формирующая строку для sql-транзакции в базу данных
+    """
     stat_string = f"""
 INSERT INTO main_log ('event_result', 'consumable_name', 'roll_result', 
                       'group_name', 'type_name', 'sub_list_name',

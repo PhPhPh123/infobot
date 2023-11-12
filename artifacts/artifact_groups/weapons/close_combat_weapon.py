@@ -7,7 +7,7 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from imports_globalVariables import *
-from craft.artifact_groups.weapons.base_weapons import Weapon
+from artifacts.artifact_groups.weapons.base_weapons import Weapon
 
 
 class CloseCombatWeapon(Weapon):

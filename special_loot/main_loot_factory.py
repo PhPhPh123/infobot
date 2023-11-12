@@ -9,7 +9,7 @@ import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
-from special_loot.special_loot_statistics import *
+from special_loot.special_loot_statistics_collect import *
 from special_loot.loot_categories.consumables import *
 
 
@@ -34,7 +34,7 @@ def to_control_loot_forming(loot_params: dict, loot_type: str = 'consumables') -
     return item_object.answer_string  # возвращаю основную строку ответа которая уйдёт в чат
 
 
-def display_items_groups_and_type(kind_loot, request):
+def display_items_groups_and_type(kind_loot, request) -> str:
     """
     Данная функция отвечает на выбор того, на что нужно выводить общий список из базы данных по специальным предметам
     """

@@ -1,6 +1,8 @@
 """
     Данный модуль осуществляет ролл кубиков
 """
+import string
+
 import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
@@ -25,7 +27,15 @@ def roll_func(dice_string: str) -> str:
     # Разбивает строку по разделителю d, где нулевой элемент это количество брошенных кубиков, а первый - количество
     # граней кубика
 
-    dice_list = dice_string.split(sep='d')
+    try:  # проверяю корректность введенных данных
+        dice_list = dice_string.split(sep='d')
+
+        assert len(dice_list) == 2
+        assert dice_string
+        int(dice_list[0])
+        int(dice_list[1])
+    except (ValueError, AssertionError, AttributeError):  # если вылетает исключение, то данные некорректные
+        return 'Кубик нужно кидать по образцу: !roll 3d6'
 
     result = 0  # инициализация результата
 

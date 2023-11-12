@@ -7,7 +7,7 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from imports_globalVariables import *
-from craft.base_artifact import Artifact
+from artifacts.base_artifact import Artifact
 
 
 class Armor(Artifact):

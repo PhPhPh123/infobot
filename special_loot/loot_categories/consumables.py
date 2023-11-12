@@ -153,7 +153,7 @@ class Consumables:
         self.consumable_data.update({'date': formatted_time})  # добавляю в словарь данные по дате запроса
 
 
-def all_groups():
+def all_groups() -> str:
     """
     Данный метод выбирает список всех групп расходников
     """
@@ -172,7 +172,7 @@ def all_groups():
     return answer_string
 
 
-def all_types():
+def all_types() -> str:
     """
     Данный метод выбирает список всех типов расходников
     """

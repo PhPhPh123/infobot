@@ -9,7 +9,7 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from imports_globalVariables import *
-from user_info import sql_queries
+from in_game_info import sql_queries
 
 
 def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=False) -> tuple:

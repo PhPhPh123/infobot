@@ -1,25 +1,29 @@
 """
 Данный модуль содержит все команды к боту и отправляет их обработку в нижестоящие модули. Запуск бота осуществляется
-именно через этот модуль. Боты организованы через асинхронные функции API discord с добавлением декораторов для команд и
-прав доступа. Первая функция подключается к базе данных, а остальные представляют собой команды боту.
-Все необходимые модули импортируются включая модуль с настройками
+именно через этот модуль. Бот организован через асинхронные функции API discord с добавлением декораторов для команд и
+прав доступа. Под конструкцией name-main идут базовые стартовые настройки, а все остальные
+функции представляют собой команды боту. Одна функция - одна команда. Все необходимые модули импортируются,
+включая модуль с глобальными переменными и соединениями с БД.
+Последняя строчка в модуле запускает асинхронный цикл бота. Данный модуль, за исключением модулей в каталоге
+separatly_started_modules, является единственным запускаемым напрямую. Все остальные импортируются и отдельного вызова
+не допускают
 """
 
 from imports_globalVariables import *
 
 from minor_commands import roll_module
 import static_answer_messages
-import user_info.infoworld_command
-import user_info.infosystem_command
-import user_info.info_access_command
-import user_info.import_and_export_commands
-import user_info.infoexportgoods_command
-import user_info.goodspie_command
-import user_info.info_all_goods
-import user_info.ingame_goods
-import news.bot_news_main
-import craft.main_artifact_factory
-import news.unique_news
+import in_game_info.infoworld_command
+import in_game_info.infosystem_command
+import in_game_info.info_access_command
+import in_game_info.import_and_export_commands
+import in_game_info.infoexportgoods_command
+import in_game_info.goodspie_command
+import in_game_info.info_all_goods
+import in_game_info.ingame_goods
+import in_game_news.bot_news_main
+import artifacts.main_artifact_factory
+import in_game_news.unique_news
 import special_loot.main_loot_factory
 
 if __name__ == '__main__':
@@ -45,7 +49,7 @@ if __name__ == '__main__':
 
     logger.info('[bot_run]')  # запись в лог старт сессии
 else:
-    raise exceptions.NotImportedModuleException  # модуль не подразумевает импорт, он вызывает только непосредственно
+    raise exceptions.NotImportedModuleException  # модуль не подразумевает импорт, он вызывается только непосредственно
 
 """
 #######################################################################################################################
@@ -62,7 +66,7 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     :param world_name: название запрашиваемого мира
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
-    bot_answer, world_url = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name)
+    bot_answer, world_url = in_game_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name)
     await ctx.send(content=bot_answer, file=discord.File(f'static/image/world_image/{world_url}'))
 
 
@@ -78,8 +82,8 @@ async def infoworldgm(ctx: discord.ext.commands.context.Context, world_name: str
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
     gmflag = True
-    bot_answer, world_url = user_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name,
-                                                                                                          gmflag)
+    bot_answer, world_url = in_game_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name,
+                                                                                                             gmflag)
     await ctx.send(content=bot_answer, file=discord.File(f'static/image/world_image/{world_url}'))
 
 
@@ -91,7 +95,7 @@ async def infosystem(ctx: discord.ext.commands.context.Context, system_name: str
     :param system_name: название запрашиваемой системы
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = user_info.infosystem_command.to_control_other_functions_and_returns_bot_answer(system_name)
+    bot_answer = in_game_info.infosystem_command.to_control_other_functions_and_returns_bot_answer(system_name)
     await ctx.send(bot_answer)
 
 
@@ -129,7 +133,7 @@ async def infoexport(ctx: discord.ext.commands.context.Context, world_name: str)
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     deal_name = 'export'
-    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
+    bot_answer = in_game_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -143,7 +147,7 @@ async def infoimport(ctx: discord.ext.commands.context.Context, world_name: str)
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     deal_name = 'import'
-    bot_answer = user_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
+    bot_answer = in_game_info.import_and_export_commands.choice_deal_and_returns_bot_answer(world_name, deal_name)
     await ctx.send(bot_answer)
 
 
@@ -158,14 +162,14 @@ async def infoaccess(ctx: discord.ext.commands.context.Context, type_of_output='
     """
     if type_of_output == 'string':
         # если тип ответа строка(либо ничего т.к. аргумент по умолчанию), то вызывается фасад без аргументов
-        bot_answer_list = user_info.info_access_command.form_tuple_in_db()
+        bot_answer_list = in_game_info.info_access_command.form_tuple_in_db()
         # строка ответа может быть больше 2000 знаков, поэтому ответ размещается в списке и выводится по частям
         for message in bot_answer_list:
             await ctx.send(message)
 
     elif type_of_output == 'excel':
         # если запрос является экселем, то вызывается фасад с аргументом экселя
-        user_info.info_access_command.form_tuple_in_db(excel_answer=True)
+        in_game_info.info_access_command.form_tuple_in_db(excel_answer=True)
         await ctx.send(file=discord.File('logs_and_temp_files/access.xlsx'))
     else:  # некорректный запрос
         await ctx.send('Некорректный тип вывода для запроса, укажите либо string либо ничего либо excel')
@@ -179,7 +183,7 @@ async def infoallgoods(ctx: discord.ext.commands.context.Context):
     :param ctx: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = user_info.info_all_goods.to_control_other_functions()
+    bot_answer = in_game_info.info_all_goods.to_control_other_functions()
     await ctx.send(bot_answer)
 
 
@@ -192,7 +196,7 @@ async def infoimportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     deal_name = 'import'
-    user_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
+    in_game_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
     await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
@@ -205,12 +209,12 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     deal_name = 'export'
-    user_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
+    in_game_info.infoexportgoods_command.choise_deal_and_execute_in_db(goods_name, deal_name)
     await ctx.send(file=discord.File('logs_and_temp_files/info_export_import_goods.png'))
 
 
 @infobot.command()
-async def roll(ctx: discord.ext.commands.context.Context, user_roll: str):
+async def roll(ctx: discord.ext.commands.context.Context, user_roll: str = None):
     """
     :param ctx: ctx: discord.ext.commands.context.Context
     :param user_roll: строка ролла, например '3d6'
@@ -257,7 +261,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    ):
     """
     Данная команда отвечает за формирование артефактов, она доступка только админу
-    Полный список доступен либо при просмотре базы данных либо в __init__.py артефактного пакета craft
+    Полный список доступен либо при просмотре базы данных либо в __init__.py артефактного пакета artifacts
     @param ctx: объект класса контекст библиотеки discord
     @param grade: грейд артефакта(возможны зеленый, синий, фиолетовый, красный)
     @param group_art: группа артефактов
@@ -272,7 +276,7 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                   'тип': type_art.lower(),
                   'особенность': unique_bonus.lower()}
 
-    bot_answer = craft.main_artifact_factory.choise_class_objects(param_dict)
+    bot_answer = artifacts.main_artifact_factory.choise_class_objects(param_dict)
     await ctx.send(bot_answer)
 
 
@@ -343,7 +347,7 @@ async def goodspie(ctx: discord.ext.commands.context.Context):
     @param ctx: объект класса контекст библиотеки discord
     @return: отправка в чат картинки с двумя пироговыми диаграммами созданными библиотекой matplotlib
     """
-    user_info.goodspie_command.to_control_other_functions()
+    in_game_info.goodspie_command.to_control_other_functions()
     await ctx.send(file=discord.File('logs_and_temp_files/answer_pie.png'))
 
 
@@ -356,7 +360,7 @@ async def price(ctx: discord.ext.commands.context.Context, good_name='all'):
     @param good_name: название товара, по умолчанию вывод полного списка
     @return: отправка в чат картинки с двумя пироговыми диаграммами созданными библиотекой matplotlib
     """
-    bot_answer = user_info.ingame_goods.to_control_other_functions_and_returns_bot_answer(good_name)
+    bot_answer = in_game_info.ingame_goods.to_control_other_functions_and_returns_bot_answer(good_name)
     await ctx.send(bot_answer)
 
 
@@ -375,9 +379,9 @@ async def news_send(channel: discord.channel.TextChannel):
     :param channel: объект класса контекст библиотеки discord
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    chosen_news = news.bot_news_main.choise_random_news()
+    chosen_news = in_game_news.bot_news_main.choise_random_news()
     # Новости записываются в лог
-    logger.info('[news]' + chosen_news)
+    logger.info('[in_game_news]' + chosen_news)
     await channel.send(chosen_news)
 
 

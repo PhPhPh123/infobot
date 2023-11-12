@@ -1,10 +1,13 @@
 """
-    В этом модуле собраны внешние импорты, настройки для бота и глобальные переменные. Остальные модули импортируют его
+    В этом модуле собраны внешние импорты, подключение к базам данных, подключение логирования и глобальные
+    межмодульные переменные. Остальные модули импортируют его
 """
+
 import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
+# внешние импорты
 import sqlite3
 import sqlalchemy
 import discord
@@ -27,6 +30,7 @@ from loguru import logger
 from datetime import date
 from time import time, strftime, localtime
 
+# импорт модуля статистики сессий
 from news_statistics import count_news_statistics
 
 
@@ -96,7 +100,7 @@ def connect_to_consumables_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Conn
 """
 # логгер для новостей
 logger.add('logs_and_temp_files/news.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
-           filter=lambda x: '[news]' in x['message'])
+           filter=lambda x: '[in_game_news]' in x['message'])
 # логгер для принтов
 logger.add('logs_and_temp_files/print.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[print]' in x['message'])

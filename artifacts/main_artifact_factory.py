@@ -10,10 +10,10 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from imports_globalVariables import *
-from craft.artifact_groups.armor import Armor
-from craft.artifact_groups.jewerly import Jewelry
-from craft.artifact_groups.weapons.close_combat_weapon import CloseCombatWeapon
-from craft.artifact_groups.weapons.range_weapon import RangeWeapon
+from artifacts.artifact_groups.armor import Armor
+from artifacts.artifact_groups.jewerly import Jewelry
+from artifacts.artifact_groups.weapons.close_combat_weapon import CloseCombatWeapon
+from artifacts.artifact_groups.weapons.range_weapon import RangeWeapon
 
 
 def choise_class_objects(art_user_dict: dict) -> str:

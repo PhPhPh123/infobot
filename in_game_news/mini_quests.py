@@ -12,7 +12,7 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from imports_globalVariables import *
-import craft.main_artifact_factory
+import artifacts.main_artifact_factory
 
 
 def control_quests() -> str:
@@ -347,7 +347,7 @@ class ArtifactQuest(Quest):
                         'тип': 'random',
                         'особенность': 'random'}
 
-        self.full_artifact_string = craft.main_artifact_factory.choise_class_objects(request_dict)
+        self.full_artifact_string = artifacts.main_artifact_factory.choise_class_objects(request_dict)
 
     def build_quest(self) -> None:
         """

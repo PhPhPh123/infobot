@@ -1,7 +1,7 @@
 import random
 import pytest
 
-from news.mini_quests import QuestFactory, choise_quest_group, control_quests, Quest, RewardMixin, ArtifactQuest, KillQuest, \
+from in_game_news.mini_quests import QuestFactory, choise_quest_group, control_quests, Quest, RewardMixin, ArtifactQuest, KillQuest, \
     DeliveryQuest
 from constants import *
 
@@ -85,12 +85,12 @@ def test_control_quests(monkeypatch):
     def mock_load_artifact_to_log(*args, **kwargs):
         return None
 
-    monkeypatch.setattr('news.mini_quests.ArtifactQuest.load_artifact_to_log', mock_load_artifact_to_log)
+    monkeypatch.setattr('in_game_news.mini_quests.ArtifactQuest.load_artifact_to_log', mock_load_artifact_to_log)
 
     def mock_load_quest_to_log(*args, **kwargs):
         return None
 
-    monkeypatch.setattr('news.mini_quests.Quest.load_quest_to_log', mock_load_quest_to_log)
+    monkeypatch.setattr('in_game_news.mini_quests.Quest.load_quest_to_log', mock_load_quest_to_log)
 
     for _ in range(FEW_TEST_PASSES):
         result = control_quests()
