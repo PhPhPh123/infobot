@@ -1,3 +1,4 @@
 .env
 .idea
 /logs_and_temp_files
+/separatly_started_modules/traits/traits.txt
