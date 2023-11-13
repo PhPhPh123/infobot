@@ -11,7 +11,6 @@ separatly_started_modules, является единственным запус�
 
 from imports_globalVariables import *
 
-from minor_commands import roll_module
 import static_answer_messages
 import in_game_info.infoworld_command
 import in_game_info.infosystem_command
@@ -25,6 +24,8 @@ import in_game_news.bot_news_main
 import artifacts.main_artifact_factory
 import in_game_news.unique_news
 import special_loot.main_loot_factory
+import roll_mechanics.common_roll_module
+import roll_mechanics.statistics_roll_module
 
 if __name__ == '__main__':
     '''
@@ -214,13 +215,13 @@ async def infoexportgoods(ctx: discord.ext.commands.context.Context, goods_name:
 
 
 @infobot.command()
-async def roll(ctx: discord.ext.commands.context.Context, user_roll: str = None):
+async def common_roll(ctx: discord.ext.commands.context.Context, user_roll: str = None):
     """
     :param ctx: ctx: discord.ext.commands.context.Context
     :param user_roll: строка ролла, например '3d6'
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
-    bot_answer = roll_module.roll_func(user_roll)
+    bot_answer = roll_mechanics.common_roll_module.roll_func_without_statistics(user_roll)
     await ctx.send(bot_answer)
 
 

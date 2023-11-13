@@ -29,6 +29,7 @@ from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from datetime import date
 from time import time, strftime, localtime
+import string
 
 # импорт модуля статистики сессий
 from news_statistics import count_news_statistics
