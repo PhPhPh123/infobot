@@ -17,17 +17,17 @@ class Jewelry(Artifact):
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
 
-    def __init__(self, grade_modifier: float, jewelry_type: str):
-        super().__init__(grade_modifier)
+    def __init__(self, grade_modifier: float, jewelry_type: str, prefix: str, suffix: str):
+        super().__init__(grade_modifier, prefix)
 
         self.group_name = 'artifact_jewelry'  # статичная инициализация группы артефакта
 
         # Данная строчка отвечает за выбор типа артефакта если он явно указан в запросе, иначе вызывается метод
         # родительского класса, который выбирает случайный тип
-        self.art_type = jewelry_type if jewelry_type != 'random' else self.get_random_type_of_artifact(self.group_name)
+        self.art_type = self.get_random_type_of_artifact(self.group_name)
 
         # Данные методы берутся из родительского класса Artifact
-        self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
+        self.unique_suffix = suffix if suffix != 'random' else self.get_suffix(self.group_name, self.art_type, suffix)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.get_weight()
         self.get_requiriments()

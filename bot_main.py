@@ -258,7 +258,8 @@ async def artifact(ctx: discord.ext.commands.context.Context,
                    grade: str,
                    group_art: str = 'random',
                    type_art: str = 'random',
-                   unique_bonus: str = 'random'
+                   prefix: str = 'random',
+                   suffix: str = 'random'
                    ):
     """
     Данная команда отвечает за формирование артефактов, она доступка только админу
@@ -267,7 +268,8 @@ async def artifact(ctx: discord.ext.commands.context.Context,
     @param grade: грейд артефакта(возможны зеленый, синий, фиолетовый, красный)
     @param group_art: группа артефактов
     @param type_art: тип артефактов
-    @param unique_bonus: уникальный бонус
+    @param prefix: префиксный модификатор
+    @param suffix: суффиксный модификатор
     @return: отправка ботом в чат информации с параметрами и названием артефакта
     """
     # Словарь со значениями запрошенных параметров, обязательным является только грейд, остальное, по умолчанию, будет
@@ -275,7 +277,8 @@ async def artifact(ctx: discord.ext.commands.context.Context,
     param_dict = {'грейд': grade.lower(),
                   'группа': group_art.lower(),
                   'тип': type_art.lower(),
-                  'особенность': unique_bonus.lower()}
+                  'префикс': prefix.lower(),
+                  'суффикс': suffix.lower()}
 
     bot_answer = artifacts.main_artifact_factory.choise_class_objects(param_dict)
     await ctx.send(bot_answer)

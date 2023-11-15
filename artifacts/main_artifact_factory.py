@@ -61,25 +61,33 @@ def choise_class_objects(art_user_dict: dict) -> str:
     """
 
     if art_user_dict['группа'] == 'броня':
-        art_object = Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+        art_object = Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                           art_user_dict['префикс'], art_user_dict['суффикс'])
 
     elif art_user_dict['группа'] == 'оружие-дб':
-        art_object = RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+        art_object = RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                                 art_user_dict['префикс'], art_user_dict['суффикс'])
 
     elif art_user_dict['группа'] == 'оружие-бб':
-        art_object = CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+        art_object = CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                                       art_user_dict['префикс'], art_user_dict['суффикс'])
         # строчка ниже исключает бижутерию из ролла для зеленых типов артефактов, хотя, если очень повезет,
         # то можно будет получить
 
     elif art_user_dict['группа'] == 'бижутерия':
-        art_object = Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'])
+        art_object = Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                             art_user_dict['префикс'], art_user_dict['суффикс'])
 
     elif art_user_dict['группа'] == 'random':
-        rand_list = [Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип']),
-                     RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип']),
-                     CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'])]
+        rand_list = [Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                           art_user_dict['префикс'], art_user_dict['суффикс']),
+                     RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                                 art_user_dict['префикс'], art_user_dict['суффикс']),
+                     CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                                       art_user_dict['префикс'], art_user_dict['суффикс'])]
         if art_user_dict['грейд'] not in ('зеленый', 'синий'):
-            rand_list.append(Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип']))
+            rand_list.append(Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
+                                     art_user_dict['префикс'], art_user_dict['суффикс']))
 
         art_object = random.choice(rand_list)
 

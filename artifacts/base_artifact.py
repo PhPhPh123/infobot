@@ -16,10 +16,10 @@ class Artifact:
     не вызывается, лишь содержит наследуемые методы.
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
-    def __init__(self, grade_modifier):
+    def __init__(self, grade_modifier, prefix):
 
         # Префикс назначается все артефактам независимо от их типа и вида
-        self.unique_prefix = self.get_prefix()
+        self.unique_prefix = self.get_prefix(prefix)
         self.grade_modifier = grade_modifier
 
         self.name = None
@@ -55,37 +55,44 @@ class Artifact:
         return chosen_artifact
 
     @staticmethod
-    def get_prefix():
+    def get_prefix(prefix: str):
         """
          Данная функция случайно выбирает один из префиксов
         :return: кортеж с именем префикса и навыком, на который он влияет
         """
-        prefix_tuple = tuple(global_bd_sqlite3_cursor.execute('''
+        print('pref')
+        chosen_prefix = f"WHERE prefix_name == '{prefix}'"
+        prefix_tuple = tuple(global_bd_sqlite3_cursor.execute(f"""
 SELECT * FROM unique_prefix
+{'' if prefix == 'random' else chosen_prefix}
 ORDER BY RANDOM()
-LIMIT 1'''))
+LIMIT 1"""))
         return prefix_tuple
 
     @staticmethod
-    def get_suffix(art_group: str, art_type: str) -> tuple:
+    def get_suffix(art_group: str, art_type: str, suffix: str) -> tuple:
         """
         Данная функция случайно выбирает один из суффиксов, доступные для выбора
         :param art_group: название группы артефактов, например artifact_armor, данные строки через f-строку
         добавляются в строку запроса БД для формирования JOIN-ов
 
         :param art_type: название конкретного типа артефакта для добавления в запрос в контрукции WHERE
-
+        :param suffix: название конкретного суффикса, если он был заранее выбран командой
         :return: строка с кортежом суффикса, где первый элемент это его название, использующееся для формирования имени
         а второй элемент это описание его уникального эффекта
         """
-        suffix_tuple = tuple(global_bd_sqlite3_cursor.execute(f'''
+
+        chosen_suffix = f"AND unique_suffix.effect_name == '{suffix}'"
+        suffix_query_string = f'''
 SELECT unique_suffix.effect_name, unique_suffix.effect_text 
 FROM unique_suffix
 INNER JOIN unique_suffix_{art_group}_relations ON unique_suffix.effect_name == unique_suffix_{art_group}_relations.effect_name
 INNER JOIN {art_group} ON unique_suffix_{art_group}_relations.art_type_name == {art_group}.art_type_name
-WHERE {art_group}.art_type_name == '{art_type}'
+WHERE {art_group}.art_type_name == '{art_type}' {"" if suffix == 'random' else chosen_suffix}
 ORDER BY RANDOM()
-LIMIT 1'''))
+LIMIT 1'''
+
+        suffix_tuple = tuple(global_bd_sqlite3_cursor.execute(suffix_query_string))
         return suffix_tuple
 
     def get_name(self, prefix: tuple, art_type: str, suffix: tuple) -> None:

@@ -16,13 +16,13 @@ class RangeWeapon(Weapon):
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
 
-    def __init__(self, grade_modifier, weapon_type):
-        super().__init__(grade_modifier)
+    def __init__(self, grade_modifier, weapon_type, prefix, suffix):
+        super().__init__(grade_modifier, prefix)
 
         # Данные аттрибуты/методы идут из базовых классов
         self.group_name = 'artifact_range_weapon'
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name)
-        self.unique_suffix = self.get_suffix(self.group_name, self.art_type)
+        self.unique_suffix = self.get_suffix(self.group_name, self.art_type, suffix)
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.damage = self.get_damage(self.group_name, self.art_type, grade_modifier)
         self.penetration = self.get_penetration(self.group_name, self.art_type)
