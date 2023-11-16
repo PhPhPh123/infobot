@@ -19,9 +19,9 @@ class DiceRollerWithStatistics:
     """
 
     def __init__(self,
-                 user_id: str,
+                 user_id: int,
                  dice_roll_required: str,
-                 crit_modifier: str = None,
+                 crit_modifier: str,
                  mega_roll: bool = False,
                  is_luck_roll: bool = False):
 
@@ -32,10 +32,9 @@ class DiceRollerWithStatistics:
         self.crit_modifier = crit_modifier
         self.user_name = None
         self.dice_result = None
-        self.roll_success = None
         self.roll_description = None
         self.chat_answer = None
-        self.mega_roll_success = None
+        self.mega_roll_success = False
         self.db_query_string = None
 
     @staticmethod
@@ -52,12 +51,9 @@ class DiceRollerWithStatistics:
 
     def verify_user_input(self):
         try:
-            int(self.user_id)
-            assert len(self.user_id) == 18
-            assert int(self.user_id) == float(self.user_id)
-            self.user_id = int(self.user_id)
+            int(self.crit_modifier)
         except Exception:
-            self.chat_answer = 'Некорректный id пользователя'
+            self.chat_answer = 'Параметр диапазона критической удачи должен быть числом от -5 до 5'
 
         if self.user_id not in self.check_gamers():
             self.chat_answer = 'Вы не зарегистрированы как игрок'
@@ -70,7 +66,6 @@ class DiceRollerWithStatistics:
             self.chat_answer = 'Неверный формат сложности броска, введите число от 3 до 18'
 
     def process_user_input(self):
-        self.user_id = int(self.user_id)
         self.dice_roll_required = int(self.dice_roll_required)
         self.crit_modifier = int(self.crit_modifier)
 
@@ -100,23 +95,22 @@ class DiceRollerWithStatistics:
 
     def check_result(self):
         required_and_rolled_diff = self.dice_roll_required - self.dice_result
+        print(required_and_rolled_diff)
 
         if self.dice_result in (3, 4):
             self.roll_description = 'критический успех'
         elif self.dice_result == (17, 18):
             self.roll_description = 'критическая неудача'
-        elif self.dice_result == 4 and self.dice_roll_required == 4:
-            pass
 
-
-
-
-        if 6 <= required_and_rolled_diff <= 9:
+        elif required_and_rolled_diff > 10:
+            self.roll_description = 'очень значительный успех'
+        elif 5 <= required_and_rolled_diff <= 9:
             self.roll_description = 'значительный успех'
-        elif 5 <= required_and_rolled_diff <= 2:
+        elif 2 <= required_and_rolled_diff <= 4:
             self.roll_description = 'обычный успех'
         elif 0 <= required_and_rolled_diff <= 1:
             self.roll_description = 'минимальный успех'
+
         elif required_and_rolled_diff == -1:
             self.roll_description = 'минимальный провал'
         elif -2 <= required_and_rolled_diff <= -3:
@@ -126,18 +120,30 @@ class DiceRollerWithStatistics:
 
     def form_answer(self):
         answer_temp = f'''
-    Игрок: {self.user_name}
-    Результат броска: {self.roll_success}, Значение кубика: {self.dice_result}
-    Бросок с удачей: {'нет' if not self.is_luck_roll else 'да'}
-    Сработал ли мегабросок: {'нет' if not self.mega_roll_success else 'да'}
+Игрок: {self.user_name}
+Результат броска: {self.roll_description}, Значение кубика: {self.dice_result}
+Бросок с удачей: {'нет' if not self.is_luck_roll else 'да'}
+Сработал ли мегабросок: {'нет' if not self.mega_roll_success else 'да'}
         '''
+        self.chat_answer = answer_temp
 
     def write_to_stat_database(self):
-        pass
+        insert_query_string = f"""
+    INSERT INTO roll_results (discord_user_id, dice_roll_required, dice_result, roll_description, 
+                              mega_roll, mega_roll_success, roll_timestamp, crit_modifier)
+    VALUES({self.user_id}, {self.dice_roll_required}, {self.dice_result}, 
+           '{self.roll_description}', {self.mega_roll}, {self.mega_roll_success},
+           datetime('now'), {self.crit_modifier})
+        """
+        print(insert_query_string)
+        global_dice_roll_statistics_sqlite3_cursor.execute(insert_query_string)
+        global_dice_roll_statistics_sqlite3_connect.commit()
 
     def control_roll_forming(self):
         self.verify_user_input()
         self.process_user_input()
         self.roll_dice()
+        self.check_result()
         self.form_answer()
         self.write_to_stat_database()
+        print('after stat')
