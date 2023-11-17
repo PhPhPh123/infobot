@@ -1,7 +1,6 @@
 """
 
 """
-import random
 
 import exceptions
 if __name__ == '__main__':
@@ -39,14 +38,14 @@ class DiceRollerWithStatistics:
 
     @staticmethod
     def check_gamers():
-        gamers_str = 'SELECT discord_user_id FROM gamers'
+        gamers_str = 'SELECT * FROM gamers'
         all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)
-        all_gamers = [elem[0] for elem in all_gamers]
-        return all_gamers
+        all_gamers_ids = [elem[0] for elem in all_gamers]
+        return all_gamers_ids, list(all_gamers)
 
-    def select_user_name(self):
-        gamers_str = f"SELECT ser_name FROM gamers WHERE discord_user_id = '{self.user_id}'"
-        user_name = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)[0]
+    def set_user_name(self):
+        gamers_str = f"SELECT user_name FROM gamers WHERE discord_user_id = {self.user_id}"
+        user_name = list(global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str))[0][0]
         self.user_name = user_name
 
     def verify_user_input(self):
@@ -55,7 +54,7 @@ class DiceRollerWithStatistics:
         except Exception:
             self.chat_answer = 'Параметр диапазона критической удачи должен быть числом от -5 до 5'
 
-        if self.user_id not in self.check_gamers():
+        if self.user_id not in self.check_gamers()[0]:
             self.chat_answer = 'Вы не зарегистрированы как игрок'
 
         try:
@@ -95,11 +94,19 @@ class DiceRollerWithStatistics:
 
     def check_result(self):
         required_and_rolled_diff = self.dice_roll_required - self.dice_result
-        print(required_and_rolled_diff)
+        crit_success_values = [3, 4]
+        crit_failure_values = [17, 18]
 
-        if self.dice_result in (3, 4):
+        if self.crit_modifier > 0:
+            for digit in range(self.crit_modifier):
+                crit_success_values.append(max(crit_success_values) + 1)
+        if self.crit_modifier < 0:
+            for digit in range(abs(self.crit_modifier)):
+                crit_failure_values.append(min(crit_failure_values) - 1)
+
+        if self.dice_result in crit_success_values:
             self.roll_description = 'критический успех'
-        elif self.dice_result == (17, 18):
+        elif self.dice_result in crit_failure_values:
             self.roll_description = 'критическая неудача'
 
         elif required_and_rolled_diff > 10:
@@ -135,15 +142,14 @@ class DiceRollerWithStatistics:
            '{self.roll_description}', {self.mega_roll}, {self.mega_roll_success},
            datetime('now'), {self.crit_modifier})
         """
-        print(insert_query_string)
         global_dice_roll_statistics_sqlite3_cursor.execute(insert_query_string)
         global_dice_roll_statistics_sqlite3_connect.commit()
 
     def control_roll_forming(self):
         self.verify_user_input()
         self.process_user_input()
+        self.set_user_name()
         self.roll_dice()
         self.check_result()
         self.form_answer()
         self.write_to_stat_database()
-        print('after stat')

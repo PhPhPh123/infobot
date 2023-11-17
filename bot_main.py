@@ -226,19 +226,20 @@ async def common_roll(ctx: discord.ext.commands.context.Context, user_roll: str 
 
 
 @infobot.command()
-async def roll(ctx: discord.ext.commands.context.Context, dice_roll_required: str):
+async def roll(ctx: discord.ext.commands.context.Context, dice_roll_required: str, crit_modifier: str):
     """
     :param ctx: ctx: discord.ext.commands.context.Context
     :param dice_roll_required: указывает, какое минимальное число нужно для броска, так называемая сложность броска
+    :param crit_modifier: указывает изменение диапазона критической удачи или неудачи(отрицательное значение - неудача,
+                                                                                      положительное значение - удача)
     :return: отправка строки боту для вывода в текущем чате дискорда
     """
     user_id = ctx.message.author.id
     roll_object = roll_mechanics.statistics_roll_module.DiceRollerWithStatistics(user_id,
                                                                                  dice_roll_required,
-                                                                                 '0',
+                                                                                 crit_modifier,
                                                                                  False,
                                                                                  False)
-    print(roll_object.__dict__)
     roll_object.control_roll_forming()
     bot_answer = roll_object.chat_answer
     await ctx.send(bot_answer)
