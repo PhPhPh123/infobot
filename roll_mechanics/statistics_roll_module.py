@@ -35,34 +35,49 @@ class DiceRollerWithStatistics:
         self.chat_answer = None
         self.mega_roll_success = False
         self.db_query_string = None
+        self.is_error = False
 
     @staticmethod
-    def check_gamers():
+    def check_gamers() -> tuple[list, list]:
+        """
+        Данный статический метод собирает id(discord-а) и имя игровой из базы данных метод
+        """
         gamers_str = 'SELECT * FROM gamers'
-        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)
-        all_gamers_ids = [elem[0] for elem in all_gamers]
+        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str) # запрос в бд
+        all_gamers_ids = [elem[0] for elem in all_gamers] # создаю список с discord id игроков
         return all_gamers_ids, list(all_gamers)
 
     def set_user_name(self):
+        """
+        Данный метод выбирает из таблицы с игроками имя игрока на основании его id
+        """
         gamers_str = f"SELECT user_name FROM gamers WHERE discord_user_id = {self.user_id}"
+
+        # изымаю имя из кортежа с кортежами
         user_name = list(global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str))[0][0]
         self.user_name = user_name
 
     def verify_user_input(self):
-        try:
+        """
+        Данный метод верифицирует введенные данные для команды ролла
+        """
+        try:  # проверяю, может ли модификатор крита быть приведен к int-типу
             int(self.crit_modifier)
-        except Exception:
+        except (TypeError, ValueError):  # если нет, то вывожу чат что введено нет
             self.chat_answer = 'Параметр диапазона критической удачи должен быть числом от -5 до 5'
+            self.is_error = True
 
         if self.user_id not in self.check_gamers()[0]:
             self.chat_answer = 'Вы не зарегистрированы как игрок'
+            self.is_error = True
 
         try:
             int(self.dice_roll_required)
             assert 3 <= int(self.dice_roll_required) < 18
             assert int(self.dice_roll_required) == float(self.dice_roll_required)
-        except Exception:
+        except (TypeError, ValueError, AssertionError):
             self.chat_answer = 'Неверный формат сложности броска, введите число от 3 до 18'
+            self.is_error = True
 
     def process_user_input(self):
         self.dice_roll_required = int(self.dice_roll_required)
@@ -120,7 +135,7 @@ class DiceRollerWithStatistics:
 
         elif required_and_rolled_diff == -1:
             self.roll_description = 'минимальный провал'
-        elif -2 <= required_and_rolled_diff <= -3:
+        elif -2 >= required_and_rolled_diff >= -3:
             self.roll_description = 'обычный провал'
         elif required_and_rolled_diff <= -4:
             self.roll_description = 'серьезный провал'
@@ -147,6 +162,8 @@ class DiceRollerWithStatistics:
 
     def control_roll_forming(self):
         self.verify_user_input()
+        if self.is_error:
+            return None
         self.process_user_input()
         self.set_user_name()
         self.roll_dice()

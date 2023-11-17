@@ -227,7 +227,7 @@ async def common_roll(ctx: discord.ext.commands.context.Context, user_roll: str 
 
 
 @infobot.command()
-async def roll(ctx: discord.ext.commands.context.Context, dice_roll_required: str, crit_modifier: str):
+async def roll(ctx: discord.ext.commands.context.Context, dice_roll_required: str, crit_modifier: str = 0):
     """
     :param ctx: ctx: discord.ext.commands.context.Context
     :param dice_roll_required: указывает, какое минимальное число нужно для броска, так называемая сложность броска
