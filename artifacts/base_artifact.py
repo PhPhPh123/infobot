@@ -47,7 +47,7 @@ class Artifact:
                                        'плазмаган', 'плазма-пистолет',
                                        'силовая-броня'"""
 
-        chosen_artifact = tuple(global_bd_sqlite3_cursor.execute(f'''
+        chosen_artifact = tuple(global_artifacts_sqlite3_cursor.execute(f'''
     SELECT art_type_name FROM {table_name}
     WHERE art_type_name NOT IN ({excluded_artifact_types})
     ORDER BY RANDOM()
@@ -60,9 +60,8 @@ class Artifact:
          Данная функция случайно выбирает один из префиксов
         :return: кортеж с именем префикса и навыком, на который он влияет
         """
-        print('pref')
         chosen_prefix = f"WHERE prefix_name == '{prefix}'"
-        prefix_tuple = tuple(global_bd_sqlite3_cursor.execute(f"""
+        prefix_tuple = tuple(global_artifacts_sqlite3_cursor.execute(f"""
 SELECT * FROM unique_prefix
 {'' if prefix == 'random' else chosen_prefix}
 ORDER BY RANDOM()
@@ -92,7 +91,7 @@ WHERE {art_group}.art_type_name == '{art_type}' {"" if suffix == 'random' else c
 ORDER BY RANDOM()
 LIMIT 1'''
 
-        suffix_tuple = tuple(global_bd_sqlite3_cursor.execute(suffix_query_string))
+        suffix_tuple = tuple(global_artifacts_sqlite3_cursor.execute(suffix_query_string))
         return suffix_tuple
 
     def get_name(self, prefix: tuple, art_type: str, suffix: tuple) -> None:
@@ -132,7 +131,7 @@ LIMIT 1'''
         грейда
         :return: ничего, изменяет self.weight
         """
-        art_weight = tuple(global_bd_sqlite3_cursor.execute(f'''
+        art_weight = tuple(global_artifacts_sqlite3_cursor.execute(f'''
 SELECT art_weight FROM {self.group_name}
 WHERE art_type_name == '{self.art_type}'
 '''))[0][0]
@@ -151,7 +150,7 @@ WHERE art_type_name == '{self.art_type}'
         без учета модификатора грейда
         :return: ничего, изменяет self.str_requeriments
         """
-        art_reqs = tuple(global_bd_sqlite3_cursor.execute(f'''
+        art_reqs = tuple(global_artifacts_sqlite3_cursor.execute(f'''
 SELECT art_str_req FROM {self.group_name}
 WHERE art_type_name == '{self.art_type}'
 '''))[0][0]

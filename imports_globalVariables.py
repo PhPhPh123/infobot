@@ -57,6 +57,19 @@ def connect_to_main_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     return cursor, connect
 
 
+def connect_to_artifact_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
+    """
+    Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
+    настроек
+    :return: объекты курсора и коннекта
+    """
+    db_name = 'artifacts\\artifacts.db'
+    abspath = get_bot_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
+    connect = sqlite3.connect(abspath)  # Подключение к базе данных
+    cursor = connect.cursor()  # Создание курсора
+    return cursor, connect
+
+
 def connect_to_unique_news_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     Функция, которая подключается к второстепенной базе данных unique_news.db, хранящей уникальные новости
@@ -146,6 +159,9 @@ if os.path.exists(get_bot_dir() + os.path.sep + 'separatly_started_modules\\uniq
     global_unique_news_cursor, global_unique_news_connect = connect_to_unique_news_db()
 else:
     pass
+
+# Объекты курсора и коннекта для доступа в базу данных лута
+global_artifacts_sqlite3_cursor, global_artifacts_sqlite3_connect = connect_to_artifact_db()
 
 # Объекты курсора и коннекта для доступа в базу данных лута
 global_consumables_loot_sqlite3_cursor, global_consumables_loot_sqlite3_connect = connect_to_consumables_loot_db()

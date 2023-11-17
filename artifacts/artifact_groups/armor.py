@@ -38,7 +38,7 @@ class Armor(Artifact):
         :param grade_modifier: модификатор грейда, на который будет умножаться базовая броня
         :return: int число с количеством брони(ВУ)
         """
-        base_armor = tuple(global_bd_sqlite3_cursor.execute(f'''
+        base_armor = tuple(global_artifacts_sqlite3_cursor.execute(f'''
 SELECT art_armor FROM artifact_armor
 WHERE art_type_name == '{self.art_type}'
         '''))[0][0]  # [0][0] отвечает за извлечение числа из кортежа с кортежами
@@ -53,7 +53,7 @@ WHERE art_type_name == '{self.art_type}'
         модификатора удачи, если результат броска будет меньше 5
         :return: int число с параметром бонуса/штрафа
         """
-        base_speed_mod = tuple(global_bd_sqlite3_cursor.execute(f'''
+        base_speed_mod = tuple(global_artifacts_sqlite3_cursor.execute(f'''
         SELECT art_speed FROM artifact_armor
         WHERE art_type_name == '{self.art_type}'
                 '''))[0][0]  # [0][0] отвечает за извлечение числа из кортежа с кортежами
@@ -69,7 +69,7 @@ WHERE art_type_name == '{self.art_type}'
         модификатора удачи, если результат броска будет меньше 5
         :return: int число с параметром бонуса/штрафа
         """
-        base_evasion = tuple(global_bd_sqlite3_cursor.execute(f'''
+        base_evasion = tuple(global_artifacts_sqlite3_cursor.execute(f'''
         SELECT art_evasion FROM artifact_armor
         WHERE art_type_name == '{self.art_type}'
                 '''))[0][0]  # [0][0] отвечает за извлечение числа из кортежа с кортежами
