@@ -35,6 +35,7 @@ def to_control_other_functions_and_returns_bot_answer(world_name: str, gmflag=Fa
     tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_main))
     if not tuple_with_worlds:  # Если название мира некорректно, то вернется пустой кортеж и нужно вернуть ответ
         return 'Некорректное название мира', None
+
     tuple_with_terrains = tuple(global_bd_sqlite3_cursor.execute(select_terrains))
     tuple_with_enemies = tuple(global_bd_sqlite3_cursor.execute(select_enemies))
     tuple_with_export = tuple(global_bd_sqlite3_cursor.execute(select_export))
