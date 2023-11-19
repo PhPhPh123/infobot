@@ -99,7 +99,7 @@ class DiceRollerWithStatistics:
 
     def check_mega_roll_(self):
         if self.mega_roll:
-            megaroll = random.randint(1, 10)
+            megaroll = random.randint(1, 5)
 
             if megaroll == 1 and self.dice_result != 3:
                 self.dice_result -= 1
@@ -168,5 +168,6 @@ class DiceRollerWithStatistics:
         self.set_user_name()
         self.roll_dice()
         self.check_result()
+        self.check_mega_roll_()
         self.form_answer()
         self.write_to_stat_database()
