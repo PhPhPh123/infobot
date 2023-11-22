@@ -71,6 +71,10 @@ class DiceRollerWithStatistics:
             self.chat_answer = 'Вы не зарегистрированы как игрок'
             self.is_error = True
 
+        if int(self.crit_modifier) < -2 or int(self.crit_modifier) > 2:
+            self.chat_answer = 'Критический модификатор должен быть в диапазоне от -2 до 2'
+            self.is_error = True
+
         try:
             int(self.dice_roll_required)
             assert 3 <= int(self.dice_roll_required) < 18
