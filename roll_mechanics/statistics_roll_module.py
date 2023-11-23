@@ -1,6 +1,7 @@
 """
 
 """
+import matplotlib.pyplot as plt
 
 import exceptions
 if __name__ == '__main__':
@@ -156,10 +157,10 @@ class DiceRollerWithStatistics:
     def write_to_stat_database(self):
         insert_query_string = f"""
     INSERT INTO roll_results (discord_user_id, dice_roll_required, dice_result, roll_description, 
-                              mega_roll, mega_roll_success, roll_timestamp, crit_modifier)
+                              mega_roll, mega_roll_success, roll_timestamp, crit_modifier, is_luck_roll)
     VALUES({self.user_id}, {self.dice_roll_required}, {self.dice_result}, 
            '{self.roll_description}', {self.mega_roll}, {self.mega_roll_success},
-           datetime('now'), {self.crit_modifier})
+           datetime('now'), {self.crit_modifier}, {self.is_luck_roll})
         """
         global_dice_roll_statistics_sqlite3_cursor.execute(insert_query_string)
         global_dice_roll_statistics_sqlite3_connect.commit()
@@ -175,3 +176,47 @@ class DiceRollerWithStatistics:
         self.check_mega_roll_()
         self.form_answer()
         self.write_to_stat_database()
+
+
+class MeanResultsByGamers:
+    """
+
+    """
+    def __init__(self):
+        self.query_str = None
+        self.query_result = None
+        self.dataset = None
+
+    def form_query_str(self):
+        self.query_str = """
+    SELECT dice_result, user_name FROM roll_results r
+    INNER JOIN gamers g ON r.discord_user_id=g.discord_user_id
+    WHERE NOT is_luck_roll AND NOT mega_roll AND crit_modifier == 0
+        """
+
+    def execute_db(self):
+        result = global_dice_roll_statistics_sqlite3_cursor.execute(self.query_str)
+        result = [dict(row) for row in result]
+        self.query_result = result
+
+    def form_dataset(self):
+        raw_dataset = pd.DataFrame(self.query_result)
+        grouped_dataset = raw_dataset.groupby('user_name', as_index=False).agg({'dice_result': 'mean'})
+        grouped_dataset = grouped_dataset.sort_values(by='dice_result')
+        grouped_dataset['dice_result'] = round(grouped_dataset['dice_result'], 2)
+
+        self.dataset = grouped_dataset
+
+    def draw_plot(self):
+        plt.Figure(figsize=(10, 15))
+        sns.set_style("darkgrid")
+        ax = sns.barplot(x='user_name', y='dice_result', data=self.dataset, palette='deep')
+        ax.set(title='Среднее значение обычных кубиков по игрокам', xlabel='Игроки', ylabel='Среднее значение кубика')
+
+        plt.savefig('logs_and_temp_files/mean_results_by_gamers.png')
+
+    def control_plot_forming(self):
+        self.form_query_str()
+        self.execute_db()
+        self.form_dataset()
+        self.draw_plot()

@@ -68,7 +68,6 @@ async def infoworld(ctx: discord.ext.commands.context.Context, world_name: str):
     :return: строка, полученная путем выполнения нижестоящих функций и даюткоманду боту на вывод текста в чате дискорда
     """
     bot_answer, world_url = in_game_info.infoworld_command.to_control_other_functions_and_returns_bot_answer(world_name)
-    print(bot_answer)
     await ctx.send(content=bot_answer, file=discord.File(f'static_files/image/world_image/{world_url}'))
 
 
@@ -304,6 +303,13 @@ async def luck_roll(ctx: discord.ext.commands.context.Context, dice_roll_require
     # из сформированного объекта изымаю строку с ответом в чат
     bot_answer = roll_object.chat_answer
     await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def display_avg_roll(ctx: discord.ext.commands.context.Context):
+    plot_object = roll_mechanics.statistics_roll_module.MeanResultsByGamers()
+    plot_object.control_plot_forming()
+    await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_gamers.png'))
 
 
 @infobot.command()

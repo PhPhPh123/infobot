@@ -19,6 +19,7 @@ import discord.ext.commands.context
 import openpyxl
 import re
 import matplotlib.pyplot as plt
+import seaborn as sns
 import string
 from typing import Optional, Union
 from pprint import pprint
@@ -117,6 +118,7 @@ def connect_to_dice_roll_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Connec
     db_name = 'roll_mechanics\\roll_stat_db'
     abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
+    connect.row_factory = sqlite3.Row
     cursor = connect.cursor()  # Создание курсора
 
     return cursor, connect
