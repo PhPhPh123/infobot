@@ -26,6 +26,7 @@ import in_game_news.unique_news
 import special_loot.main_loot_factory
 import roll_mechanics.common_roll_module
 import roll_mechanics.statistics_roll_module
+import statistics_output.dice_statistics.general_graphs
 
 if __name__ == '__main__':
     '''
@@ -310,7 +311,7 @@ async def luck_roll(ctx: discord.ext.commands.context.Context, dice_roll_require
 
 @infobot.command()
 async def display_avg_roll(ctx: discord.ext.commands.context.Context):
-    plot_object = roll_mechanics.statistics_roll_module.MeanResultsByGamers()
+    plot_object = statistics_output.dice_statistics.general_graphs.MeanResultsByGamers()
     plot_object.control_plot_forming()
     await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_gamers.png'))
 

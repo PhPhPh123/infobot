@@ -31,8 +31,6 @@ def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
     tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_systems))
 
     form_answer(tuple_with_worlds, name_deal)
-    #
-    # return final_string
 
 
 def form_export_query(goods_name: str) -> str:

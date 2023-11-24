@@ -33,7 +33,7 @@ from datetime import date
 from time import time, strftime, localtime
 
 # импорт модуля статистики сессий
-from news_statistics import count_news_statistics
+from statistics_output.news_statistics.session_stats import count_news_statistics
 
 
 def get_bot_dir() -> str:
