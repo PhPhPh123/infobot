@@ -3,12 +3,12 @@
 получении особого игрового лута
 """
 
-from imports_globalVariables import *
 import exceptions
 
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
+from imports_globalVariables import *
 from special_loot.special_loot_statistics_collect import *
 from special_loot.loot_categories.consumables import *
 

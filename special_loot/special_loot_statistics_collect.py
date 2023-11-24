@@ -3,11 +3,12 @@
 --переделать базу данных в декларативную через sqlalchemy потом
 """
 
-from imports_globalVariables import *
 import exceptions
 
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
+
+from imports_globalVariables import *
 
 
 def write_to_consumable_statistics(loot_data: dict) -> None:
