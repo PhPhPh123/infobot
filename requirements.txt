@@ -7,3 +7,5 @@ pytest
 pandas
 openpyxl
 matplotlib
+seaborn
+numpy

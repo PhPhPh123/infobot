@@ -241,7 +241,8 @@ async def roll(ctx: discord.ext.commands.context.Context, dice_roll_required: st
     roll_object = roll_mechanics.statistics_roll_module.DiceRollerWithStatistics(user_id,
                                                                                  dice_roll_required,
                                                                                  crit_modifier,
-                                                                                 mega_roll=False,
+                                                                                 is_common_roll=True,
+                                                                                 is_mega_roll=False,
                                                                                  is_luck_roll=False)
     # вызываю основной управляющий метод
     roll_object.control_roll_forming()
@@ -268,7 +269,8 @@ async def mega_roll(ctx: discord.ext.commands.context.Context, dice_roll_require
     roll_object = roll_mechanics.statistics_roll_module.DiceRollerWithStatistics(user_id,
                                                                                  dice_roll_required,
                                                                                  crit_modifier,
-                                                                                 mega_roll=True,
+                                                                                 is_common_roll=False,
+                                                                                 is_mega_roll=True,
                                                                                  is_luck_roll=False)
     # вызываю основной управляющий метод
     roll_object.control_roll_forming()
@@ -295,7 +297,8 @@ async def luck_roll(ctx: discord.ext.commands.context.Context, dice_roll_require
     roll_object = roll_mechanics.statistics_roll_module.DiceRollerWithStatistics(user_id,
                                                                                  dice_roll_required,
                                                                                  crit_modifier,
-                                                                                 mega_roll=False,
+                                                                                 is_common_roll=False,
+                                                                                 is_mega_roll=False,
                                                                                  is_luck_roll=True)
     # вызываю основной управляющий метод
     roll_object.control_roll_forming()
