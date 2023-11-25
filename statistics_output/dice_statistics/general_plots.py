@@ -58,7 +58,7 @@ class BasePlotFormer:
         могут исключаться из собранной статистики чтобы не портить ее или наоборот, быть включены исключительно они)
         """
         self.query_str = f"""
-    SELECT dice_result, user_name FROM roll_results r
+    SELECT * FROM roll_results r
     INNER JOIN gamers g ON r.discord_user_id=g.discord_user_id
     WHERE {'' if self.allow_common_rolls else 'NOT'} is_common_roll
           {'' if self.allow_luck_rolls else 'AND NOT is_luck_roll'}
@@ -85,6 +85,10 @@ class MeanDicesPlotFormer(BasePlotFormer):
         super().__init__()
 
     def form_dataset(self):
+        """
+        Данный метод формирует pandas датасэт путем группировки по имени игрока и агрегации его, среднего значения
+        брошенных кубов, он обязателен и наследуется от абстрактного метода базового класса
+        """
         raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
 
         # группирую по имени игрока и аггрегирую средние результаты бросков кубика
@@ -95,9 +99,13 @@ class MeanDicesPlotFormer(BasePlotFormer):
         self.dataset = grouped_dataset
 
     def draw_plot(self):
+        """
+        Данный метод отрисовывает столбчатую диаграмму по средним значениям результатов брошенных игроком за всё время,
+        он обязателен и наследуется от абстрактного метода базового класса
+        """
         plt.Figure(figsize=(10, 15))  # выставляю размер фигуры(размер картинки в дюймах)
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
-        ax = sns.barplot(x='user_name', y='dice_result', data=self.dataset, palette='deep') # рисую график
+        ax = sns.barplot(x='user_name', y='dice_result', data=self.dataset, palette='deep')  # рисую график
         # выставляю названия осей и графика
         ax.set(title='Среднее значение обычных кубиков по игрокам', xlabel='Игроки', ylabel='Среднее значение кубика')
 
@@ -106,7 +114,7 @@ class MeanDicesPlotFormer(BasePlotFormer):
 
     def control_plot_forming(self):
         """
-        Метод осуществляет последовательных вызов необходимых методов
+        Метод осуществляет последовательный вызов необходимых методов
         """
         self.form_query_str()
         self.execute_db()
@@ -123,12 +131,41 @@ class AllDicesHistFormer(BasePlotFormer):
         super().__init__()
 
     def form_dataset(self):
-        pass
+        """
+        Данный метод формирует pandas датасэт, он обязателен и наследуется от абстрактного метода базового класса
+        """
+        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
+
+        self.dataset = raw_dataset[['user_name', 'dice_result']]  # отбираю только данные по игроку и его броску куба
+        # меняю названия столбцов
+        self.dataset = self.dataset.rename(columns={'user_name': 'Игроки', 'dice_result': 'результат броска'})
 
     def draw_plot(self):
-        pass
+        """
+        Данный метод отрисовывает гистограмму по всем броскам игроков за всё время, в разрезе игрока,
+        он обязателен и наследуется от абстрактного метода базового класса
+        """
+        plt.Figure(figsize=(30, 30))  # выставляю размер фигуры(размер картинки в дюймах)
+        sns.set_style("darkgrid")  # выставляю стиль с сеткой
+
+        # кол-во корзин должно быть равно уник.значения выпавших кубов чтобы несколько значений в одно не смешивались
+        bins = self.dataset['результат броска'].nunique()
+
+        # строю гистограмму с типом stack и нужным количеством корзин
+        ax = sns.histplot(x='результат броска', data=self.dataset, hue='Игроки', multiple="stack", bins=bins)
+        # выставляю нужные параметры
+        ax.set(title='Количество выпавших значений на кубах в разрезе игроков',
+               xlabel='Значения кубов',
+               ylabel='Количество бросков')
+        plt.xticks(numpy.arange(3, 19, 1))  # количество тиков соответствует количество потенциальных результатов
+
+        # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
+        plt.savefig('logs_and_temp_files/all_results_by_gamers.png')
 
     def control_plot_forming(self):
+        """
+        Метод осуществляет последовательный вызов необходимых методов
+        """
         self.form_query_str()
         self.execute_db()
         self.form_dataset()

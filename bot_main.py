@@ -310,10 +310,17 @@ async def luck_roll(ctx: discord.ext.commands.context.Context, dice_roll_require
 
 
 @infobot.command()
-async def display_avg_roll(ctx: discord.ext.commands.context.Context):
+async def display_avg_rolls(ctx: discord.ext.commands.context.Context):
     plot_object = statistics_output.dice_statistics.general_plots.MeanDicesPlotFormer()
     plot_object.control_plot_forming()
     await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_gamers.png'))
+
+
+@infobot.command()
+async def display_all_rolls(ctx: discord.ext.commands.context.Context):
+    plot_object = statistics_output.dice_statistics.general_plots.AllDicesHistFormer()
+    plot_object.control_plot_forming()
+    await ctx.send(file=discord.File('logs_and_temp_files/all_results_by_gamers.png'))
 
 
 @infobot.command()

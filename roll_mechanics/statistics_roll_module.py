@@ -46,8 +46,8 @@ class DiceRollerWithStatistics:
         Данный статический метод собирает id(discord-а) и имя игровой из базы данных метод
         """
         gamers_str = 'SELECT * FROM gamers'
-        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str) # запрос в бд
-        all_gamers_ids = [elem[0] for elem in all_gamers] # создаю список с discord id игроков
+        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)  # запрос в бд
+        all_gamers_ids = [elem[0] for elem in all_gamers]  # создаю список с discord id игроков
         return all_gamers_ids, list(all_gamers)
 
     def set_user_name(self):
