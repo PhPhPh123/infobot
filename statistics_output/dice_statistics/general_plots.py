@@ -4,6 +4,7 @@
     кубиков записываются в модуле roll_mechanics/statistics_roll_module.py, а сами данные хранятся в базе roll_stat_db
     в директории того же пакета
 """
+import matplotlib.pyplot as plt
 
 import exceptions
 if __name__ == '__main__':
@@ -26,6 +27,9 @@ class BasePlotFormer:
         self.allow_luck_rolls = False  # флаг определяющий учет или не учет бросков с модификатором удачи(двойных)
         self.allow_mega_rolls = False  # флаг определяющий учет или не учет бросков с шансом на улучшение результата
         self.allow_crit_modifier = False  # флаг определяющий учитывать или нет броски с измененным модификатором крита
+        self.is_error = False  # флаг, определяющий ошибку
+        self.error_message = None  # строка для ответа в чат в случае если запрос ошибочен
+
 
     @abstractmethod
     def form_dataset(self):
@@ -103,7 +107,6 @@ class MeanDicesPlotFormer(BasePlotFormer):
         Данный метод отрисовывает столбчатую диаграмму по средним значениям результатов брошенных игроком за всё время,
         он обязателен и наследуется от абстрактного метода базового класса
         """
-        plt.Figure(figsize=(10, 15))  # выставляю размер фигуры(размер картинки в дюймах)
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
         ax = sns.barplot(x='user_name', y='dice_result', data=self.dataset, palette='deep')  # рисую график
         # выставляю названия осей и графика
@@ -111,6 +114,7 @@ class MeanDicesPlotFormer(BasePlotFormer):
 
         # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
         plt.savefig('logs_and_temp_files/mean_results_by_gamers.png')
+        plt.clf()  # очищаю объект фигуры
 
     def control_plot_forming(self):
         """
@@ -127,8 +131,21 @@ class AllDicesHistFormer(BasePlotFormer):
     Данный класс занимается отрисовкой и выдачей в чат гистограммы по брошенным кубам в разрезе по игрокам.
     Учитываются только обычные кубы команды !roll без дополнительных модификаторов
     """
-    def __init__(self):
+    def __init__(self, user_name):
         super().__init__()
+        self.user_name = user_name
+
+    def check_gamers(self):
+        """
+        Данный метод проверяет, что выбранный игрок(если он выбран), зарегистрирован в таблице gamers
+        """
+        gamers_str = 'SELECT * FROM gamers'
+        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)  # запрос в бд
+        all_gamers = [elem[1] for elem in all_gamers]  # создаю список именами игроков
+
+        if self.user_name not in all_gamers:
+            self.is_error = True
+            self.error_message = f'Неверное имя игрока. Введите один из этих вариантов: {all_gamers}'
 
     def form_dataset(self):
         """
@@ -137,6 +154,11 @@ class AllDicesHistFormer(BasePlotFormer):
         raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
 
         self.dataset = raw_dataset[['user_name', 'dice_result']]  # отбираю только данные по игроку и его броску куба
+
+        # если команда подразумевает вывод под конкретного игрока, то датасэт фильтруется под него
+        if self.user_name != '':
+            self.dataset = self.dataset[self.dataset['user_name'] == self.user_name]
+
         # меняю названия столбцов
         self.dataset = self.dataset.rename(columns={'user_name': 'Игроки', 'dice_result': 'результат броска'})
 
@@ -145,7 +167,6 @@ class AllDicesHistFormer(BasePlotFormer):
         Данный метод отрисовывает гистограмму по всем броскам игроков за всё время, в разрезе игрока,
         он обязателен и наследуется от абстрактного метода базового класса
         """
-        plt.Figure(figsize=(30, 30))  # выставляю размер фигуры(размер картинки в дюймах)
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
 
         # кол-во корзин должно быть равно уник.значения выпавших кубов чтобы несколько значений в одно не смешивались
@@ -161,11 +182,20 @@ class AllDicesHistFormer(BasePlotFormer):
 
         # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
         plt.savefig('logs_and_temp_files/all_results_by_gamers.png')
+        plt.clf()  # очищаю объект фигуры
 
     def control_plot_forming(self):
         """
         Метод осуществляет последовательный вызов необходимых методов
         """
+        # если команда не подразумевает вывод одного игрока, то метод не отрабатывает
+        if self.user_name == '':
+            pass
+        else:
+            self.check_gamers()
+            if self.is_error:  # если в результате работы метода дался этот флаг, значит игрока нет в списке
+                return None  # и формирование экземпляра класса нужно прекратить
+
         self.form_query_str()
         self.execute_db()
         self.form_dataset()

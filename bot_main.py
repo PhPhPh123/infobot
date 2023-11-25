@@ -311,16 +311,28 @@ async def luck_roll(ctx: discord.ext.commands.context.Context, dice_roll_require
 
 @infobot.command()
 async def display_avg_rolls(ctx: discord.ext.commands.context.Context):
-    plot_object = statistics_output.dice_statistics.general_plots.MeanDicesPlotFormer()
-    plot_object.control_plot_forming()
-    await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_gamers.png'))
+    """
+    Данная команда выводит в чат график со средними значениями брошенных кубиков по всем игрокам
+    """
+    plot_object = statistics_output.dice_statistics.general_plots.MeanDicesPlotFormer()  # создаю экземпляр класса
+    plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
+    await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_gamers.png'))  # загружаю ее в чат
 
 
 @infobot.command()
-async def display_all_rolls(ctx: discord.ext.commands.context.Context):
-    plot_object = statistics_output.dice_statistics.general_plots.AllDicesHistFormer()
-    plot_object.control_plot_forming()
-    await ctx.send(file=discord.File('logs_and_temp_files/all_results_by_gamers.png'))
+async def display_all_rolls(ctx: discord.ext.commands.context.Context, user_name=''):
+    """
+    Данная команда выводит в чат график по всем броскам либо сразу всех игроков, либо конкретного, если после ее
+    вызова указан его зарегистрированный ник. Если ник неправильный, то будет выведена текстовая шибка
+    """
+    # создаю экземпляр класса
+    plot_object = statistics_output.dice_statistics.general_plots.AllDicesHistFormer(user_name=user_name)
+    plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
+
+    if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
+        await ctx.send(file=discord.File('logs_and_temp_files/all_results_by_gamers.png'))
+    else:  # иначе в чат выводится сообщение с ошибкой
+        await ctx.send(plot_object.error_message)
 
 
 @infobot.command()
