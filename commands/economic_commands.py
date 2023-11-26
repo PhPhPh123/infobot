@@ -12,9 +12,9 @@ import economic_info.infoexportgoods_command
 import economic_info.goodspie_command
 import economic_info.info_all_goods
 import economic_info.ingame_goods
-from commands import static_answer_messages
 import economic_news.bot_news_main
 import economic_news.unique_news
+from commands import static_answer_messages
 
 
 @infobot.command()

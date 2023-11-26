@@ -86,5 +86,6 @@ def form_pie_plot(goods_list_export, counts_world_list_export,
     ax1.pie(counts_world_list_export, labels=goods_list_export)
     ax2.pie(counts_world_list_import, labels=goods_list_import)
     plt.savefig('logs_and_temp_files/answer_pie.png')
+    plt.clf()  # очищаю объект фигуры
 
 

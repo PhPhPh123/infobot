@@ -77,6 +77,7 @@ def form_answer(tuple_with_worlds: tuple, deal_name: str):
         label_y = bar.get_y() + bar.get_height() / 2
         plt.text(width, label_y, s=f'{width}')
     plt.savefig('logs_and_temp_files/info_export_import_goods.png')
+    plt.clf()  # очищаю объект фигуры
 
     return None
 
