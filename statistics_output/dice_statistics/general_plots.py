@@ -4,7 +4,7 @@
     кубиков записываются в модуле roll_mechanics/statistics_roll_module.py, а сами данные хранятся в базе roll_stat_db
     в директории того же пакета
 """
-import matplotlib.pyplot as plt
+from abc import ABC
 
 import exceptions
 if __name__ == '__main__':
@@ -29,7 +29,6 @@ class BasePlotFormer:
         self.allow_crit_modifier = False  # флаг определяющий учитывать или нет броски с измененным модификатором крита
         self.is_error = False  # флаг, определяющий ошибку
         self.error_message = None  # строка для ответа в чат в случае если запрос ошибочен
-
 
     @abstractmethod
     def form_dataset(self):
@@ -80,9 +79,9 @@ class BasePlotFormer:
         self.query_result = result
 
 
-class MeanDicesPlotFormer(BasePlotFormer):
+class AvgRollsPlotFormer(BasePlotFormer):
     """
-    Данный класс занимается отрисовкой и выдачей в чат столбчатую диаграмму по среднему кубу игроков. Учитываются
+    Данный класс занимается отрисовкой и выдачей в чат столбчатой диаграммы по среднему кубу игроков. Учитываются
     только обычные кубы команды !roll без дополнительных модификаторов. Наследует базовый класс
     """
     def __init__(self):
@@ -93,7 +92,7 @@ class MeanDicesPlotFormer(BasePlotFormer):
         Данный метод формирует pandas датасэт путем группировки по имени игрока и агрегации его, среднего значения
         брошенных кубов, он обязателен и наследуется от абстрактного метода базового класса
         """
-        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
+        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сырые данные в сырой датасэт pandas
 
         # группирую по имени игрока и аггрегирую средние результаты бросков кубика
         grouped_dataset = raw_dataset.groupby('user_name', as_index=False).agg({'dice_result': 'mean'})
@@ -126,12 +125,12 @@ class MeanDicesPlotFormer(BasePlotFormer):
         self.draw_plot()
 
 
-class AllDicesHistFormer(BasePlotFormer):
+class AllRollsPlotFormer(BasePlotFormer):
     """
     Данный класс занимается отрисовкой и выдачей в чат гистограммы по брошенным кубам в разрезе по игрокам.
     Учитываются только обычные кубы команды !roll без дополнительных модификаторов
     """
-    def __init__(self, user_name):
+    def __init__(self, user_name: str):
         super().__init__()
         self.user_name = user_name
 
@@ -200,3 +199,33 @@ class AllDicesHistFormer(BasePlotFormer):
         self.execute_db()
         self.form_dataset()
         self.draw_plot()
+
+
+class CritSuccessFailurePlotFormer(BasePlotFormer):
+    def __init__(self):
+        super().__init__()
+
+    def form_dataset(self):
+        """
+        Данный метод формирует pandas датасэт, он обязателен и наследуется от абстрактного метода базового класса
+        """
+        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
+
+        def set_roll_type(row):
+            if row >= 17:
+                return 'критнеудача'
+            elif row <= 4:
+                return 'критудача'
+            else:
+                return 'обычный'
+
+        raw_dataset['result_type'] = raw_dataset['dice_results'].apply(set_roll_type)
+
+
+    def draw_plot(self):
+        pass
+
+    def control_plot_forming(self):
+        pass
+
+
