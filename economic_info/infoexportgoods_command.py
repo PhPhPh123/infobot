@@ -8,7 +8,7 @@ if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 
 from imports_globalVariables import *
-import in_game_info.sql_queries
+import economic_info.sql_queries
 
 
 def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
@@ -40,7 +40,7 @@ def form_export_query(goods_name: str) -> str:
     :return: строка для экзекьюта в БД
     """
     # Текст sql-запроса берется из модуля sql_queries
-    select_temp_systems = Template(in_game_info.sql_queries.info_goods_query_dict['export'])
+    select_temp_systems = Template(economic_info.sql_queries.info_goods_query_dict['export'])
     select_render_systems = select_temp_systems.render(goods_name=goods_name)
     return select_render_systems
 
@@ -52,7 +52,7 @@ def form_import_query(goods_name: str) -> str:
     :return: строка для экзекьюта в БД
     """
     # Текст sql-запроса берется из модуля sql_queries
-    select_temp_systems = Template(in_game_info.sql_queries.info_goods_query_dict['import'])
+    select_temp_systems = Template(economic_info.sql_queries.info_goods_query_dict['import'])
     select_render_systems = select_temp_systems.render(goods_name=goods_name)
     return select_render_systems
 

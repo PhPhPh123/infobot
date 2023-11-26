@@ -129,7 +129,7 @@ def connect_to_dice_roll_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Connec
 """
 # логгер для новостей
 logger.add('logs_and_temp_files/news.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
-           filter=lambda x: '[in_game_news]' in x['message'])
+           filter=lambda x: '[economic_news]' in x['message'])
 # логгер для принтов
 logger.add('logs_and_temp_files/print.log', format='{time}, {level}, {message}', level='DEBUG', backtrace=True,
            filter=lambda x: '[print]' in x['message'])
