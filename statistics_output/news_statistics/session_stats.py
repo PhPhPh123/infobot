@@ -25,6 +25,7 @@ def count_news_statistics():
     с новостями
     @return: функция append_stat
     """
+    # словарь шаблона ответа
     stat_dict = {"НОВОСТЬ О ВРАГАХ": [],
                  "НОВОСТЬ О БЕЗОПАСНОМ МЕСТЕ": [],
                  "КВЕСТ": [],
@@ -46,12 +47,13 @@ def count_news_statistics():
         @param value: строка новости
         @return: либо словарь замыкания либо результат работы функции подготовки строкового ответа статистики
         """
-        if type_news:
-            if value:
-                stat_dict[type_news].append(value)
-                return stat_dict
+        # данный выбор срабатывает в ситуации когда в замыкание добавляется одна новость
+        if type_news:  # т.е. тип новости должен быть непустой
+            if value:  # а у текста новости должна быть непустая строка
+                stat_dict[type_news].append(value)  # тогда в в список в словаре замыкания добавляется значение
+                return stat_dict  # и замыкание возвращается
 
-        return form_news_statitics(stat_dict)
+        return form_news_statitics(stat_dict)  # замыкание завершает работу с выводом статистики
 
     return append_stat
 
@@ -62,6 +64,7 @@ def form_news_statitics(isdict: dict) -> str:
     @param isdict: словарь со списком новостей в значениях, ключ это тэг новости
     @return: строка ответа для бота
     """
+    # темплейт ответа в чат
     stat_template = Template("""
     Статистика текущей сессии бота: 
     {% for item in isdict.items() -%}

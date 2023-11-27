@@ -113,7 +113,7 @@ class AvgRollsPlotFormer(BasePlotFormer):
 
         # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
         plt.savefig('logs_and_temp_files/mean_results_by_gamers.png')
-        plt.clf()  # очищаю объект фигуры
+        plt.close()  # закрываю объект фигуры
 
     def control_plot_forming(self):
         """
@@ -168,7 +168,7 @@ class AllRollsPlotFormer(BasePlotFormer):
         """
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
 
-        # кол-во корзин должно быть равно уник.значения выпавших кубов чтобы несколько значений в одно не смешивались
+        # кол-во корзин должно быть равно кол-ву уник.значений кубов чтобы несколько значений в одно не смешивались
         bins = self.dataset['результат броска'].nunique()
 
         # строю гистограмму с типом stack и нужным количеством корзин
@@ -181,7 +181,7 @@ class AllRollsPlotFormer(BasePlotFormer):
 
         # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
         plt.savefig('logs_and_temp_files/all_results_by_gamers.png')
-        plt.clf()  # очищаю объект фигуры
+        plt.close()  # закрываю объект фигуры
 
     def control_plot_forming(self):
         """
