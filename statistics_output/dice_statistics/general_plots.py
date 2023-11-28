@@ -6,6 +6,8 @@
 """
 from abc import ABC
 
+import pandas as pd
+
 import exceptions
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
@@ -201,9 +203,10 @@ class AllRollsPlotFormer(BasePlotFormer):
         self.draw_plot()
 
 
-class CritSuccessFailurePlotFormer(BasePlotFormer):
-    def __init__(self):
+class MeanRollsByTimePlotFormer(BasePlotFormer):
+    def __init__(self, datetime_type):
         super().__init__()
+        self.datetime_type = datetime_type
 
     def form_dataset(self):
         """
@@ -211,21 +214,35 @@ class CritSuccessFailurePlotFormer(BasePlotFormer):
         """
         raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
 
-        def set_roll_type(row):
-            if row >= 17:
-                return 'критнеудача'
-            elif row <= 4:
-                return 'критудача'
-            else:
-                return 'обычный'
+        dataset = raw_dataset.groupby([pd.to_datetime(raw_dataset['roll_timestamp']).dt.date,
+                                       raw_dataset['user_name']]) \
+                             .agg({'dice_result': 'mean'}).reset_index()
 
-        raw_dataset['result_type'] = raw_dataset['dice_results'].apply(set_roll_type)
-
+        dataset = dataset.rename(columns={
+                                          'user_name': 'Игрок',
+                                          'dice_result': 'Среднее значение кубика'})
+        self.dataset = dataset
 
     def draw_plot(self):
-        pass
+        sns.set_style("darkgrid")  # выставляю стиль с сеткой
+
+        ax = sns.lineplot(data=self.dataset, x='roll_timestamp', y='Среднее значение кубика', hue='Игрок')
+
+        # выставляю нужные параметры
+        ax.set(title='Среднее значение кубика в разрезе сессии',
+               xlabel='Дата',
+               ylabel='Среднее значение кубика')
+        plt.xticks(rotation=27)
+
+        plt.gcf().set_size_inches(12, 8)
+        # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
+        plt.savefig('logs_and_temp_files/mean_results_by_datetime.png')
+        plt.close()  # закрываю объект фигуры
 
     def control_plot_forming(self):
-        pass
+        self.form_query_str()
+        self.execute_db()
+        self.form_dataset()
+        self.draw_plot()
 
 

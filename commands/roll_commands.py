@@ -126,3 +126,17 @@ async def display_all_rolls(ctx: discord.ext.commands.context.Context, user_name
         await ctx.send(file=discord.File('logs_and_temp_files/all_results_by_gamers.png'))
     else:  # иначе в чат выводится сообщение с ошибкой
         await ctx.send(plot_object.error_message)
+
+
+@infobot.command()
+async def display_mean_roll_by_session(ctx: discord.ext.commands.context.Context, datetime='week'):
+    """
+    """
+
+    plot_object = statistics_output.dice_statistics.general_plots.MeanRollsByTimePlotFormer(datetime_type=datetime)
+    plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
+
+    if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
+        await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_datetime.png'))
+    else:  # иначе в чат выводится сообщение с ошибкой
+        await ctx.send(plot_object.error_message)
