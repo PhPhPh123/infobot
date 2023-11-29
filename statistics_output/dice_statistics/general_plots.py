@@ -4,7 +4,6 @@
     кубиков записываются в модуле roll_mechanics/statistics_roll_module.py, а сами данные хранятся в базе roll_stat_db
     в директории того же пакета
 """
-import matplotlib.pyplot as plt
 
 import exceptions
 if __name__ == '__main__':
@@ -198,9 +197,13 @@ class AllRollsPlotFormer(BasePlotFormer):
 
 
 class MeanRollsByTimePlotFormer(BasePlotFormer):
+    """
+    Данный класс занимается отрисовкой линейного графика по игрокам в разрезе временных отрезков характерных для
+    проведения игровых сессий(datetime)
+    """
     def __init__(self, datetime_type):
         super().__init__()
-        self.datetime_type = datetime_type
+        self.datetime_type = datetime_type  # по умолчанию datetime, но можно разрез и изменить
 
     def form_dataset(self):
         """
@@ -216,6 +219,10 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
         self.dataset = dataset
 
     def draw_plot(self):
+        """
+        Данный метод отрисовывает линейный график в разрезе игроков по датам. он обязателен и наследуется
+        от абстрактного метода базового класса
+        """
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
 
         ax = sns.lineplot(data=self.dataset, x='roll_timestamp', y='Среднее значение кубика', hue='Игрок')
@@ -226,12 +233,15 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
                ylabel='Среднее значение кубика')
         plt.xticks(rotation=60)
 
-        plt.gcf().set_size_inches(12, 9)
+        plt.gcf().set_size_inches(12, 9)  # выставляю размер для png картинки
         # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
         plt.savefig('logs_and_temp_files/mean_results_by_datetime.png')
         plt.close()  # закрываю объект фигуры
 
     def control_plot_forming(self):
+        """
+        Метод осуществляет последовательный вызов необходимых методов
+        """
         self.form_query_str()
         self.execute_db()
         self.form_dataset()
@@ -239,39 +249,67 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
 
 
 class CritRatioPlotFormer(BasePlotFormer):
+    """
+    Данный класс отрисовывает столбчатую диаграмму отражающую процент критических удач или неудач игроков за
+    всё время
+    """
     def __init__(self, crit_type):
         super().__init__()
         self.crit_type = crit_type
 
     def form_dataset(self):
+        """
+        Данный метод формирует pandas датасэт, он обязателен и наследуется от абстрактного метода базового класса
+        """
+
+        # проверяется какой командой вызван данный метод после чего происходит фильтрация данных по этому критерию
         if self.crit_type == 'luck':
             crit_dataset = self.raw_dataset[self.raw_dataset['roll_description'] == 'критический успех']
         else:
             crit_dataset = self.raw_dataset[self.raw_dataset['roll_description'] == 'критическая неудача']
 
+        # группирую по имени игрока и подсчитаю количество выброшенных кубиков с критической удачей или неудачей
         crit_dataset = crit_dataset.groupby('user_name').agg({'roll_id': 'count'}).reset_index()
+
+        # группирую второй датасэт по имени игрока и подсчитываю общее количество бросков
         all_rolls_dataset = self.raw_dataset.groupby('user_name').agg({'roll_id': 'count'}).reset_index()
+
+        # сливаю датасэты по имени игрока чтобы было известно общее количество бросков и количество бросков с критами
         merged_dataset = crit_dataset.merge(all_rolls_dataset, on='user_name')
 
+        # меняю названия столбцов
         merged_dataset = merged_dataset.rename(columns={'user_name': 'Игрок',
                                                         'roll_id_x': 'Количество критов',
                                                         'roll_id_y': 'Общее количество бросков'})
+
+        # создаваю столбец с соотношением между общим количеством бросков и бросков с критической удачей или неудачей
         merged_dataset['Соотношение'] = merged_dataset['Количество критов'] / merged_dataset['Общее количество бросков'] * 100
+
+        # оставляю нужные столбцы и сортирую по параметру соотношения
         merged_dataset = merged_dataset[['Игрок', 'Соотношение']].sort_values(by='Соотношение')
 
         self.dataset = merged_dataset
 
     def draw_plot(self):
+        """
+        Данный метод отрисовывает столбчатый график в разрезе игроков. Он обязателен и наследуется от абстрактного
+        метода базового класса
+        """
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
 
-        sns.barplot(self.dataset, x='Игрок', y='Соотношение', palette='deep')
+        sns.barplot(self.dataset, x='Игрок', y='Соотношение', palette='deep')  # строю столбчатую диаграмму
 
-        plt.title(f"""Соотношение {'критических удач' if self.crit_type == 'luck' else 'критических неудач'} к общему количеству бросков""")
+        # даю параметры
+        plt.title(f"Соотношение {'критических удач' if self.crit_type == 'luck' else 'критических неудач'} к общему количеству бросков")
         plt.ylabel('Соотношение (проценты)')
-        plt.savefig('logs_and_temp_files/crit_ratio.png')
-        plt.close()
+
+        plt.savefig('logs_and_temp_files/crit_ratio.png')  # сохраняю в файл
+        plt.close()  # закрываю фигуру
 
     def control_plot_forming(self):
+        """
+        Метод осуществляет последовательный вызов необходимых методов
+        """
         self.form_query_str()
         self.execute_db()
         self.form_dataset()
