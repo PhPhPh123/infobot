@@ -4,9 +4,7 @@
     кубиков записываются в модуле roll_mechanics/statistics_roll_module.py, а сами данные хранятся в базе roll_stat_db
     в директории того же пакета
 """
-from abc import ABC
-
-import pandas as pd
+import matplotlib.pyplot as plt
 
 import exceptions
 if __name__ == '__main__':
@@ -23,7 +21,7 @@ class BasePlotFormer:
     """
     def __init__(self):
         self.query_str = None  # строка запрос в базу данных
-        self.query_result = None  # список словарей в котором ключ это название столбца, а значения это его значения
+        self.raw_dataset = None  # список словарей в котором ключ это название столбца, а значения это его значения
         self.dataset = None  # датасэт pandas
         self.allow_common_rolls = True  # флаг определяющий учет или не учет обычных бросков командой !roll
         self.allow_luck_rolls = False  # флаг определяющий учет или не учет бросков с модификатором удачи(двойных)
@@ -78,7 +76,7 @@ class BasePlotFormer:
         """
         result = global_dice_roll_statistics_sqlite3_cursor.execute(self.query_str)  # собственно экзекьют в базу
         result = [dict(row) for row in result]  # преобразование в список словарей
-        self.query_result = result
+        self.raw_dataset = pd.DataFrame(result)  # преобразую сырые данные в сырой датасэт pandas
 
 
 class AvgRollsPlotFormer(BasePlotFormer):
@@ -94,10 +92,8 @@ class AvgRollsPlotFormer(BasePlotFormer):
         Данный метод формирует pandas датасэт путем группировки по имени игрока и агрегации его, среднего значения
         брошенных кубов, он обязателен и наследуется от абстрактного метода базового класса
         """
-        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сырые данные в сырой датасэт pandas
-
         # группирую по имени игрока и аггрегирую средние результаты бросков кубика
-        grouped_dataset = raw_dataset.groupby('user_name', as_index=False).agg({'dice_result': 'mean'})
+        grouped_dataset = self.raw_dataset.groupby('user_name', as_index=False).agg({'dice_result': 'mean'})
         grouped_dataset = grouped_dataset.sort_values(by='dice_result')  # сортирую по значению среднего кубика
         grouped_dataset['dice_result'] = round(grouped_dataset['dice_result'], 2)  # округляю значения
 
@@ -152,9 +148,7 @@ class AllRollsPlotFormer(BasePlotFormer):
         """
         Данный метод формирует pandas датасэт, он обязателен и наследуется от абстрактного метода базового класса
         """
-        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
-
-        self.dataset = raw_dataset[['user_name', 'dice_result']]  # отбираю только данные по игроку и его броску куба
+        self.dataset = self.raw_dataset[['user_name', 'dice_result']]  # отбираю только данные по игроку и его броску куба
 
         # если команда подразумевает вывод под конкретного игрока, то датасэт фильтруется под него
         if self.user_name != '':
@@ -212,11 +206,9 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
         """
         Данный метод формирует pandas датасэт, он обязателен и наследуется от абстрактного метода базового класса
         """
-        raw_dataset = pd.DataFrame(self.query_result)  # преобразую сыры данные в сырой датасэт pandas
-
-        dataset = raw_dataset.groupby([pd.to_datetime(raw_dataset['roll_timestamp']).dt.date,
-                                       raw_dataset['user_name']]) \
-                             .agg({'dice_result': 'mean'}).reset_index()
+        dataset = self.raw_dataset.groupby([pd.to_datetime(self.raw_dataset['roll_timestamp']).dt.date,
+                                            self.raw_dataset['user_name']]) \
+                                  .agg({'dice_result': 'mean'}).reset_index()
 
         dataset = dataset.rename(columns={
                                           'user_name': 'Игрок',
@@ -232,9 +224,9 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
         ax.set(title='Среднее значение кубика в разрезе сессии',
                xlabel='Дата',
                ylabel='Среднее значение кубика')
-        plt.xticks(rotation=27)
+        plt.xticks(rotation=60)
 
-        plt.gcf().set_size_inches(12, 8)
+        plt.gcf().set_size_inches(12, 9)
         # сохраняю в виде картинки в каталоге с времеменными файлами откуда она будет загружена в чат
         plt.savefig('logs_and_temp_files/mean_results_by_datetime.png')
         plt.close()  # закрываю объект фигуры
@@ -244,5 +236,46 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
         self.execute_db()
         self.form_dataset()
         self.draw_plot()
+
+
+class CritRatioPlotFormer(BasePlotFormer):
+    def __init__(self, crit_type):
+        super().__init__()
+        self.crit_type = crit_type
+
+    def form_dataset(self):
+        if self.crit_type == 'luck':
+            crit_dataset = self.raw_dataset[self.raw_dataset['roll_description'] == 'критический успех']
+        else:
+            crit_dataset = self.raw_dataset[self.raw_dataset['roll_description'] == 'критическая неудача']
+
+        crit_dataset = crit_dataset.groupby('user_name').agg({'roll_id': 'count'}).reset_index()
+        all_rolls_dataset = self.raw_dataset.groupby('user_name').agg({'roll_id': 'count'}).reset_index()
+        merged_dataset = crit_dataset.merge(all_rolls_dataset, on='user_name')
+
+        merged_dataset = merged_dataset.rename(columns={'user_name': 'Игрок',
+                                                        'roll_id_x': 'Количество критов',
+                                                        'roll_id_y': 'Общее количество бросков'})
+        merged_dataset['Соотношение'] = merged_dataset['Количество критов'] / merged_dataset['Общее количество бросков'] * 100
+        merged_dataset = merged_dataset[['Игрок', 'Соотношение']].sort_values(by='Соотношение')
+
+        self.dataset = merged_dataset
+
+    def draw_plot(self):
+        sns.set_style("darkgrid")  # выставляю стиль с сеткой
+
+        sns.barplot(self.dataset, x='Игрок', y='Соотношение', palette='deep')
+
+        plt.title(f"""Соотношение {'критических удач' if self.crit_type == 'luck' else 'критических неудач'} к общему количеству бросков""")
+        plt.ylabel('Соотношение (проценты)')
+        plt.savefig('logs_and_temp_files/crit_ratio.png')
+        plt.close()
+
+    def control_plot_forming(self):
+        self.form_query_str()
+        self.execute_db()
+        self.form_dataset()
+        self.draw_plot()
+
 
 

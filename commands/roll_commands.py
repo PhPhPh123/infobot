@@ -140,3 +140,31 @@ async def display_mean_roll_by_session(ctx: discord.ext.commands.context.Context
         await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_datetime.png'))
     else:  # иначе в чат выводится сообщение с ошибкой
         await ctx.send(plot_object.error_message)
+
+
+@infobot.command()
+async def display_crit_luck(ctx: discord.ext.commands.context.Context):
+    """
+    """
+
+    plot_object = statistics_output.dice_statistics.general_plots.CritRatioPlotFormer(crit_type='luck')
+    plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
+
+    if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
+        await ctx.send(file=discord.File('logs_and_temp_files/crit_ratio.png'))
+    else:  # иначе в чат выводится сообщение с ошибкой
+        await ctx.send(plot_object.error_message)
+
+
+@infobot.command()
+async def display_crit_failure(ctx: discord.ext.commands.context.Context):
+    """
+    """
+
+    plot_object = statistics_output.dice_statistics.general_plots.CritRatioPlotFormer(crit_type='failure')
+    plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
+
+    if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
+        await ctx.send(file=discord.File('logs_and_temp_files/crit_ratio.png'))
+    else:  # иначе в чат выводится сообщение с ошибкой
+        await ctx.send(plot_object.error_message)
