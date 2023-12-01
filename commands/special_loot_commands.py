@@ -4,6 +4,7 @@ if __name__ == '__main__':
 from bot_settings import *
 
 import special_loot.main_loot_factory
+import statistics_output.consumables_statistics.consumables_plots
 
 
 @infobot.command()
@@ -63,3 +64,17 @@ async def consumable_all_types(ctx: discord.ext.commands.context.Context):
     bot_answer = special_loot.main_loot_factory.display_items_groups_and_type('consumables', 'types')
 
     await ctx.send(bot_answer)
+
+
+@infobot.command()
+async def display_consumables(ctx: discord.ext.commands.context.Context, group_or_type):
+    """
+    """
+
+    plot_object = statistics_output.consumables_statistics.consumables_plots.ConsumablesPlotsFormer(group_or_type)
+    plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
+
+    if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
+        await ctx.send(file=discord.File('logs_and_temp_files/consumables_plot.png'))
+    else:  # иначе в чат выводится сообщение с ошибкой
+        await ctx.send(plot_object.error_message)

@@ -255,7 +255,7 @@ class CritRatioPlotFormer(BasePlotFormer):
     """
     def __init__(self, crit_type):
         super().__init__()
-        self.crit_type = crit_type
+        self.crit_type = crit_type  # параметр отвечающий за тип крита - критическая неудача или критическая удача
 
     def form_dataset(self):
         """

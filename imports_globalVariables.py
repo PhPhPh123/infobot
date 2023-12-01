@@ -105,6 +105,7 @@ def connect_to_consumables_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Conn
     db_name = 'special_loot\\consumables_statistics_db'
     abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
     connect = sqlite3.connect(abspath)  # Подключение к базе данных
+    connect.row_factory = sqlite3.Row
     cursor = connect.cursor()  # Создание курсора
 
     return cursor, connect

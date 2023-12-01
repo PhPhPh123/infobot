@@ -5,7 +5,7 @@ from bot_settings import *
 
 import roll_mechanics.common_roll_module
 import roll_mechanics.statistics_roll_module
-import statistics_output.dice_statistics.general_plots
+import statistics_output.dice_statistics.roll_plots
 
 
 @infobot.command()
@@ -107,7 +107,7 @@ async def display_avg_rolls(ctx: discord.ext.commands.context.Context):
     """
     Данная команда выводит в чат график со средними значениями брошенных кубиков по всем игрокам
     """
-    plot_object = statistics_output.dice_statistics.general_plots.AvgRollsPlotFormer()  # создаю экземпляр класса
+    plot_object = statistics_output.dice_statistics.roll_plots.AvgRollsPlotFormer()  # создаю экземпляр класса
     plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
     await ctx.send(file=discord.File('logs_and_temp_files/mean_results_by_gamers.png'))  # загружаю ее в чат
 
@@ -119,7 +119,7 @@ async def display_all_rolls(ctx: discord.ext.commands.context.Context, user_name
     вызова указан его зарегистрированный ник. Если ник неправильный, то будет выведена текстовая шибка
     """
     # создаю экземпляр класса
-    plot_object = statistics_output.dice_statistics.general_plots.AllRollsPlotFormer(user_name=user_name)
+    plot_object = statistics_output.dice_statistics.roll_plots.AllRollsPlotFormer(user_name=user_name)
     plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
 
     if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
@@ -133,7 +133,7 @@ async def display_mean_roll_by_session(ctx: discord.ext.commands.context.Context
     """
     """
 
-    plot_object = statistics_output.dice_statistics.general_plots.MeanRollsByTimePlotFormer(datetime_type=datetime)
+    plot_object = statistics_output.dice_statistics.roll_plots.MeanRollsByTimePlotFormer(datetime_type=datetime)
     plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
 
     if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
@@ -147,7 +147,7 @@ async def display_crit_luck(ctx: discord.ext.commands.context.Context):
     """
     """
 
-    plot_object = statistics_output.dice_statistics.general_plots.CritRatioPlotFormer(crit_type='luck')
+    plot_object = statistics_output.dice_statistics.roll_plots.CritRatioPlotFormer(crit_type='luck')
     plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
 
     if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
@@ -161,7 +161,7 @@ async def display_crit_failure(ctx: discord.ext.commands.context.Context):
     """
     """
 
-    plot_object = statistics_output.dice_statistics.general_plots.CritRatioPlotFormer(crit_type='failure')
+    plot_object = statistics_output.dice_statistics.roll_plots.CritRatioPlotFormer(crit_type='failure')
     plot_object.control_plot_forming()  # выполняю основной формирующий метод после который создаст картинку графика
 
     if not plot_object.is_error:  # если ошибки нет, то в чат загружается картинка
