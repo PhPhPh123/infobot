@@ -209,10 +209,12 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
         """
         Данный метод формирует pandas датасэт, он обязателен и наследуется от абстрактного метода базового класса
         """
+        # привожу таймстэмп изъятый из базы данных к типу даты и изымаю ее для группировки
         dataset = self.raw_dataset.groupby([pd.to_datetime(self.raw_dataset['roll_timestamp']).dt.date,
                                             self.raw_dataset['user_name']]) \
-                                  .agg({'dice_result': 'mean'}).reset_index()
+                                  .agg({'dice_result': 'mean'}).reset_index()  # подсчитываю среднее результат бросков
 
+        # меняю названия столбцов
         dataset = dataset.rename(columns={
                                           'user_name': 'Игрок',
                                           'dice_result': 'Среднее значение кубика'})
@@ -225,6 +227,7 @@ class MeanRollsByTimePlotFormer(BasePlotFormer):
         """
         sns.set_style("darkgrid")  # выставляю стиль с сеткой
 
+        # строю график в разрезе игроков
         ax = sns.lineplot(data=self.dataset, x='roll_timestamp', y='Среднее значение кубика', hue='Игрок')
 
         # выставляю нужные параметры
