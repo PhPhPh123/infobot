@@ -1,12 +1,10 @@
 import exceptions
-import other_mechanics.game_sessions.game_sessions
 
 if __name__ == '__main__':
     raise exceptions.NotCallableModuleException
 from bot_settings import *
 
 from commands import static_answer_messages
-from other_mechanics.game_sessions import game_sessions
 
 
 @infobot.command()
@@ -29,27 +27,6 @@ async def helpme(ctx: discord.ext.commands.context.Context, commands_group='all'
         await ctx.send(message_dict[commands_group])
     else:  # иначе выводится сообщение об ошибке
         await ctx.send('Неверная группа команд')
-
-
-@infobot.command()
-@commands.has_permissions(administrator=True)
-async def start_game_session(ctx: discord.ext.commands.context.Context, game_hours):
-    """
-    """
-    if_error_message = other_mechanics.game_sessions.game_sessions.control_writing(game_hours)
-
-    if if_error_message:
-        await ctx.send(if_error_message)
-    else:
-        pass
-
-
-@infobot.command()
-@commands.has_permissions(administrator=True)
-async def start_new_game(ctx: discord.ext.commands.context.Context):
-    """
-    """
-    pass
 
 
 @infobot.event

@@ -16,6 +16,7 @@ if __name__ == '__main__':
     from commands.other_commands import *
     from commands.special_loot_commands import *
     from commands.roll_commands import *
+    from commands.game_session_commands import *
 
     infobot.run(settings['token'])  # запуск основного асинхронного цикла бота
 else:
