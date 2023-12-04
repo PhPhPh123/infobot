@@ -125,6 +125,20 @@ def connect_to_dice_roll_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Connec
     return cursor, connect
 
 
+def connect_to_game_sessions_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
+    """
+    Функция, которая подключается к базе данных, хранящей статистику по брошенным игроками игровым кубикам
+    :return: объекты курсора и коннекта
+    """
+    db_name = 'other_mechanics\\game_sessions\\game_sessions_db'
+    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
+    connect = sqlite3.connect(abspath)  # Подключение к базе данных
+    connect.row_factory = sqlite3.Row
+    cursor = connect.cursor()  # Создание курсора
+
+    return cursor, connect
+
+
 """
 Глобальное подключение логирования
 """
@@ -174,6 +188,9 @@ global_consumables_statistics_sqlite3_cursor, global_consumables_statistics_sqli
 
 # Объекты курсора и коннекта для доступа в базу данных статистики по броскам кубика
 global_dice_roll_statistics_sqlite3_cursor, global_dice_roll_statistics_sqlite3_connect = connect_to_dice_roll_statistics_db()
+
+# Объекты курсора и коннекта для доступа в базу данных статистики по проведенным игровым сессиям
+global_game_sessions_sqlite3_cursor, global_game_sessions_sqlite3_connect = connect_to_game_sessions_db()
 
 # Объект замыкания для хранения статистики по новостям и выводу ее при завершении сессии новостей
 # хранит значения в течении всей сессии бота вплоть до его отключения
