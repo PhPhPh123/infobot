@@ -33,7 +33,7 @@ from time import time, strftime, localtime
 from loguru import logger
 
 # импорт модуля статистики сессий
-from statistics_output.session_stats import count_news_statistics
+from statistics_output.news_session_stats import count_news_statistics
 
 
 def get_bot_dir() -> str:

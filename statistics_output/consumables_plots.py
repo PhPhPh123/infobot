@@ -47,7 +47,6 @@ class ConsumablesPlotsFormer:
             self.is_error = True
             self.error_message = 'Топ вывода должны быть целым числом больше нуля'
 
-
     def execute_db(self):
         """
         Данный метод осуществляет запрос в базу данных и преобразует сырые данные так, чтобы они представляли собой
@@ -72,7 +71,6 @@ class ConsumablesPlotsFormer:
                                                           'event_id': 'Количество предметов'})
         # сортирую по количеству предметов
         grouped_dataset = grouped_dataset.sort_values(by='Количество предметов')
-        print(self.top_value)
         if self.top_value:
             grouped_dataset = grouped_dataset.tail(self.top_value)
 
