@@ -18,7 +18,8 @@ async def helpme(ctx: discord.ext.commands.context.Context, commands_group='all'
     """
     message_dict = {'eco': static_answer_messages.economic_commands,
                     'roll': static_answer_messages.roll_commands,
-                    'items': static_answer_messages.art_and_special_items_commands}
+                    'items': static_answer_messages.art_and_special_items_commands,
+                    'session': static_answer_messages.game_session_commands}
 
     if commands_group == 'all':  # по умолчанию выводит список всех групп команд
         for message in message_dict.items():
