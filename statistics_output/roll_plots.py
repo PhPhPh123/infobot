@@ -73,7 +73,7 @@ class BasePlotFormer:
         Данный метод осуществляет запрос в базу данных и преобразует сырые данные так, чтобы они представляли собой
         словарь
         """
-        result = global_dice_roll_statistics_sqlite3_cursor.execute(self.query_str)  # собственно экзекьют в базу
+        result = global_dice_roll_statistics_cursor.execute(self.query_str)  # собственно экзекьют в базу
         result = [dict(row) for row in result]  # преобразование в список словарей
         self.raw_dataset = pd.DataFrame(result)  # преобразую сырые данные в сырой датасэт pandas
 
@@ -136,7 +136,7 @@ class AllRollsPlotFormer(BasePlotFormer):
         Данный метод проверяет, что выбранный игрок(если он выбран), зарегистрирован в таблице gamers
         """
         gamers_str = 'SELECT * FROM gamers'
-        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)  # запрос в бд
+        all_gamers = global_dice_roll_statistics_cursor.execute(gamers_str)  # запрос в бд
         all_gamers = [elem[1] for elem in all_gamers]  # создаю список именами игроков
 
         if self.user_name not in all_gamers:

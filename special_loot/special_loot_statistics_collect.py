@@ -17,8 +17,8 @@ def write_to_consumable_statistics(loot_data: dict) -> None:
     """
     stat_string = form_consumable_string(loot_data)  # формирую строку запроса в БД
 
-    global_consumables_statistics_sqlite3_cursor.execute(stat_string)  # записываю в базу
-    global_consumables_statistics_sqlite3_connect.commit()
+    global_consumables_statistics_cursor.execute(stat_string)  # записываю в базу
+    global_consumables_statistics_connect.commit()
 
 
 def form_consumable_string(loot_data: dict) -> str:

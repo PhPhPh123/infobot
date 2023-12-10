@@ -37,7 +37,7 @@ class SessionHoursPlotFormer:
         """
         self.query_str = 'SELECT * FROM sessions'
 
-        result = global_game_sessions_sqlite3_cursor.execute(self.query_str)  # собственно экзекьют в базу
+        result = global_game_sessions_cursor.execute(self.query_str)  # собственно экзекьют в базу
         result = [dict(row) for row in result]  # преобразование в список словарей
         self.raw_dataset = pd.DataFrame(result)  # преобразую сырые данные в сырой датасэт pandas
 

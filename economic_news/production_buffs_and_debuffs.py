@@ -56,7 +56,7 @@ INNER JOIN import_needs ON worlds.needs_name == import_needs.needs_name
 INNER JOIN danger_zone ON worlds.danger_name = danger_zone.danger_name
 WHERE export_overproduction.value_level NOT NULL AND import_needs.value_level NOT NULL"""
 
-    tuple_from_db = tuple(global_bd_sqlite3_cursor.execute(select_string))
+    tuple_from_db = tuple(global_main_db_cursor.execute(select_string))
 
     return tuple_from_db
 
@@ -143,8 +143,8 @@ def update_db_with_production_changes(world_list: list, table_name: str, column_
         WHERE world_name == '{world[0]}'
         """
 
-        global_bd_sqlite3_cursor.execute(query_string)
-        global_bd_sqlite3_connect.commit()
+        global_main_db_cursor.execute(query_string)
+        global_main_db_connect.commit()
 
 
 def form_string_answer(export_list: list, import_list: list) -> str:

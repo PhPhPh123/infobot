@@ -54,7 +54,7 @@ class ConsumablesPlotsFormer:
         """
         self.query_str = """SELECT * FROM main_log"""
 
-        result = global_consumables_statistics_sqlite3_cursor.execute(self.query_str)  # собственно экзекьют в базу
+        result = global_consumables_statistics_cursor.execute(self.query_str)  # собственно экзекьют в базу
         result = [dict(row) for row in result]  # преобразование в список словарей
         self.raw_dataset = pd.DataFrame(result)  # преобразую сырые данные в сырой датасэт pandas
 

@@ -40,7 +40,7 @@ class RangeWeapon(Weapon):
         :return: численный модификатор дистанции стрельбы
         """
         # достаю из БД базовый показатель парирования, [0][0] чтобы вытащить значение из кортежа с кортежами
-        base_range = tuple(global_artifacts_sqlite3_cursor.execute(f'''
+        base_range = tuple(global_artifacts_cursor.execute(f'''
                 SELECT art_range FROM artifact_range_weapon
                 WHERE art_type_name == '{self.art_type}'
                         '''))[0][0]
@@ -64,7 +64,7 @@ class RangeWeapon(Weapon):
         """
 
         # достаю из БД базовый показатель скорости стрельбы, [0][0] чтобы вытащить значение из кортежа с кортежами
-        base_attack_speed = tuple(global_artifacts_sqlite3_cursor.execute(f'''
+        base_attack_speed = tuple(global_artifacts_cursor.execute(f'''
                 SELECT art_attack_speed FROM artifact_range_weapon
                 WHERE art_type_name == '{self.art_type}'
                 '''))[0][0]

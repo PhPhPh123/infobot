@@ -28,7 +28,7 @@ def choise_deal_and_execute_in_db(goods_name: str, name_deal: str) -> None:
     elif name_deal == 'export':
         select_systems = form_export_query(goods_name)
 
-    tuple_with_worlds = tuple(global_bd_sqlite3_cursor.execute(select_systems))
+    tuple_with_worlds = tuple(global_main_db_cursor.execute(select_systems))
 
     form_answer(tuple_with_worlds, name_deal)
 

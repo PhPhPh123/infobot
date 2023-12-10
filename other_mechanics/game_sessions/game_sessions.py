@@ -30,5 +30,5 @@ def write_statistics(game_hours) -> None:
     INSERT INTO sessions (session_timestamp, session_hours)
     VALUES (datetime('now'), {game_hours})
     """
-    global_game_sessions_sqlite3_cursor.execute(query_string)
-    global_game_sessions_sqlite3_connect.commit()
+    global_game_sessions_cursor.execute(query_string)
+    global_game_sessions_connect.commit()

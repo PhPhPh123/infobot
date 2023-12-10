@@ -19,7 +19,7 @@ def form_tuple_in_db(excel_answer=False) -> list:
     """
 
     # Экзекьют в БД для получения кортежей
-    access_tuple = tuple(global_bd_sqlite3_cursor.execute("SELECT world_name, access_level FROM worlds WHERE access_level > 0"))
+    access_tuple = tuple(global_main_db_cursor.execute("SELECT world_name, access_level FROM worlds WHERE access_level > 0"))
 
     # Отправка кортежа из кортежей для формирования из него списка из списков и добавления во вложенные списки данных
     # о родительских системах миров
@@ -65,7 +65,7 @@ def select_system(world_name: str) -> str:
     :param world_name: название мира
     :return: название системы
     """
-    selected_system = tuple(global_bd_sqlite3_cursor.execute(f"""
+    selected_system = tuple(global_main_db_cursor.execute(f"""
     SELECT systems.system_name FROM systems
     INNER JOIN systems_worlds_relations ON systems.system_name == systems_worlds_relations.system_name
     INNER JOIN worlds ON systems_worlds_relations.world_name == worlds.world_name

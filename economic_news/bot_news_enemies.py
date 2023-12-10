@@ -29,7 +29,7 @@ def form_enemy_news() -> str:
     LIMIT 1
     '''
 
-    enemy_news_tuple = tuple(global_bd_sqlite3_cursor.execute(select_enemy_string))
+    enemy_news_tuple = tuple(global_main_db_cursor.execute(select_enemy_string))
     str_enemy_news = form_string_answer(enemy_news_tuple)
 
     return str_enemy_news

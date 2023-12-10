@@ -22,7 +22,7 @@ def to_control_other_functions_and_returns_bot_answer(system_name: str) -> str:
     select_systems = form_query_to_db(system_name)
 
     # Получение кортежа с данными
-    system_tuple = tuple(global_bd_sqlite3_cursor.execute(select_systems))
+    system_tuple = tuple(global_main_db_cursor.execute(select_systems))
 
     # Формирование строкового ответа для бота
     system_ans = form_string_answer(system_tuple)

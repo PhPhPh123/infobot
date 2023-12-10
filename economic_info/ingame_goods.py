@@ -32,7 +32,7 @@ def execute_to_db(good_name) -> tuple:
     else:
         sql_string = f"SELECT * FROM ingame_common_goods WHERE good_name == '{good_name}'"
 
-    sql_tuple = tuple(global_bd_sqlite3_cursor.execute(sql_string))
+    sql_tuple = tuple(global_main_db_cursor.execute(sql_string))
 
     return sql_tuple
 

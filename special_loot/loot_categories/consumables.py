@@ -74,7 +74,7 @@ class Consumables:
         Данный метод выбирает список всех групп расходников
         """
         groups_query = 'SELECT group_name FROM groups'
-        groups = global_consumables_loot_sqlite3_cursor.execute(groups_query) # запрос в базу данных
+        groups = global_consumables_loot_cursor.execute(groups_query) # запрос в базу данных
         groups = [elem[0] for elem in groups]  # изымаю из кортежей значения названий групп и формирую список
         return groups
 
@@ -84,7 +84,7 @@ class Consumables:
         Данный метод выбирает список всех типов расходников
         """
         types_query = 'SELECT type_name FROM types'
-        types = global_consumables_loot_sqlite3_cursor.execute(types_query)  # запрос в базу данных
+        types = global_consumables_loot_cursor.execute(types_query)  # запрос в базу данных
         types = [elem[0] for elem in types]  # изымаю из кортежей значения названий типов и формирую список
         return types
 
@@ -125,7 +125,7 @@ class Consumables:
         LIMIT 1
         """
 
-        rows = global_consumables_loot_sqlite3_cursor.execute(item_select_string)  # осуществляется запрос в БД
+        rows = global_consumables_loot_cursor.execute(item_select_string)  # осуществляется запрос в БД
         item = [dict(row) for row in rows]  # формирую из ответа в базу данных словарь из ключ-значений, где ключ это
         # название столбца, а значение это значение аттрибута
         self.consumable_data = item[0]  # изымаю словарь из списка
@@ -158,7 +158,7 @@ def all_groups() -> str:
     Данный метод выбирает список всех групп расходников
     """
     groups_query = 'SELECT group_name FROM groups'
-    groups = global_consumables_loot_sqlite3_cursor.execute(groups_query)  # запрос в базу данных
+    groups = global_consumables_loot_cursor.execute(groups_query)  # запрос в базу данных
     groups = [elem[0] for elem in groups]  # изымаю из кортежей значения названий групп и формирую список
 
     answer_template = Template('''
@@ -177,7 +177,7 @@ def all_types() -> str:
     Данный метод выбирает список всех типов расходников
     """
     types_query = 'SELECT type_name FROM types'
-    types = global_consumables_loot_sqlite3_cursor.execute(types_query)  # запрос в базу данных
+    types = global_consumables_loot_cursor.execute(types_query)  # запрос в базу данных
     types = [elem[0] for elem in types]  # изымаю из кортежей значения названий типов и формирую список
 
     answer_template = Template('''

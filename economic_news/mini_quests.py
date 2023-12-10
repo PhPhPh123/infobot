@@ -36,7 +36,7 @@ def choise_quest_group() -> str:
     Данная функция выбирает случайную группу квеста, например artifact_quest, kill_quest, delivery_quest.
     Она работает с глобальной межмодульной переменной курсора
     """
-    quests = tuple(global_bd_sqlite3_cursor.execute("SELECT group_name FROM quest_group"))
+    quests = tuple(global_main_db_cursor.execute("SELECT group_name FROM quest_group"))
 
     # Квестовые группы добавляются в список
     quests_list = []
@@ -101,7 +101,7 @@ class QuestFactory:
         WHERE worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
-        artifact_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(artifact_quest_query))[0]
+        artifact_quest_tuple = tuple(global_main_db_cursor.execute(artifact_quest_query))[0]
 
         assert artifact_quest_tuple, 'база должна вернуть непустое значение'
 
@@ -129,7 +129,7 @@ class QuestFactory:
         AND worlds.class_name != 'Мир-Горка-Стопудова' AND worlds.class_name != 'Мир-смерти'
         ORDER BY RANDOM()
         LIMIT 1'''
-        kill_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(kill_quest_query))[0]
+        kill_quest_tuple = tuple(global_main_db_cursor.execute(kill_quest_query))[0]
 
         assert kill_quest_tuple, 'база должна вернуть непустое значение'
 
@@ -154,7 +154,7 @@ class QuestFactory:
         ORDER BY RANDOM()
         LIMIT 1'''
 
-        delivery_quest_tuple = tuple(global_bd_sqlite3_cursor.execute(delivery_quest_query))[0]
+        delivery_quest_tuple = tuple(global_main_db_cursor.execute(delivery_quest_query))[0]
         assert delivery_quest_tuple, 'база должна вернуть непустое значение'
 
         return delivery_quest_tuple
@@ -183,7 +183,7 @@ class QuestFactory:
 
         # Здесь, в отличии от остальных квестов, я получаю полностью кортеж с кортежами, а не достаю с кортежа значение
         # с нулевым индексом
-        delivery_escort_tuple = tuple(global_bd_sqlite3_cursor.execute(escort_quest_query))
+        delivery_escort_tuple = tuple(global_main_db_cursor.execute(escort_quest_query))
         assert delivery_escort_tuple, 'база должна вернуть непустое значение'
 
         return delivery_escort_tuple
@@ -383,7 +383,7 @@ class ArtifactQuest(Quest):
         LIMIT 1"""
 
         # Достается из БД кортеж, используя глобальную переменную курсора
-        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_main_db_cursor.execute(quest_query))
         assert quest_tuple, f'база должна вернуть непустое значение. Неверный запрос: {quest_query}'
 
         self.quest_subtype = quest_tuple[0][0]  # по факту это quest_patterns.quest_name
@@ -497,7 +497,7 @@ class KillQuest(Quest, RewardMixin):
         LIMIT 1"""
 
         # Достается из БД кортеж, используя глобальную переменную курсора
-        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_main_db_cursor.execute(quest_query))
         assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]  # по факту это quest_patterns.quest_name
@@ -583,7 +583,7 @@ class DeliveryQuest(Quest):
         LIMIT 1"""
 
         # Достается из БД кортеж, используя глобальную переменную курсора
-        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_main_db_cursor.execute(quest_query))
         assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]  # по факту это quest_patterns.quest_name
@@ -671,7 +671,7 @@ class EscortQuest(Quest, RewardMixin):
         LIMIT 1"""
 
         # Достается из БД кортеж, используя глобальную переменную курсора
-        quest_tuple = tuple(global_bd_sqlite3_cursor.execute(quest_query))
+        quest_tuple = tuple(global_main_db_cursor.execute(quest_query))
         assert quest_tuple, 'база должна вернуть непустое значение'
 
         self.quest_subtype = quest_tuple[0][0]  # по факту это quest_patterns.quest_name

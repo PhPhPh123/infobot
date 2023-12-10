@@ -46,7 +46,7 @@ class DiceRollerWithStatistics:
         Данный статический метод собирает id(discord-а) и имя игровой из базы данных метод
         """
         gamers_str = 'SELECT * FROM gamers'
-        all_gamers = global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str)  # запрос в бд
+        all_gamers = global_dice_roll_statistics_cursor.execute(gamers_str)  # запрос в бд
         all_gamers_ids = [elem[0] for elem in all_gamers]  # создаю список с discord id игроков
         return all_gamers_ids, list(all_gamers)
 
@@ -57,7 +57,7 @@ class DiceRollerWithStatistics:
         gamers_str = f"SELECT user_name FROM gamers WHERE discord_user_id = {self.user_id}"
 
         # изымаю имя из кортежа с кортежами
-        user_name = list(global_dice_roll_statistics_sqlite3_cursor.execute(gamers_str))[0][0]
+        user_name = list(global_dice_roll_statistics_cursor.execute(gamers_str))[0][0]
         self.user_name = user_name
 
     def verify_user_input(self):
@@ -165,8 +165,8 @@ class DiceRollerWithStatistics:
            {self.is_mega_roll}, {self.is_common_roll}, {self.mega_roll_success},
            {self.crit_modifier})
         """
-        global_dice_roll_statistics_sqlite3_cursor.execute(insert_query_string)
-        global_dice_roll_statistics_sqlite3_connect.commit()
+        global_dice_roll_statistics_cursor.execute(insert_query_string)
+        global_dice_roll_statistics_connect.commit()
 
     def control_roll_forming(self):
         self.verify_user_input()

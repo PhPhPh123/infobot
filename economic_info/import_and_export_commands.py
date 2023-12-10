@@ -34,7 +34,7 @@ def choice_deal_and_returns_bot_answer(world_name: str, deal_name: str) -> str:
         select_systems = form_query(world_name, deal_name)
 
     # 2 этап
-    world_tuple = tuple(global_bd_sqlite3_cursor.execute(select_systems))
+    world_tuple = tuple(global_main_db_cursor.execute(select_systems))
 
     # 3 этап
     trade_answer = form_string(world_tuple, deal_name)

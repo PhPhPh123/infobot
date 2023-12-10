@@ -32,111 +32,9 @@ from datetime import date
 from time import time, strftime, localtime
 from loguru import logger
 
-# импорт модуля статистики сессий
-from statistics_output.news_session_stats import count_news_statistics
 
-
-def get_bot_dir() -> str:
-    """
-    Функция собирающая абсолютный путь к текущей директории
-    :return: возвращает этот путь
-    """
-    abs_path = os.path.abspath(__file__)  # полный путь к файлу скрипта
-    return os.path.dirname(abs_path)
-
-
-def connect_to_main_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
-    настроек
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'infobot_db.db'
-    abspath = get_bot_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    cursor = connect.cursor()  # Создание курсора
-    return cursor, connect
-
-
-def connect_to_artifact_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных и создает объекты курсора и коннекта, абсолютный путь берет из файла
-    настроек
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'artifacts\\artifacts.db'
-    abspath = get_bot_dir() + os.path.sep + db_name  # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    cursor = connect.cursor()  # Создание курсора
-    return cursor, connect
-
-
-def connect_to_unique_news_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к второстепенной базе данных unique_news.db, хранящей уникальные новости
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'separatly_started_modules\\unique_news\\unique_news.db'
-    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    cursor = connect.cursor()  # Создание курсора
-    return cursor, connect
-
-
-def connect_to_consumables_loot_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных хранящей информацию по расходуемым предметам
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'special_loot\\consumables_loot_db'
-    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    connect.row_factory = sqlite3.Row
-    cursor = connect.cursor()  # Создание курсора
-
-    return cursor, connect
-
-
-def connect_to_consumables_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных, хранящей статистику по выданным расходуемым предметам
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'special_loot\\consumables_statistics_db'
-    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    connect.row_factory = sqlite3.Row
-    cursor = connect.cursor()  # Создание курсора
-
-    return cursor, connect
-
-
-def connect_to_dice_roll_statistics_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных, хранящей статистику по брошенным игроками игровым кубикам
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'roll_mechanics\\roll_stat_db'
-    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    connect.row_factory = sqlite3.Row
-    cursor = connect.cursor()  # Создание курсора
-
-    return cursor, connect
-
-
-def connect_to_game_sessions_db() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
-    """
-    Функция, которая подключается к базе данных, хранящей статистику по брошенным игроками игровым кубикам
-    :return: объекты курсора и коннекта
-    """
-    db_name = 'other_mechanics\\game_sessions\\game_sessions_db'
-    abspath = get_bot_dir() + os.path.sep + db_name   # Формирование вабсолютного пути для файла базы данных
-    connect = sqlite3.connect(abspath)  # Подключение к базе данных
-    connect.row_factory = sqlite3.Row
-    cursor = connect.cursor()  # Создание курсора
-
-    return cursor, connect
+from statistics_output.news_session_stats import count_news_statistics  # импорт модуля статистики сессий
+from db_connects import *  # импорт функций подключений к базам данных
 
 
 """
@@ -166,34 +64,36 @@ logger.add('logs_and_temp_files/quests_description.log', format='{time}, {level}
 Глобальные межмодульные переменные
 """
 # Объекты курсора и коннекта для доступа в основную базу данных
-global_bd_sqlite3_cursor, global_bd_sqlite3_connect = connect_to_main_db()
+global_main_db_cursor, global_main_db_connect = connect_sqlite(db_path='infobot_db.db')
 
 # Объекты курсора и коннекта для доступа во второстепенную базу уникальных новостей
 # База динамически формируется при первом запуске модуля unique_news_main поэтому может не существовать. В данном
 # случае создание объектов курсора и соединения пропускаются, структуры, работающие с данными глобальными переменными
 # работают через try\except
 if os.path.exists(get_bot_dir() + os.path.sep + 'separatly_started_modules\\unique_news\\unique_news.db'):
-    global_unique_news_cursor, global_unique_news_connect = connect_to_unique_news_db()
+    global_unique_news_cursor, global_unique_news_connect = connect_sqlite('separatly_started_modules\\unique_news\\unique_news.db')
 else:
     pass
 
 # Объекты курсора и коннекта для доступа в базу данных лута
-global_artifacts_sqlite3_cursor, global_artifacts_sqlite3_connect = connect_to_artifact_db()
+global_artifacts_cursor, global_artifacts_connect = connect_sqlite('artifacts\\artifacts.db')
 
 # Объекты курсора и коннекта для доступа в базу данных лута
-global_consumables_loot_sqlite3_cursor, global_consumables_loot_sqlite3_connect = connect_to_consumables_loot_db()
+global_consumables_loot_cursor, global_consumables_loot_connect = connect_sqlite('special_loot\\consumables_loot_db',
+                                                                                 row_factory=True)
 
 # Объекты курсора и коннекта для доступа в базу данных статистики по луту
-global_consumables_statistics_sqlite3_cursor, global_consumables_statistics_sqlite3_connect = connect_to_consumables_statistics_db()
+global_consumables_statistics_cursor, global_consumables_statistics_connect = connect_sqlite('special_loot\\consumables_statistics_db',
+                                                                                             row_factory=True)
 
 # Объекты курсора и коннекта для доступа в базу данных статистики по броскам кубика
-global_dice_roll_statistics_sqlite3_cursor, global_dice_roll_statistics_sqlite3_connect = connect_to_dice_roll_statistics_db()
+global_dice_roll_statistics_cursor, global_dice_roll_statistics_connect = connect_sqlite('roll_mechanics\\roll_stat_db',
+                                                                                         row_factory=True)
 
 # Объекты курсора и коннекта для доступа в базу данных статистики по проведенным игровым сессиям
-global_game_sessions_sqlite3_cursor, global_game_sessions_sqlite3_connect = connect_to_game_sessions_db()
+global_game_sessions_cursor, global_game_sessions_connect = connect_sqlite('other_mechanics\\game_sessions\\game_sessions_db',
+                                                                           row_factory=True)
 
 # Объект замыкания для хранения статистики по новостям и выводу ее при завершении сессии новостей
 # хранит значения в течении всей сессии бота вплоть до его отключения
 global_news_statistics = count_news_statistics()
-
-

@@ -41,7 +41,7 @@ class CloseCombatWeapon(Weapon):
         luck_modifier = random.randint(1, 100)
         parry_modifier = 0  # иницилизация параметра дополнительного изменения парирования
 
-        art_parry = tuple(global_artifacts_sqlite3_cursor.execute(f'''
+        art_parry = tuple(global_artifacts_cursor.execute(f'''
                     SELECT art_parry_bonus FROM artifact_close_combat
                     WHERE art_type_name == '{self.art_type}'
 '''))[0][0]  # достаю из БД базовый показатель парирования, [0][0] чтобы вытащить значение из кортежа с кортежами

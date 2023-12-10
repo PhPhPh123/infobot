@@ -27,7 +27,7 @@ def execute_sql() -> tuple:
     @return: кортеж с кортежами товаров
     """
     sql_string = "SELECT export_name FROM trade_export WHERE export_name NOT IN ('Экспорт-отсутствует', 'Ваааааах!')"
-    all_goods_tuple = tuple(global_bd_sqlite3_cursor.execute(sql_string))
+    all_goods_tuple = tuple(global_main_db_cursor.execute(sql_string))
     return all_goods_tuple
 
 
