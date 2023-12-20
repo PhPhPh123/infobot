@@ -46,7 +46,9 @@ def choise_class_objects(art_user_dict: dict) -> str:
     if art_user_dict['грейд'] == 'зеленый' and art_user_dict['тип'] in excluded_artifact_types:
         return 'С зеленым грейдом нельзя создавать данный тип артефакта т.к. он слишком мощный'
     if art_user_dict['грейд'] in 'зеленый' and art_user_dict['группа'] == 'бижутерия':
-        return 'Бижутерия с зеленым грейдом не роллится обычным способом, только если на рандоме очень повезет'
+        return 'Бижутерия с зеленым грейдом не роллится обычным способом, только если на рандоме повезет'
+    if art_user_dict['грейд'] != 'красный' and art_user_dict['тип'] == 'реликвия':
+        return 'Реликвии могут быть лишь красного грейда либо выпасть на рандоме если повезет'
 
     #  float модификатор, который используется для умножения некоторых числовых характеристик артефактов
     art_user_dict['грейд_модификатор'] = count_grade_modifier(art_user_dict['грейд'])
@@ -59,7 +61,7 @@ def choise_class_objects(art_user_dict: dict) -> str:
     и создает экземляр соответствующего класса отправляя в них их модификатор грейда, тип артефакта(если выбран, если
     не выбран то random)
     """
-
+    print(art_user_dict)
     if art_user_dict['группа'] == 'броня':
         art_object = Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
                            art_user_dict['префикс'], art_user_dict['суффикс'])
@@ -67,7 +69,6 @@ def choise_class_objects(art_user_dict: dict) -> str:
     elif art_user_dict['группа'] == 'оружие-дб':
         art_object = RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
                                  art_user_dict['префикс'], art_user_dict['суффикс'])
-
     elif art_user_dict['группа'] == 'оружие-бб':
         art_object = CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
                                        art_user_dict['префикс'], art_user_dict['суффикс'])
@@ -76,7 +77,7 @@ def choise_class_objects(art_user_dict: dict) -> str:
 
     elif art_user_dict['группа'] == 'бижутерия':
         art_object = Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                             art_user_dict['префикс'], art_user_dict['суффикс'])
+                             art_user_dict['префикс'], art_user_dict['суффикс'], grade_name=art_user_dict['грейд'])
 
     elif art_user_dict['группа'] == 'random':
         rand_list = [Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
@@ -87,7 +88,7 @@ def choise_class_objects(art_user_dict: dict) -> str:
                                        art_user_dict['префикс'], art_user_dict['суффикс'])]
         if art_user_dict['грейд'] not in ('зеленый', 'синий'):
             rand_list.append(Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                                     art_user_dict['префикс'], art_user_dict['суффикс']))
+                                     art_user_dict['префикс'], art_user_dict['суффикс'], grade_name=art_user_dict['грейд']))
 
         art_object = random.choice(rand_list)
 
@@ -179,6 +180,7 @@ def form_string_answer(artifact_dict: dict) -> str:
     # Создание строк, характерных для всех артефактов независимо от группы
     final_string += f"Требования силы: {artifact_dict['str_requeriments']}\n"
     final_string += f"Вес: {artifact_dict['weight']}\n"
+
     final_string += f"Особенность: 1 раз в сессию удача для навыка {artifact_dict['unique_prefix'][0][1]}\n"
     final_string += f"Особенность: {artifact_dict['unique_suffix'][0][1]}"
 

@@ -16,15 +16,16 @@ class Artifact:
     не вызывается, лишь содержит наследуемые методы.
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
-    def __init__(self, grade_modifier, prefix):
+    def __init__(self, grade_modifier, prefix, grade_name=None):
 
         # Префикс назначается все артефактам независимо от их типа и вида
         self.unique_prefix = self.get_prefix(prefix)
         self.grade_modifier = grade_modifier
 
-        self.name = None
-        self.art_type = None
-        self.group_name = None
+        self.grade = grade_name  # параметр грейда нужен артефакта, для отсеивания неподходящих суффиксов или типов
+        self.name = None  # формирующееся имя артефакта, складывается из: префикс + название базы + суффикс
+        self.group_name = None  # группа артефакта(например броня, оружие-бб, оружие-дб)
+        self.art_type = None  # тип артефакта (например двуручный-пиломёч, силовая-броня, амулет)
         self.weight = 1
         self.unique_suffix = ''
         self.str_requeriments = None
@@ -41,11 +42,13 @@ class Artifact:
         # данный кортеж и проверка нужны чтобы исключить некоторые особо сильные виды артефактов для низкого грейда
         # чтобы игроки не получали их на слишком ранних этапах игры
         if self.grade_modifier < 1.10:
-            excluded_artifact_types = """'одноручный-силовой-меч', 'двуручный-силовой меч',
+            excluded_artifact_types.join("""'одноручный-силовой-меч', 'двуручный-силовой меч',
                                        'мельтаган', 'мельта-пистолет',
                                        'болтер', 'болт-пистолет',
                                        'плазмаган', 'плазма-пистолет',
-                                       'силовая-броня'"""
+                                       'силовая-броня'""")
+        if self.group_name != 'красный':
+            excluded_artifact_types.join(",'реликвия'")
 
         chosen_artifact = tuple(global_artifacts_cursor.execute(f'''
     SELECT art_type_name FROM {table_name}
