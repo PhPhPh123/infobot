@@ -73,8 +73,20 @@ class BasePlotFormer:
         Данный метод осуществляет запрос в базу данных и преобразует сырые данные так, чтобы они представляли собой
         словарь
         """
-        result = global_dice_roll_statistics_cursor.execute(self.query_str)  # собственно экзекьют в базу
+        try:  # пытаюсь выполнить экзекьют в бд
+            result = global_dice_roll_statistics_cursor.execute(self.query_str)  # собственно экзекьют в базу
+        except sqlite3.Error as error:  # Если в базе данных вызникла ошибка
+            self.is_error = True  # флаг, определяющий ошибку
+            self.error_message = "Вылетела ошибка в базе данных"  # строка для ответа в чат в случае если запрос ошибочен
+            print(f'Вылетела ошибка в базе данных {error}')
+            return None  # прекращаю работу метода
+
         result = [dict(row) for row in result]  # преобразование в список словарей
+
+        if not result:
+            self.is_error = True  # флаг, определяющий ошибку
+            self.error_message = "База данных выдала пустой ответ"
+
         self.raw_dataset = pd.DataFrame(result)  # преобразую сырые данные в сырой датасэт pandas
 
 
@@ -136,10 +148,23 @@ class AllRollsPlotFormer(BasePlotFormer):
         Данный метод проверяет, что выбранный игрок(если он выбран), зарегистрирован в таблице gamers
         """
         gamers_str = 'SELECT * FROM gamers'
-        all_gamers = global_dice_roll_statistics_cursor.execute(gamers_str)  # запрос в бд
+
+        try:
+            all_gamers = global_dice_roll_statistics_cursor.execute(gamers_str)  # запрос в бд
+        except sqlite3.Error as error:  # Если в базе данных вызникла ошибка
+            self.is_error = True
+            self.error_message = "Вылетела ошибка в базе данных" # строка для ответа в чат в случае если запрос ошибочен
+            # в чат выводится сообщение об ошибке, а в принт более детализированная информация
+            print(f'Вылетела ошибка в базе данных {error}')
+            return None  # прекращаю работу метода
+
         all_gamers = [elem[1] for elem in all_gamers]  # создаю список именами игроков
 
-        if self.user_name not in all_gamers:
+        if not all_gamers:  # если список пустой значит игроков в базе нет
+            self.is_error = True
+            self.error_message = f'Не зарегистрировано ни одного игрока'
+
+        if self.user_name not in all_gamers:  # если запрашиваемого игрока нет в базе данных
             self.is_error = True
             self.error_message = f'Неверное имя игрока. Введите один из этих вариантов: {all_gamers}'
 

@@ -40,7 +40,7 @@ class Jewelry(Artifact):
         Статический метод, получающий из БД случайный тип ювелирного бонуса на основе выбранного типа бижутерии
         :return: кортеж с ювелирным бонусом, где [0] элемент это название бонуса, а [0] это текст его описания
         """
-        print('startjew')
+
         jewerly_bonus = tuple(global_artifacts_cursor.execute(f'''
 SELECT * FROM unique_jewelry_bonuses
 INNER JOIN artifact_jewelry_unique_jewelry_bonuses_relations ON unique_jewelry_bonuses.jewelry_bonus_name == 
@@ -51,5 +51,5 @@ WHERE artifact_jewelry.art_type_name == '{self.art_type}'
 ORDER BY RANDOM()
 LIMIT 1'''))[0]  # поскольку из БД собираются кортежи с кортежами то из внешнего кортежа берется
         # вложенный кортеж с 2 значениями
-        print(jewerly_bonus)
+
         return jewerly_bonus

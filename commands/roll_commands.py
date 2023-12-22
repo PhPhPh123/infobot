@@ -131,6 +131,8 @@ async def display_all_rolls(ctx: discord.ext.commands.context.Context, user_name
 @infobot.command()
 async def display_mean_roll_by_session(ctx: discord.ext.commands.context.Context, datetime='week'):
     """
+    Данная команда выводит линейный график среднего значения выброшенного кубика в разрезе недель или месяцев,
+    по умолчанию недель
     """
 
     plot_object = statistics_output.roll_plots.MeanRollsByTimePlotFormer(datetime_type=datetime)
@@ -145,6 +147,8 @@ async def display_mean_roll_by_session(ctx: discord.ext.commands.context.Context
 @infobot.command()
 async def display_crit_luck(ctx: discord.ext.commands.context.Context):
     """
+    Данная команда выводит столбчатый график среднего значения по отношению критических удач к общему количеству
+    бросков в разрезе игроков
     """
 
     plot_object = statistics_output.roll_plots.CritRatioPlotFormer(crit_type='luck')
@@ -159,6 +163,8 @@ async def display_crit_luck(ctx: discord.ext.commands.context.Context):
 @infobot.command()
 async def display_crit_failure(ctx: discord.ext.commands.context.Context):
     """
+    Данная команда выводит столбчатый график среднего значения по отношению критических неудач к общему количеству
+    бросков в разрезе игроков
     """
 
     plot_object = statistics_output.roll_plots.CritRatioPlotFormer(crit_type='failure')

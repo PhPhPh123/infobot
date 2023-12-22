@@ -61,7 +61,7 @@ def choise_class_objects(art_user_dict: dict) -> str:
     и создает экземляр соответствующего класса отправляя в них их модификатор грейда, тип артефакта(если выбран, если
     не выбран то random)
     """
-    print(art_user_dict)
+
     if art_user_dict['группа'] == 'броня':
         art_object = Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
                            art_user_dict['префикс'], art_user_dict['суффикс'])
