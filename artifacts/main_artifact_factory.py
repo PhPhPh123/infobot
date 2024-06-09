@@ -179,7 +179,7 @@ def form_string_answer(artifact_dict: dict) -> str:
 
     # Создание строк, характерных для всех артефактов независимо от группы
     final_string += f"Требования силы: {artifact_dict['str_requeriments']}\n"
-    final_string += f"Вес: {artifact_dict['weight']}\n"
+    final_string += f"Weight: {artifact_dict['weight']}кг\n"
 
     final_string += f"Особенность: 1 раз в сессию удача для навыка {artifact_dict['unique_prefix'][0][1]}\n"
     final_string += f"Особенность: {artifact_dict['unique_suffix'][0][1]}"
