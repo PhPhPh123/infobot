@@ -170,7 +170,7 @@ def form_string_answer(artifact_dict: dict) -> str:
     if artifact_dict['group_name'] == 'artifact_armor':
         final_string += f"ВУ: {artifact_dict['armor']}\n"
         final_string += f"Модификатор уворота: {artifact_dict['evasion_modifier']}\n"
-        final_string += f"Модификатор скорости: {artifact_dict['speed_modifier']}\n"
+        final_string += f"Модификатор шагов(дистанция бега): {artifact_dict['speed_modifier']}\n"
 
     # Создание строк, характерных для бижутерии
     if artifact_dict['group_name'] == 'artifact_jewelry':

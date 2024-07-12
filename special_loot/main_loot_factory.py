@@ -3,6 +3,7 @@
 получении особого игрового лута
 """
 
+
 import exceptions
 
 if __name__ == '__main__':
