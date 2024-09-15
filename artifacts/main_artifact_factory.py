@@ -184,4 +184,10 @@ def form_string_answer(artifact_dict: dict) -> str:
     final_string += f"Особенность: 1 раз в сессию удача для навыка {artifact_dict['unique_prefix'][0][1]}\n"
     final_string += f"Особенность: {artifact_dict['unique_suffix'][0][1]}"
 
+    flamethrower_mec_string = """\n\nРаботает механика огнемёта: атаковать можно в конусе примерно 30градусов. 
+Количество затронутых целей и время горения зависит от разницы между точностью и кубом. 
+Можно попасть даже при неудаче"""
+    if artifact_dict['art_type'] == 'огнемёт':
+        final_string += flamethrower_mec_string
+
     return final_string
