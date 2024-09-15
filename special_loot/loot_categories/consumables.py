@@ -139,6 +139,9 @@ class Consumables:
 Эффект: {self.consumable_data['consumable_description']}
 Тип расходника: {self.consumable_data['type_name']}
 Связанная характеристика: {"отсутствует" if self.consumable_data['sub_list_element'] is None else self.consumable_data['sub_list_element']}
+{'Damage 8d(0-6 клетки)4d(7-12клеток)' if self.consumable_data['type_name'] == 'фраг-гранаты' else ''}
+{'Damage 6d(0-4клеток)4d(5-8клеток.Игнор половины ВУ' if self.consumable_data['type_name'] == 'крак-гранаты' else ''}
+
     '''
         self.answer_string = consumable_string
 
