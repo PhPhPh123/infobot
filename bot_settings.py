@@ -11,7 +11,7 @@ from imports_globalVariables import *
 '''
 Настройки бота и загрузка токена для него при старте модуля. Всё должно быть в глобальных переменных
 '''
-load_dotenv(find_dotenv())  # загрузка переменных окружения из файла ..env с токеном, именем и id бота
+load_dotenv(find_dotenv())  # загрузка переменных окружения из файла ._.text с токеном, именем и id бота
 token = os.environ['TOKEN']  # токен для доступа к боту
 bot_name = os.environ['NAME']  # имя бота в discord
 bot_id = os.environ['ID']  # id бота в discord
