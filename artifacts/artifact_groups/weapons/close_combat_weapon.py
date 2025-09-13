@@ -15,8 +15,8 @@ class CloseCombatWeapon(Weapon):
     Класс, отвечающий за оружие ближнего боя
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
-    def __init__(self, grade_modifier, weapon_type, prefix, suffix):
-        super().__init__(grade_modifier, prefix)
+    def __init__(self, grade_modifier, weapon_type, prefix, suffix, game_mode):
+        super().__init__(grade_modifier, prefix, game_mode)
         # Данные аттрибуты/методы идут из базовых классов
         self.group_name = 'artifact_close_combat'
         self.art_type = weapon_type if weapon_type != 'random' else self.get_random_type_of_artifact(self.group_name)
@@ -27,6 +27,7 @@ class CloseCombatWeapon(Weapon):
         self.prescision_modifier = self.get_prescision(self.group_name, self.art_type)
         self.get_weight()
         self.get_requiriments()
+        self.game_mode = game_mode
 
         # Собственные аттрибуты и методы
         self.parry_modifier = self.get_parry_bonus()

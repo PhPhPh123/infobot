@@ -61,34 +61,35 @@ def choise_class_objects(art_user_dict: dict) -> str:
     и создает экземляр соответствующего класса отправляя в них их модификатор грейда, тип артефакта(если выбран, если
     не выбран то random)
     """
-
+    print(art_user_dict['game_mode'])
     if art_user_dict['группа'] == 'броня':
         art_object = Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                           art_user_dict['префикс'], art_user_dict['суффикс'])
+                           art_user_dict['префикс'], art_user_dict['суффикс'], art_user_dict['game_mode'])
 
     elif art_user_dict['группа'] == 'оружие-дб':
         art_object = RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                                 art_user_dict['префикс'], art_user_dict['суффикс'])
+                                 art_user_dict['префикс'], art_user_dict['суффикс'], art_user_dict['game_mode'])
     elif art_user_dict['группа'] == 'оружие-бб':
         art_object = CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                                       art_user_dict['префикс'], art_user_dict['суффикс'])
+                                       art_user_dict['префикс'], art_user_dict['суффикс'], art_user_dict['game_mode'])
         # строчка ниже исключает бижутерию из ролла для зеленых типов артефактов, хотя, если очень повезет,
         # то можно будет получить
 
     elif art_user_dict['группа'] == 'бижутерия':
         art_object = Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                             art_user_dict['префикс'], art_user_dict['суффикс'], grade_name=art_user_dict['грейд'])
+                             art_user_dict['префикс'], art_user_dict['суффикс'], grade_name=art_user_dict['грейд'], game_mode=art_user_dict['game_mode'] )
 
     elif art_user_dict['группа'] == 'random':
+
         rand_list = [Armor(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                           art_user_dict['префикс'], art_user_dict['суффикс']),
+                           art_user_dict['префикс'], art_user_dict['суффикс'], art_user_dict['game_mode']),
                      RangeWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                                 art_user_dict['префикс'], art_user_dict['суффикс']),
+                                 art_user_dict['префикс'], art_user_dict['суффикс'], art_user_dict['game_mode']),
                      CloseCombatWeapon(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                                       art_user_dict['префикс'], art_user_dict['суффикс'])]
+                                       art_user_dict['префикс'], art_user_dict['суффикс'], art_user_dict['game_mode'])]
         if art_user_dict['грейд'] not in ('зеленый', 'синий'):
             rand_list.append(Jewelry(art_user_dict['грейд_модификатор'], art_user_dict['тип'],
-                                     art_user_dict['префикс'], art_user_dict['суффикс'], grade_name=art_user_dict['грейд']))
+                                     art_user_dict['префикс'], art_user_dict['суффикс'], grade_name=art_user_dict['грейд'], game_mode=art_user_dict['game_mode']))
 
         art_object = random.choice(rand_list)
 
@@ -133,7 +134,7 @@ def count_grade_modifier(grade: str) -> Optional[float]:
     elif luck_roll > 95:
         luck_mod = 0.9
 
-    return grade_modifier * balance_mod * luck_mod
+    return grade_modifier * balance_mod * luck_mod  # 1.5, 0.8
 
 
 def form_string_answer(artifact_dict: dict) -> str:

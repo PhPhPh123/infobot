@@ -16,7 +16,7 @@ class Artifact:
     не вызывается, лишь содержит наследуемые методы.
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
-    def __init__(self, grade_modifier, prefix, grade_name=None):
+    def __init__(self, grade_modifier, prefix, grade_name=None, game_mode="wh40k"):
 
         # Префикс назначается все артефактам независимо от их типа и вида
         self.unique_prefix = self.get_prefix(prefix)
@@ -29,6 +29,8 @@ class Artifact:
         self.weight = 1
         self.unique_suffix = ''
         self.str_requeriments = None
+        self.game_mode=game_mode
+        print(self.game_mode)
 
     def get_random_type_of_artifact(self, table_name: str) -> str:
         """
@@ -108,26 +110,45 @@ LIMIT 1'''
         # Префикс и суффикс идут как кортеж с кортежом с двумя значениями поэтому во вложенном кортеже, поэтому
         # [0][0] используются для извлечения строки названия
 
-        grade_pre_prefix = ''
-        if self.grade_modifier <= 0.85:
-            grade_pre_prefix = 'Низкокачественный'
-        elif 0.85 < self.grade_modifier <= 0.9:
-            grade_pre_prefix = 'Старенький'
-        elif 0.9 < self.grade_modifier <= 1:
-            grade_pre_prefix = 'Потёрный'
-        elif 1 < self.grade_modifier <= 1.1:
-            grade_pre_prefix = 'Обычный'
-        elif 1.1 < self.grade_modifier <= 1.2:
-            grade_pre_prefix = 'Качественный'
-        elif 1.2 < self.grade_modifier <= 1.3:
-            grade_pre_prefix = 'Отличный'
-        elif 1.3 < self.grade_modifier <= 1.4:
-            grade_pre_prefix = 'Архиотековский'
-        elif self.grade_modifier >= 1.4:
-            grade_pre_prefix = 'Тёмной эры технологий'
+        if self.game_mode:
+            grade_pre_prefix = ''
+            if self.grade_modifier <= 0.85:
+                grade_pre_prefix = 'Низкокачественный'
+            elif 0.85 < self.grade_modifier <= 0.9:
+                grade_pre_prefix = 'Поврежденный'
+            elif 0.9 < self.grade_modifier <= 1:
+                grade_pre_prefix = 'Потёрный'
+            elif 1 < self.grade_modifier <= 1.1:
+                grade_pre_prefix = 'Обычный'
+            elif 1.1 < self.grade_modifier <= 1.2:
+                grade_pre_prefix = 'Эльфийский'
+            elif 1.2 < self.grade_modifier <= 1.3:
+                grade_pre_prefix = 'Гномий'
+            elif 1.3 < self.grade_modifier <= 1.4:
+                grade_pre_prefix = 'Легендарный'
+            elif self.grade_modifier >= 1.4:
+                grade_pre_prefix = 'Божественный дар'
+        else:
+            grade_pre_prefix = ''
+            if self.grade_modifier <= 0.85:
+                grade_pre_prefix = 'Низкокачественный'
+            elif 0.85 < self.grade_modifier <= 0.9:
+                grade_pre_prefix = 'Старенький'
+            elif 0.9 < self.grade_modifier <= 1:
+                grade_pre_prefix = 'Потёрный'
+            elif 1 < self.grade_modifier <= 1.1:
+                grade_pre_prefix = 'Обычный'
+            elif 1.1 < self.grade_modifier <= 1.2:
+                grade_pre_prefix = 'Качественный'
+            elif 1.2 < self.grade_modifier <= 1.3:
+                grade_pre_prefix = 'Отличный'
+            elif 1.3 < self.grade_modifier <= 1.4:
+                grade_pre_prefix = 'Архиотековский'
+            elif self.grade_modifier >= 1.4:
+                grade_pre_prefix = 'Тёмной эры технологий'
 
         self.name = f'{grade_pre_prefix} {prefix[0][0]} {art_type} {suffix[0][0]}'
-
+        print(self.name)
     def get_weight(self) -> None:
         """
         Данный метод формирует вес артефакта на основе запроса в бд с применением случайного модификатора и модификатора

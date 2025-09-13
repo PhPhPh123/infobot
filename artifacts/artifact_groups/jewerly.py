@@ -17,7 +17,7 @@ class Jewelry(Artifact):
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
 
-    def __init__(self, grade_modifier: float, jewelry_type: str, prefix: str, suffix: str, grade_name: str):
+    def __init__(self, grade_modifier: float, jewelry_type: str, prefix: str, suffix: str, grade_name: str, game_mode):
         super().__init__(grade_modifier, prefix, grade_name)
 
         self.group_name = 'artifact_jewelry'  # статичная инициализация группы артефакта
@@ -31,6 +31,7 @@ class Jewelry(Artifact):
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.get_weight()
         self.get_requiriments()
+        self.game_mode = game_mode
 
         # Собственные методы
         self.jewerly_bonus = self.get_jewelry_bonus()

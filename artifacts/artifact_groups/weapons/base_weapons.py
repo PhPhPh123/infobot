@@ -15,11 +15,12 @@ class Weapon(Artifact):
     Базовый класс для дочерних классов CloseCombatWeapon и RangeWeapon
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
-    def __init__(self, grade_modifier: float, prefix: str):
-        super().__init__(grade_modifier, prefix)
+    def __init__(self, grade_modifier: float, prefix: str, game_mode):
+        super().__init__(grade_modifier, prefix, game_mode)
         self.damage = 18
         self.penetration = 'Отсутствует'
         self.prescision_modifier = 0
+        self.game_mode = game_mode
 
     @staticmethod
     def get_damage(weapon_group: str, weapon_type: str, grade_modifier: float) -> int:

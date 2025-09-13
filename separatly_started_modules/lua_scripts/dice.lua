@@ -1,34 +1,13 @@
-print('importing sqlite3...')
-sqlite3 = require "luasql.sqlite3"
+Не, про монстра забудь - он не нужен. Я сначала всё оформлю в свой проект на гитхаб и приведу это всё к нормальному виду, потом с requirements.txt, скриптом для lua, чтобы не потерять и тд. 
+Плюс сделаю себе базу на postgresql, куда будем записывать. Думаю нужно будет отдельный файл обработчик этого json сделать, где я, помимо данных, буду еще timestamp прописывать. 
+К слову, мне еще нужно записывать сессию tabletop касательно этих бросков. Думаю это лучше в скрипте lua в tabletop делать, когда создатель игры пропишет в чате "start". Думаю, можно будет к этому запросу
+привязать триггер, который будет авто-инкрементировать в базе данных значение по сессиям. Каждая команда "start" будет вызывать этот триггер
 
-print('create enviroment')
-local env  = sqlite3.sqlite3()
-
-print('create connection to db')
-local conn = env:connect([['C:\Users\User\PycharmProjects\infobot\lua_scripts\lua_dice.db']])
-print(env,conn)
-
-print('initialize local variables')
-local dice_sum = 0
-local count_dice_rolls = 0
+К базе перейдём чуть позже, сделай для триггер mock заглушку в python скрипте, ну и нужно дополните lua скрипт в tabletop. Весь скрипт заново пропечатывать не нужно, дай только необходимый код - я его вставлю
+Если у тебя есть более здравые идеи, как можно фиксировать id сессии - сообщи. Как по мне, лучше это делать уже на уровне БД, чтобы не тревожить лишних раз api
 
 
-function onObjectRandomize(object, player_color)
-    if object.getGUID() == '322d66' or object.getGUID() == '9716db' or object.getGUID() == 'd1e994' then
-        count_dice_rolls = count_dice_rolls + 1
-    end
-    if count_dice_rolls > 3 then
-        dice_sum = dice_sum + object.getValue() end
-            if count_dice_rolls == 6 then
-                print('Игрок ', player_color, ' роллит: ', dice_sum)
-                dice_sum = 0
-                count_dice_rolls = 0 end
-    end
 
-function onScriptingButtonUp(index, player_color)
-    print('a')
-        if index==0 and player_color then
-            dice_sum = 0
-            count_dice_rolls = 0
-            print('Значения сброшены')end
-    end
+Так, подожди. Lua скрипт не нужно ставить в известность по поводу session_id. Пусть будет единичная команда при сообщении в чате, которая тыкает api и вызывает добавление значения в БД. Тут нужно от тебя
+сделать Lua скрипт, обрабатывающий команду start в чате и mock заглушку, обрабатывающую этот запрос по api для добавления в БД
+

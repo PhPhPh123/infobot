@@ -16,8 +16,8 @@ class Armor(Artifact):
     наследуюется от класса Artifact
     Объект курсора bd_sqlite3_cursor это МЕЖМОДУЛЬНАЯ ГЛОБАЛЬНАЯ переменная
     """
-    def __init__(self, grade_modifier, armor_type, prefix, suffix):
-        super().__init__(grade_modifier, prefix)
+    def __init__(self, grade_modifier, armor_type, prefix, suffix, game_mode):
+        super().__init__(grade_modifier, prefix, game_mode)
         self.group_name = 'artifact_armor'
 
         # Данные аттрибуты формируют в родительском классе Artifact
@@ -26,6 +26,7 @@ class Armor(Artifact):
         self.get_name(self.unique_prefix, self.art_type, self.unique_suffix)
         self.get_weight()
         self.get_requiriments()
+        self.game_mode = game_mode
 
         # Данные аттрибуты формируют методы в данном классе
         self.armor = self.get_armor(grade_modifier)
@@ -74,6 +75,7 @@ WHERE art_type_name == '{self.art_type}'
         WHERE art_type_name == '{self.art_type}'
                 '''))[0][0]  # [0][0] отвечает за извлечение числа из кортежа с кортежами
         random_mod = 1 if random.randint(0, 100) <= 5 else 0
+
 
         final_speed_mod = base_evasion + random_mod
 

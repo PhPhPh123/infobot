@@ -4,7 +4,7 @@ import json
 import os
 
 # Настройки Mistral API
-load_dotenv(find_dotenv())  # загрузка переменных окружения из файла ._.text с токеном, именем и id бота
+load_dotenv(find_dotenv())  # загрузка переменных окружения из файла .env
 API_KEY = os.environ['API_KEY']  # имя бота в discord
 API_URL = "https://api.mistral.ai/v1/chat/completions"  # Исправленный endpoint
 HEADERS = {
